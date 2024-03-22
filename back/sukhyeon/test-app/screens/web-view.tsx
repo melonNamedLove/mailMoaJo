@@ -13,7 +13,7 @@ const Webview = () => {
       <WebView
         // ref={ref}
         style={styles.webview}
-        source={{uri: 'https://google.com'}}
+        source={{uri: 'https://auth.worksmobile.com/oauth2/v2.0/authorize?client_id=deloPYgxenkwauBKAZ39&redirect_uri=https://43.200.60.175:80&scope=mail,mail.read&response_type=code&state=test'}}
         // onNavigationStateChange={e => setNavState(e)}
         shouldOverrideUrlLoadingSynchronousMethodEnabled={false}
       />
