@@ -1,27 +1,47 @@
 
-import React from 'react';
-import {SafeAreaView, StyleSheet, Dimensions} from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {SafeAreaView, StyleSheet, Dimensions, Platform, BackHandler} from 'react-native';
 import WebView from 'react-native-webview';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const Webview = () => {
+// const webViewRef = useRef(null);
+// const onAndroidBackPress = () =>{
+//   if (webViewRef.current) {
+//     webViewRef.current.goBack()
+//     return true;
+//   }
+// }
+
+// useEffect(() => {
+//   if (Platform.OS === 'android') {
+//     BackHandler.addEventListener('hardwareBackPress', onAndroidBackPress);
+//     return () => {
+//       BackHandler.removeEventListener('hardwareBackPress', onAndroidBackPress);
+//     };
+//   }
+// }, []);
+
+const Webviewscreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
       <WebView
         // ref={ref}
         style={styles.webview}
-        source={{uri: 'https://auth.worksmobile.com/oauth2/v2.0/authorize?client_id=deloPYgxenkwauBKAZ39&redirect_uri=https://43.200.60.175:80&scope=mail,mail.read&response_type=code&state=test'}}
-        // onNavigationStateChange={e => setNavState(e)}
-        shouldOverrideUrlLoadingSynchronousMethodEnabled={false}
+        source={{uri: 'https://www.naver.com'}}
+        //shouldOverrideUrlLoadingSynchronousMethodEnabled={false}
+        onShouldStartLoadWithRequest={(request) => {
+    // Only allow navigating within this website
+          return request.url.startsWith('https://reactnative.dev');
+          }}
       />
     </SafeAreaView>
   );
 };
 
-export default Webview;
+export default Webviewscreen;
 
 const styles = StyleSheet.create({
   container: {
