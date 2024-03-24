@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "451769492147",
+    "project_id": "dlc-mail-418203",
+    "storage_bucket": "dlc-mail-418203.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451769492147:android:f611beef1ad55a88f986c6",
+        "android_client_info": {
+          "package_name": "com.melon.mailmoajo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451769492147-ft3ci12mv45gnv5efge6knv6e85uhpa7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABtX3W58LifXkoF8eKLzZxouIo4Zo2ekQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451769492147-ft3ci12mv45gnv5efge6knv6e85uhpa7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
