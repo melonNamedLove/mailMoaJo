@@ -23,25 +23,23 @@ const windowHeight = Dimensions.get('window').height;
 //   }
 // }, []);
 
-const Webviewscreen = () => {
-
+export default () => {
   return (
     <SafeAreaView style={styles.container}>
       <WebView
         // ref={ref}
         style={styles.webview}
         source={{uri: 'https://www.naver.com'}}
+        setSupportMultipleWindows={false}
         //shouldOverrideUrlLoadingSynchronousMethodEnabled={false}
-        onShouldStartLoadWithRequest={(request) => {
+        // onShouldStartLoadWithRequest={(request) => {
     // Only allow navigating within this website
-          return request.url.startsWith('https://reactnative.dev');
-          }}
+          // return request.url.startsWith('https://reactnative.dev');
+          // }}
       />
     </SafeAreaView>
   );
 };
-
-export default Webviewscreen;
 
 const styles = StyleSheet.create({
   container: {

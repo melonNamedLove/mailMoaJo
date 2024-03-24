@@ -13,17 +13,16 @@ const Input2 = styled(TextInput)`
 `
 //아이디 비밀번호 입력 텍스트 박스 총 2개
 export default ()=>{
-    const url = "https://auth.worksmobile.com/oauth2/v2.0/authorize?"
     let uId = ""
     let pw = ""
     const navigation = useNavigation();
     return<View>
             <Text> test test </Text>
-            {/* <Input1 id ="id"></Input1>
-            <Input2 id="pw"></Input2> */}
-            {/* <Button title="로그인" 
+            <Input1 id ="id"></Input1>
+            <Input2 id="pw"></Input2>
+             <Button title="로그인" 
                     onPress = {() => navigation.navigate('WEB')}> 
-            </Button> */}
+            </Button>
         </View>
 
 }
