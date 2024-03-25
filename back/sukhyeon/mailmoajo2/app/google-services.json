@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "451769492147-5nrqs8jmnf16eo8nf081sa5gltfl2ii5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melon.mailmoajo",
+            "certificate_hash": "056438c5ed0edf2c98305d2bec2365e8add31416"
+          }
+        },
+        {
           "client_id": "451769492147-ft3ci12mv45gnv5efge6knv6e85uhpa7.apps.googleusercontent.com",
           "client_type": 3
         }
