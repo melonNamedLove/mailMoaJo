@@ -1,10 +1,15 @@
+import React, { useEffect, useRef } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Dimensions,
+  Platform,
+  BackHandler,
+} from "react-native";
+import WebView from "react-native-webview";
 
-import React, { useEffect, useRef } from 'react';
-import {SafeAreaView, StyleSheet, Dimensions, Platform, BackHandler} from 'react-native';
-import WebView from 'react-native-webview';
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 // const webViewRef = useRef(null);
 // const onAndroidBackPress = () =>{
@@ -29,13 +34,13 @@ export default () => {
       <WebView
         // ref={ref}
         style={styles.webview}
-        source={{uri: 'https://www.naver.com'}}
+        source={{ uri: "https://www.naver.com" }}
         setSupportMultipleWindows={false}
         //shouldOverrideUrlLoadingSynchronousMethodEnabled={false}
         // onShouldStartLoadWithRequest={(request) => {
-    // Only allow navigating within this website
-          // return request.url.startsWith('https://reactnative.dev');
-          // }}
+        // Only allow navigating within this website
+        // return request.url.startsWith('https://reactnative.dev');
+        // }}
       />
     </SafeAreaView>
   );
@@ -44,8 +49,8 @@ export default () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   webview: {
     flex: 1,
