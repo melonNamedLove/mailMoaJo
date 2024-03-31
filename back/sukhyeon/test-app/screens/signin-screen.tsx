@@ -120,7 +120,8 @@ export default () => {
           let gUserReq = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo',
               {
                   headers: {
-                      Authorization: `Bearer ${accessToken}`
+                      Authorization: `Bearer ${accessToken}`,
+                      redirect_uri:'https://auth.expo.io/@melonnamedlove/test-app'
                   }
               }
           );

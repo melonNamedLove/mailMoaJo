@@ -1,8 +1,7 @@
 {
   "expo": {
-    "scheme": "mailmoajo",
-    "name": "test-app",
-    "slug": "test-app",
+    "name": "mailmoojo_demo",
+    "slug": "mailmoojo_demo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,12 +26,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "a08419e3-022e-4e87-9534-d6d57fa036fe"
-      }
-    },
-    "plugins":["@react-native-google-signin/google-signin"]
+    }
   }
 }
