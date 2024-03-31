@@ -1,14 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Auth from './android/components/Auth';
+import Auth from './screens/Auth';
+
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import mail from './screens/mail';
+import login from './screens/login';
+
+
+
+const Stack = createStackNavigator();
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-      <Auth/>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {/* <Stack.Screen name="LOGIN" component={login}></Stack.Screen> */}
+        <Stack.Screen name="AUTH" component={Auth}></Stack.Screen>
+        <Stack.Screen name="MAIL" component={mail}></Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
