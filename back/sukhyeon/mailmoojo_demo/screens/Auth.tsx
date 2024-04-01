@@ -15,7 +15,7 @@ export default () =>{
 
 
     GoogleSignin.configure({
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
+    scopes: ['https://www.googleapis.com/auth/gmail.readonly'], // what API you want to access on behalf of the user, default is email and profile
     
     webClientId: '281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access). Required to get the `idToken` on the user object!
     
@@ -28,6 +28,10 @@ export default () =>{
     // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
     // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
     });
+
+    let currentUser1 ="";
+    let ui:any;
+    
     return (
         <View>
     <GoogleSigninButton
@@ -39,6 +43,12 @@ export default () =>{
                 // console.log(JSON.stringify(userInfo, null, 2));
                 const userInfo = await GoogleSignin.signIn();
                 console.log(userInfo);
+                ui=userInfo;
+
+                const currentUser = GoogleSignin.getTokens().then((res)=>{
+                    console.log(res.accessToken );
+                    currentUser1 = res.accessToken;
+    });
                 //   setState({ userInfo });
             } catch (error: any) {
                 if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -52,7 +62,7 @@ export default () =>{
                 }
             }
         } } />
-        <Button title='hi' onPress={()=> navigation.navigate("Mail", userInfo)}></Button>
+        <Button title='hi' onPress={()=> navigation.navigate("MAIL", {name:"meoow", tk:currentUser1, uidata:JSON.stringify(ui)})}></Button>
         </View>
     );
   }

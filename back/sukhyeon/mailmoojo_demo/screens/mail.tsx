@@ -6,7 +6,7 @@ import React, { createContext, useContext, useState } from 'react';
 // import { useCookies } from 'react-cookie';
 import { useEffect } from 'react';
 
-import { Text, View } from 'react-native';
+import { Text, View,StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -25,16 +25,25 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
-export default (route:any) => {
+export default ({route}) => {
 
+  const styles = StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: '#ffffff'
+    },
+    text: {
+      fontSize: 20
+    }
+  })
 
   return (
     <SafeAreaView>
 
         <View>
-        // 데이터 출력
-            <Text>{route.params.userInfo.email}</Text>
-            <Text>{route.params.userInfo.id}</Text>
+            <Text style={styles.text}>{route.params.name.toString()}</Text>
+            <Text style={styles.text}>{route.params.tk.toString()}</Text>
+            <Text style={styles.text}>{route.params.uidata}</Text>
         </View>
 
     </SafeAreaView>
