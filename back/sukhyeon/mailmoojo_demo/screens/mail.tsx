@@ -6,9 +6,9 @@ import React, { createContext, useContext, useState } from 'react';
 // import { useCookies } from 'react-cookie';
 import { useEffect } from 'react';
 
-import { Text, View,StyleSheet } from 'react-native';
+import { Text, View,StyleSheet, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { gmail } from '@googleapis/gmail';
 
 
 // const UserContext = createContext(null);
@@ -25,7 +25,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
+
 export default ({route}) => {
+
 
   const styles = StyleSheet.create({
     screen: {
@@ -45,6 +47,7 @@ export default ({route}) => {
             <Text style={styles.text}>{route.params.tk.toString()}</Text>
             <Text style={styles.text}>{route.params.uidata}</Text>
         </View>
+
 
     </SafeAreaView>
   );
