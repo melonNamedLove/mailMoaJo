@@ -31,10 +31,20 @@ export default () =>{
     // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
     });
 
-
-
-
       let accessToken="";
+        const {google} = require('googleapis');
+    const callGmailAPI = async (accessToken:String) => {
+        const auth = new google.auth.OAuth2(clientId, clientSecret, accessToken);
+        const gmailClient = new gmail.Gmail({ auth });
+      
+        const messages = await gmailClient.users.messages.list({
+          userId: 'me',
+        });
+      
+        console.log(messages.data.messages);
+      };
+      
+
     let currentUser1 ="";
     let ui:any;
     
