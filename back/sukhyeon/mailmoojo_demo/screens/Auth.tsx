@@ -1,11 +1,9 @@
-import { gmail } from '@googleapis/gmail';
 import {
     GoogleSignin,
     GoogleSigninButton,
     statusCodes,
   } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
-import { GoogleApis, gmail_v1 } from 'googleapis';
 import { createContext, useEffect, useState } from 'react';
 import { Button, View } from 'react-native';
 
@@ -31,20 +29,6 @@ export default () =>{
     // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
     });
 
-      let accessToken="";
-        const {google} = require('googleapis');
-    const callGmailAPI = async (accessToken:String) => {
-        const auth = new google.auth.OAuth2(clientId, clientSecret, accessToken);
-        const gmailClient = new gmail.Gmail({ auth });
-      
-        const messages = await gmailClient.users.messages.list({
-          userId: 'me',
-        });
-      
-        console.log(messages.data.messages);
-      };
-      
-
     let currentUser1 ="";
     let ui:any;
     
@@ -64,7 +48,6 @@ export default () =>{
                 const currentUser = GoogleSignin.getTokens().then((res)=>{
                     console.log(res.accessToken );
                     currentUser1 = res.accessToken;
-                    accessToken = res.accessToken;
     });
                 //   setState({ userInfo });
             } catch (error: any) {
@@ -80,8 +63,6 @@ export default () =>{
             }
         } } />
         <Button title='hi' onPress={()=> navigation.navigate("MAIL", {name:"meoow", tk:currentUser1, uidata:JSON.stringify(ui)})}></Button>
-        
-
         </View>
     );
   }
