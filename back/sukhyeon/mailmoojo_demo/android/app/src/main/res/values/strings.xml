@@ -1,6 +1,0 @@
-<resources>
-  <string name="app_name">mailmoojo_demo</string>
-  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
-  <string name="server_client_id">281381475185-2pt59nuf6q21c8qftj4b3e3d2fa6aec8.apps.googleusercontent.com</string>
-</resources>

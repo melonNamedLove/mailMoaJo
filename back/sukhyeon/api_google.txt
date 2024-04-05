@@ -1,7 +1,0 @@
-https://accounts.google.com/o/oauth2/v2/auth?client_id=451769492147-ft3ci12mv45gnv5efge6knv6e85uhpa7.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:5500/test.html&response_type=code&scope=https://www.googleapis.com/auth/gmail.readonly
-
-
-https://www.googleapis.com/oauth2/v4/token?code=4/0AeaYSHA9WUnMUM23t3-ldC5fAiLzqgw4juEz8z-c6A0Icm1JJAZBPkORHWpd7TT6Xgpn_w&client_id=451769492147-ft3ci12mv45gnv5efge6knv6e85uhpa7.apps.googleusercontent.com&client_secret=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&redirect_uri=http://127.0.0.1:5500/test.html&grant_type=authorization_code
-
-
-https://gmail.googleapis.com/gmail/v1/users/huibeom123@gmail.com/messages?maxResults=10
