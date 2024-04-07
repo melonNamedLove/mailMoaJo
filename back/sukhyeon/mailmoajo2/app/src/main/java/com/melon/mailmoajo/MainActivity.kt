@@ -33,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         }?: Toast.makeText(this, "Not Yet", Toast.LENGTH_SHORT).show()
     }
 
+    val serverCI = "281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com"
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -42,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestProfile()
+            .requestIdToken(serverCI)
             .build()
 
         with(binding){
@@ -75,7 +79,9 @@ class MainActivity : AppCompatActivity() {
             val familyName = account?.familyName.toString()
             val givenName = account?.givenName.toString()
             val displayName = account?.displayName.toString()
-            val photoUrl = account?.photoUrl.toString()
+            val tok = account?.idToken.toString()
+
+            Log.d("kkktoken", tok)
         }catch (e:ApiException){
             //the api Exception status code indicates the detailed failure reason
             //please refer to GoogleSignInStatusCodes class reference for more information
