@@ -1,112 +1,106 @@
 package com.melon.mailmoajo
 
-import android.app.Activity
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import com.melon.mailmoajo.databinding.ActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.melon.mailmoajo.ui.theme.Mailmoajo2Theme
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
+import java.util.UUID
 
-
-class MainActivity : AppCompatActivity() {
-
-    lateinit var mGoogleSignInClient: GoogleSignInClient
-    lateinit var resultLauncher : ActivityResultLauncher<Intent>
-
-    override fun onStart() {
-        super.onStart()
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        account?.let {
-            Toast.makeText(this, "Logged In", Toast.LENGTH_SHORT).show()
-        }?: Toast.makeText(this, "Not Yet", Toast.LENGTH_SHORT).show()
-    }
-
-    val serverCI = "281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com"
-
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
+        setContent {
+            Mailmoajo2Theme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        GoogleSignInButton()
+                    }
+                }
+            }
+        }
+    }
+}
 
-        setResultSignUp()
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .requestProfile()
-            .requestIdToken(serverCI)
+@Composable
+fun GoogleSignInButton(){
+    val context = LocalContext.current
+    val coroutineScope =rememberCoroutineScope()
+
+    val onClick:() ->Unit = {
+        val credentialManager = CredentialManager.create(context)
+        val rawNonce = UUID.randomUUID().toString()
+        val bytes = rawNonce.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        val hashedNonce = digest.fold(""){str, it ->str +"%02x".format(it)}
+
+        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId("281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com")
+            .setNonce(hashedNonce)
             .build()
 
-        with(binding){
-            btnSignIn.setOnClickListener{
-                signIn()
-            }
+        val request: GetCredentialRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
 
-            btnSignOut.setOnClickListener {
-                signOut()
+        coroutineScope.launch{
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = context
+                )
+                val credential = result.credential
+
+                val googleIdTokenCredential = GoogleIdTokenCredential
+                    .createFrom(credential.data)
+
+                val googleIdToken = googleIdTokenCredential.idToken
+
+                Log.i("meow", googleIdToken)
+
+                Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
+            }catch (e: GetCredentialException){
+                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
+            }catch (e: GoogleIdTokenParsingException){
+                Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }
         }
-        mGoogleSignInClient = GoogleSignIn.getClient(this,gso)
-        setContentView(binding.root)
-
     }
-    private fun setResultSignUp(){
-        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result ->
-        //정상적으로 결과가 받아질 때 조건문 실행
-            if(result.resultCode == Activity.RESULT_OK){
-                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                handleSignInResult(task)
-            }
-
-        }
+    Button(onClick = onClick) {
+        Text("Sign in with Google")
     }
-
-    private fun handleSignInResult(completedTask:Task<GoogleSignInAccount>){
-        try {
-            val account = completedTask.getResult(ApiException::class.java)
-            val email = account?.email.toString()
-            val familyName = account?.familyName.toString()
-            val givenName = account?.givenName.toString()
-            val displayName = account?.displayName.toString()
-            val tok = account?.idToken.toString()
-
-            Log.d("kkktoken", tok)
-        }catch (e:ApiException){
-            //the api Exception status code indicates the detailed failure reason
-            //please refer to GoogleSignInStatusCodes class reference for more information
-            Log.w("failed","signInResult:failed code"+ e.statusCode)
-        }
-    }
-
-    private fun signIn(){
-        val signInIntent: Intent = mGoogleSignInClient.getSignInIntent()
-        resultLauncher.launch(signInIntent)
-
-    }
-
-    private fun signOut(){
-        mGoogleSignInClient.signOut()
-            .addOnCompleteListener(this){
-
-            }
-    }
-    private fun revokeAccess(){
-        mGoogleSignInClient.revokeAccess()
-            .addOnCompleteListener(this){
-
-            }
-    }
-
-
 }
+//6:45
