@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".MailgogoActivity"
             android:exported="false">
             <intent-filter>
                 <data

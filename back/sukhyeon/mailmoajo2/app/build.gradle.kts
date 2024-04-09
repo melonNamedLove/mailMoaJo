@@ -84,4 +84,16 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation ("com.google.code.gson:gson:2.8.8")
+
+
+    // Retrofit 라이브러리
+    implementation ("com.squareup.retrofit2:retrofit:2.6.4")
+
+// Gson 변환기 라이브러리
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.4")
+
+// Scalars 변환기 라이브러리
+    implementation ("com.squareup.retrofit2:converter-scalars:2.6.4")
 }
