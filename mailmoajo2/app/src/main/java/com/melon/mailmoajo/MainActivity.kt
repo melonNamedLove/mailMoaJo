@@ -55,7 +55,6 @@ class MainActivity : ComponentActivity() {
 //
 //                re.launch(i)
 //            }
-
             val mailgo:() ->Unit = {
                 var i: Intent = Intent(this, MailgogoActivity::class.java)
                 startActivity(i)

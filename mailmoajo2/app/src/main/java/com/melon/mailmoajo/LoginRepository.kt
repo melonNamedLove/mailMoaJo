@@ -9,9 +9,9 @@ import retrofit2.Response
 
 class LoginRepository {
 
-    private val getAccessTokenBaseUrl = "https://www.googleapis.com"
     private val sendAccessTokenBaseUrl = "server_base_url"
 
+    private val getAccessTokenBaseUrl = "https://www.googleapis.com"
     fun getAccessToken(authCode:String) {
         LoginService.loginRetrofit(getAccessTokenBaseUrl).getAccessToken(
             request = LoginGoogleRequestModel(
