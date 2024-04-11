@@ -38,6 +38,7 @@ import java.util.UUID
 
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
 //
 //                re.launch(i)
 //            }
+
             val mailgo:() ->Unit = {
                 var i: Intent = Intent(this, MailgogoActivity::class.java)
                 startActivity(i)
@@ -71,17 +73,23 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         GoogleSignInButton()
-                        Button(onClick = mailgo) {
-                            Text("google 동기화")
-                        }
+                        GoMail()
                     }
                 }
             }
         }
     }
 }
+@Composable
+fun GoMail() {
+    val context = LocalContext.current
 
-
+    Button(onClick = {
+        context.startActivity(Intent(context, MailgogoActivity::class.java))
+    }) {
+        Text(text = "Show List")
+    }
+}
 
 
 @Composable
