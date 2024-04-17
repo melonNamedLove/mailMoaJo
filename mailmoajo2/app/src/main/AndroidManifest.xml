@@ -17,7 +17,18 @@
         tools:targetApi="31">
         <activity
             android:name=".aaActivity"
-            android:exported="false" />
+            android:exported="false"
+             />
+
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data android:host="tokey.com" android:scheme="http" />-->
+<!--            </intent-filter>-->
+
+<!--        </activity>-->
         <activity
             android:name=".MywebviewActivity"
             android:exported="false"></activity>
