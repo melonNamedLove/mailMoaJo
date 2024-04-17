@@ -36,23 +36,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            //이건 웹뷰로 구성해볼 예정
-//            var re = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
-//                if(result.resultCode == 1){
-//                    Log.i("meow", "--------------data here ------------------")
-//                }else{
-//                    Log.i("meow", "error")
-//                }
-//            }
-//            val mailapi:() ->Unit = {
-//
-//                var i: Intent = Intent(this, MailgogoActivity::class.java)
-//
-//                re.launch(i)
-//            }
 
             val mailgo:() ->Unit = {
-                var i: Intent = Intent(this, MywebviewActivity::class.java)
+                var i: Intent = Intent(this, aaActivity::class.java)
                 startActivity(i)
             }
 

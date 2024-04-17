@@ -46,8 +46,11 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+
         }
     }
+
 }
 
 dependencies {
@@ -56,7 +59,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.google.firebase:firebase-auth:22.3.1")
+//    implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
@@ -96,4 +99,7 @@ dependencies {
 
 // Scalars 변환기 라이브러리
     implementation ("com.squareup.retrofit2:converter-scalars:2.6.4")
+
+    implementation("com.github.ok2c.hc4.android:httpclient-android:0.1.0")
+
 }
