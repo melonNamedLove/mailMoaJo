@@ -16,21 +16,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".aaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MywebviewActivity"
+            android:exported="false"></activity>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".MailgogoActivity"
-            android:exported="false">
-            <intent-filter>
-                <data
-                    android:host="mailmoa.jo"
-                    android:scheme="mmj" />
             </intent-filter>
         </activity>
     </application>

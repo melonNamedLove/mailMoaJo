@@ -3,7 +3,6 @@ package com.melon.mailmoajo
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,15 +21,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.Scopes
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.Scope
+//import com.google.android.gms.auth.api.Auth
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.melon.mailmoajo.databinding.ActivityMailgogoBinding
 import com.melon.mailmoajo.ui.theme.Mailmoajo2Theme
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
@@ -58,7 +52,7 @@ class MainActivity : ComponentActivity() {
 //            }
 
             val mailgo:() ->Unit = {
-                var i: Intent = Intent(this, MailgogoActivity::class.java)
+                var i: Intent = Intent(this, MywebviewActivity::class.java)
                 startActivity(i)
             }
 
@@ -73,21 +67,13 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         GoogleSignInButton()
-                        GoMail()
+                        Button(onClick = mailgo) {
+                            Text(text = "webview")
+                        }
                     }
                 }
             }
         }
-    }
-}
-@Composable
-fun GoMail() {
-    val context = LocalContext.current
-
-    Button(onClick = {
-        context.startActivity(Intent(context, MailgogoActivity::class.java))
-    }) {
-        Text(text = "Show List")
     }
 }
 
