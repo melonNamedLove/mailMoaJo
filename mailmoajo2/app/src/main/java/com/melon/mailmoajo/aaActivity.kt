@@ -15,6 +15,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.compose.LocalActivityResultRegistryOwner.current
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.LocalContext
@@ -23,18 +24,19 @@ import androidx.core.content.ContextCompat.startActivity
 
 private var gottenData:String = ""
 class myWebViewClient: WebViewClient(){
-    var res = 0
-    override fun onPageStarted(view: WebView?, url: String, favicon: Bitmap?) {
+    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
-        Log.d("kkkk", "your current url when webpage loading..$url")
+        gottenData = ""
+        var res = 0
+        Log.d("meow", "your current url when webpage loading..$url")
         if(url.contains("localhost", ignoreCase = true)){
-            Log.d("kkkk", "ㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅ")
+            Log.d("meow", url.toString())
+            gottenData = url
             res = 1
         }
-        if (res ==1){
-                gottenData = "ㅅㅅㅅㅅㅅㅅㅅㅅhhhhㅅㅅㅅㅅㅅㅅㅅㅅ"
-            view?.setVisibility(View.GONE)
-            view?.goBack()
+        if (res ==1 && gottenData!=""){
+            view.setVisibility(View.GONE)
+//            view?.goBack()
         }
     }
 //    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
@@ -54,6 +56,7 @@ class myWebViewClient: WebViewClient(){
     }
 
     override fun onLoadResource(view: WebView, url: String) {
+        Log.d("kkkk", "여기")
         // TODO Auto-generated method stub
         super.onLoadResource(view, url)
     }
@@ -95,11 +98,17 @@ class aaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_aa)
-
         val btn: Button = findViewById<Button>(R.id.rrbtn)
         btn.setOnClickListener(View.OnClickListener {
 
             Log.d("meow", gottenData)
+            if (gottenData !=""){
+                var temp=gottenData.substring(37)
+                Log.d("meow", temp)
+                val access_code = temp.split("&scope")[0]
+                Log.d("meow", access_code)
+                findViewById<TextView>(R.id.accesscodeTV).setText(access_code)
+            }
         })
 
         val webView:WebView = findViewById<WebView>(R.id.webweb)
@@ -110,7 +119,8 @@ class aaActivity : AppCompatActivity() {
         webView.webViewClient = myWebViewClient()
 //        webView.webChromeClient = WebChromeClient()
         webView.getSettings().setUserAgentString(System.getProperty("http.agent"))
-        webView.loadUrl("https://accounts.google.com/o/oauth2/v2/auth?client_id=281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com&response_type=code&scope=https://www.googleapis.com/auth/gmail.readonly&redirect_uri=http://localhost:5500/test.html")
+        webView.loadUrl("https://accounts.google.com/o/oauth2/v2/auth?client_id=281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com&redirect_uri=http://localhost:5500/test.html&scope=https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/userinfo.email&response_type=code")
+
 
 //        val USER_AGENT:String = "Mozilla/5.0 (Linux; Android 4.1.1; Galaxy Nexus Build/JRO03C) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19"
 //        val webView:WebView = findViewById<WebView>(R.id.webweb)

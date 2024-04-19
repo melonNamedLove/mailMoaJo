@@ -79,7 +79,8 @@ fun GoogleSignInButton(){
 
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
-            .setServerClientId("281381475185-ed4qlcvb6opietckobi32g0k9s36glvb.apps.googleusercontent.com")
+//            .setServerClientId("281381475185-2pt59nuf6q21c8qftj4b3e3d2fa6aec8.apps.googleusercontent.com")//desktop
+            .setServerClientId("281381475185-un3e8c4voaqfn1j1jiqu2rcene6gp0ht.apps.googleusercontent.com")//laptop
             .setNonce(hashedNonce)
             .build()
 
@@ -104,8 +105,10 @@ fun GoogleSignInButton(){
 
                 Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
             }catch (e: GetCredentialException){
+                Log.i("meow", e.toString())
                 Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }catch (e: GoogleIdTokenParsingException){
+                Log.i("meow", e.toString())
                 Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }
         }
