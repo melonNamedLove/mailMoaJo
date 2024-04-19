@@ -1,4 +1,4 @@
-package com.melon.mailmoajo
+package com.melon.mailmoajo.x
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

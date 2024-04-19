@@ -21,20 +21,44 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.gms.auth.api.Auth
 //import com.google.android.gms.auth.api.Auth
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.melon.mailmoajo.ui.theme.Mailmoajo2Theme
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.exceptions.RestException
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.Google
+import io.github.jan.supabase.gotrue.providers.builtin.IDToken
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.from
+import io.ktor.websocket.WebSocketDeflateExtension.Companion.install
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.UUID
 
+val supabase = createSupabaseClient(
+    supabaseUrl = "https://jqsyjqwrbzyxfrmihszv.supabase.co",
+    supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impxc3lqcXdyYnp5eGZybWloc3p2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM1MzA4NTMsImV4cCI6MjAyOTEwNjg1M30.sjPdLoTNWKQ9Iw0NGfy1MxBCTxmEx1QIhALW99AFh5I"
+){
+    install(io.github.jan.supabase.gotrue.Auth)
+    install(Postgrest)
+}
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
+//        prefLoginTF.edit().putBoolean("login",false).apply()
+//        val loginTF = prefLoginTF.getBoolean("login", false)
+//        if (loginTF==false){
+//            var i: Intent = Intent(this, LoginActivity::class.java)
+//            startActivity(i)
+//        }
+
         setContent {
 
             val mailgo:() ->Unit = {
@@ -52,6 +76,7 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        InsertButton()
                         GoogleSignInButton()
                         Button(onClick = mailgo) {
                             Text(text = "webview")
@@ -60,6 +85,30 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun InsertButton(){
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    Button(onClick = {
+        coroutineScope.launch {
+            try{
+
+                supabase.from("posts").insert(mapOf("content" to "hello from android"))
+                Toast.makeText(context, "New row inserted", Toast.LENGTH_SHORT).show()
+
+            }catch (e: RestException){
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+
+        }
+        }
+
+    }) {
+        Text("야옹야옹멍멍")
+        
     }
 }
 
@@ -79,8 +128,8 @@ fun GoogleSignInButton(){
 
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
-//            .setServerClientId("281381475185-2pt59nuf6q21c8qftj4b3e3d2fa6aec8.apps.googleusercontent.com")//desktop
-            .setServerClientId("281381475185-un3e8c4voaqfn1j1jiqu2rcene6gp0ht.apps.googleusercontent.com")//laptop
+            .setServerClientId("1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com")//웹 클라이언트 아이디
+
             .setNonce(hashedNonce)
             .build()
 
@@ -101,7 +150,12 @@ fun GoogleSignInButton(){
 
                 val googleIdToken = googleIdTokenCredential.idToken
 
-                Log.i("meow", googleIdToken)
+                supabase.auth.signInWith(IDToken){
+                    idToken = googleIdToken
+                    provider = Google
+                    nonce = rawNonce
+                }
+//                Log.i("meow", googleIdToken)
 
                 Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
             }catch (e: GetCredentialException){

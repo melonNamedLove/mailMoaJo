@@ -9,29 +9,29 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="mailmoajo"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mailmoajo2"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity android:name=".LoginActivity"
+            android:exported="false"
+            ></activity>
         <activity
             android:name=".aaActivity"
-            android:exported="true"
-             >
-
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="mail.tokey.com/" android:scheme="http" />
+                <data
+                    android:host="mail.tokey.com/"
+                    android:scheme="http" />
             </intent-filter>
-
         </activity>
-        <activity
-            android:name=".MywebviewActivity"
-            android:exported="false"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">

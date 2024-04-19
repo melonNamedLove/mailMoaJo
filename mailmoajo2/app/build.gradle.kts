@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -68,6 +69,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.browser:browser:1.8.0")
+    implementation("androidx.annotation:annotation:1.7.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -79,13 +84,14 @@ dependencies {
 
 
     implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.0")
-//    implementation ("com.google.android.gms:play-services-auth:20.2.0")
+    implementation ("com.google.android.gms:play-services-auth:20.2.0")
 
 
     implementation("androidx.credentials:credentials:1.3.0-alpha02")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0-alpha02")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
@@ -102,5 +108,12 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-scalars:2.6.4")
 
     implementation("com.github.ok2c.hc4.android:httpclient-android:0.1.0")
+
+    //supabase
+    implementation(platform("io.github.jan-tennert.supabase:bom:2.3.0"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt")
+
+    implementation("io.ktor:ktor-client-android:2.3.10")
 
 }
