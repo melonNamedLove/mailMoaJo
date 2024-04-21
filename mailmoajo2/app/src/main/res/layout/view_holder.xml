@@ -5,12 +5,6 @@
     android:orientation="horizontal"
     >
 
-    <ImageView
-        android:id="@+id/imgimg1"
-        android:layout_width="50dp"
-        android:layout_height="50dp">
-
-    </ImageView>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -18,17 +12,17 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/namename1"
+            android:id="@+id/mailTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
         </TextView>
-        <TextView
-            android:id="@+id/phonephone1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+<!--        <TextView-->
+<!--            android:id="@+id/phonephone1"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content">-->
 
-        </TextView>
+<!--        </TextView>-->
     </LinearLayout>
 
 

@@ -15,9 +15,12 @@
         android:theme="@style/Theme.Mailmoajo2"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity android:name=".LoginActivity"
-            android:exported="false"
-            ></activity>
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
         <activity
             android:name=".aaActivity"
             android:exported="true">

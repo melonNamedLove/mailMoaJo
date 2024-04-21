@@ -1,6 +1,8 @@
 package com.melon.mailmoajo
 
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -18,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.edit
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
@@ -31,12 +34,17 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.gotrue.providers.builtin.IDToken
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import io.ktor.websocket.WebSocketDeflateExtension.Companion.install
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.security.MessageDigest
+import java.util.Scanner
 import java.util.UUID
 
 val supabase = createSupabaseClient(
@@ -51,15 +59,25 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
-//        prefLoginTF.edit().putBoolean("login",false).apply()
-//        val loginTF = prefLoginTF.getBoolean("login", false)
-//        if (loginTF==false){
-//            var i: Intent = Intent(this, LoginActivity::class.java)
-//            startActivity(i)
-//        }
 
         setContent {
+            val cacheFile = File(this.cacheDir, "loginTF")
+//            var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
+//            val loginTF = prefLoginTF.getBoolean("login", false)
+
+            val inputStream = FileInputStream(cacheFile)
+            val s = Scanner(inputStream)
+            var text = ""
+            while (s.hasNext()) {
+                text += s.nextLine()
+            }
+            inputStream.close()
+//            if(text.toBoolean()){                                           //***로그인부
+//                Log.d("meow",text.toString())
+//                var i: Intent = Intent(this, HomeActivity::class.java)
+//                startActivity(i)
+//            }
+
 
             val mailgo:() ->Unit = {
                 var i: Intent = Intent(this, aaActivity::class.java)
@@ -149,14 +167,24 @@ fun GoogleSignInButton(){
                     .createFrom(credential.data)
 
                 val googleIdToken = googleIdTokenCredential.idToken
-
-                supabase.auth.signInWith(IDToken){
+                Log.i("meow", googleIdTokenCredential.id)                //google email
+                googleIdTokenCredential.displayName
+                googleIdTokenCredential
+                supabase.auth.signInWith(IDToken){              //supabase  auth
                     idToken = googleIdToken
                     provider = Google
                     nonce = rawNonce
                 }
 //                Log.i("meow", googleIdToken)
+                var tempLoginFile=File.createTempFile("loginTF", null, context.cacheDir)
+                val cacheFile = File(context.cacheDir, "loginTF")
+                val outputStream = FileOutputStream(cacheFile)
+                outputStream.write("true".toByteArray())
+                outputStream.close()
 
+//                tempLoginFile.writeText(true.toString())
+//                var prefLoginTF = context.getSharedPreferences("loginTF", MODE_PRIVATE)
+//                prefLoginTF.edit().putBoolean("login",true)
                 Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
             }catch (e: GetCredentialException){
                 Log.i("meow", e.toString())
