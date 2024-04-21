@@ -1,14 +1,11 @@
 package com.melon.mailmoajo
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.webkit.SslErrorHandler
-import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -16,18 +13,16 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.compose.LocalActivityResultRegistryOwner.current
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat.startActivity
 
 
 private var gottenData:String = ""
+var res:Int =0
 class myWebViewClient: WebViewClient(){
     override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
         gottenData = ""
-        var res = 0
+        res =0
         Log.d("meow", "your current url when webpage loading..$url")
         if(url.contains("localhost", ignoreCase = true)){
             Log.d("meow", url.toString())
@@ -35,7 +30,7 @@ class myWebViewClient: WebViewClient(){
             res = 1
         }
         if (res ==1 && gottenData!=""){
-            view.setVisibility(View.GONE)
+            view.setVisibility(View.GONE)                  //여기
 //            view?.goBack()
         }
     }
@@ -92,12 +87,12 @@ class myWebViewClient: WebViewClient(){
 
 }
 
-class aaActivity : AppCompatActivity() {
+class GmailLoadActivity : AppCompatActivity() {
 
     var currentUrl: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_aa)
+        setContentView(R.layout.activity_gmail_load)
         val btn: Button = findViewById<Button>(R.id.rrbtn)
         btn.setOnClickListener(View.OnClickListener {
 
