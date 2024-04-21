@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 class DaAdapter (val d:MutableList<ItemData>):RecyclerView.Adapter<DaAdapter.ViewHolder>(){
     class ViewHolder(var v: View):RecyclerView.ViewHolder(v){
         fun bind(item:ItemData){
-            v.findViewById<ImageView>(R.id.imgimg1)?.setImageResource(item.img)
-            v.findViewById<TextView>(R.id.namename1)?.text=(item.name)
-            v.findViewById<TextView>(R.id.phonephone1)?.text=(item.phone).toString()
+//            v.findViewById<ImageView>(R.id.imgimg1)?.setImageResource(item.img)
+//            v.findViewById<TextView>(R.id.namename1)?.text=(item.name)
+            v.findViewById<TextView>(R.id.mailTV)?.text=(item.mailID).toString()
         }
     }
 

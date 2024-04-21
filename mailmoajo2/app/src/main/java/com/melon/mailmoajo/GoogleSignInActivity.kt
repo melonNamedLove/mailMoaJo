@@ -18,10 +18,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.gms.auth.api.Auth
 //import com.google.android.gms.auth.api.Auth
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -34,8 +34,9 @@ import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.IDToken
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
-import io.ktor.websocket.WebSocketDeflateExtension.Companion.install
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -47,24 +48,30 @@ val supabase = createSupabaseClient(
     install(Postgrest)
 }
 
-class MainActivity : ComponentActivity() {
+class GoogleSignInActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
-//        prefLoginTF.edit().putBoolean("login",false).apply()
-//        val loginTF = prefLoginTF.getBoolean("login", false)
-//        if (loginTF==false){
-//            var i: Intent = Intent(this, LoginActivity::class.java)
-//            startActivity(i)
-//        }
 
         setContent {
+            val cacheFile = File(this.cacheDir, "loginTF")
+//            var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
+//            val loginTF = prefLoginTF.getBoolean("login", false)
 
-            val mailgo:() ->Unit = {
-                var i: Intent = Intent(this, aaActivity::class.java)
-                startActivity(i)
-            }
+            //-----------------------------------로그인부 에러 ㅂ있음
+//            val inputStream = FileInputStream(cacheFile)
+//            val s = Scanner(inputStream)
+//            var text = ""
+//            while (s.hasNext()) {
+//                text += s.nextLine()
+//            }
+//            inputStream.close()
+//            if(text.equals("true")){                                           //***로그인부
+//                Log.d("meow",text.toString())
+//                var i: Intent = Intent(this, HomeActivity::class.java)
+//                startActivity(i)
+//            }
+
 
             Mailmoajo2Theme {
                 // A surface container using the 'background' color from the theme
@@ -78,9 +85,6 @@ class MainActivity : ComponentActivity() {
                     ) {
                         InsertButton()
                         GoogleSignInButton()
-                        Button(onClick = mailgo) {
-                            Text(text = "webview")
-                        }
                     }
                 }
             }
@@ -105,6 +109,12 @@ fun InsertButton(){
 
         }
         }
+
+//        //jetpack compose 에서  activity 밖 함수에서 activity 이동
+//        Intent(context,aaActivity::class.java).also {
+//        startActivity(context, it, null)
+//    }
+//
 
     }) {
         Text("야옹야옹멍멍")
@@ -149,14 +159,24 @@ fun GoogleSignInButton(){
                     .createFrom(credential.data)
 
                 val googleIdToken = googleIdTokenCredential.idToken
-
-                supabase.auth.signInWith(IDToken){
+                Log.i("meow", googleIdTokenCredential.id)                //google email
+                googleIdTokenCredential.displayName
+                googleIdTokenCredential
+                supabase.auth.signInWith(IDToken){              //supabase  auth
                     idToken = googleIdToken
                     provider = Google
                     nonce = rawNonce
                 }
 //                Log.i("meow", googleIdToken)
+                var tempLoginFile=File.createTempFile("loginTF", null, context.cacheDir)
+                val cacheFile = File(context.cacheDir, "loginTF")
+                val outputStream = FileOutputStream(cacheFile)
+                outputStream.write("true".toByteArray())
+                outputStream.close()
 
+//                tempLoginFile.writeText(true.toString())
+//                var prefLoginTF = context.getSharedPreferences("loginTF", MODE_PRIVATE)
+//                prefLoginTF.edit().putBoolean("login",true)
                 Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
             }catch (e: GetCredentialException){
                 Log.i("meow", e.toString())
@@ -166,6 +186,9 @@ fun GoogleSignInButton(){
                 Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }
         }
+
+        var i: Intent = Intent(context, HomeActivity::class.java)
+        startActivity(context, i, null)
     }
     Button(onClick = onClick) {
         Text("Sign in with Google")

@@ -15,11 +15,15 @@
         android:theme="@style/Theme.Mailmoajo2"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity android:name=".LoginActivity"
-            android:exported="false"
-            ></activity>
+
         <activity
-            android:name=".aaActivity"
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GmailLoadActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -33,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".GoogleSignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
