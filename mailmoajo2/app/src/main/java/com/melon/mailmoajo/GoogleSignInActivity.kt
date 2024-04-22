@@ -1,6 +1,8 @@
 package com.melon.mailmoajo
 
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -22,10 +24,12 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.gms.common.util.SharedPreferencesUtils
 //import com.google.android.gms.auth.api.Auth
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
 import com.melon.mailmoajo.ui.theme.Mailmoajo2Theme
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.RestException
@@ -36,8 +40,10 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.security.MessageDigest
+import java.util.Scanner
 import java.util.UUID
 
 val supabase = createSupabaseClient(
@@ -49,22 +55,34 @@ val supabase = createSupabaseClient(
 }
 
 class GoogleSignInActivity : ComponentActivity() {
-
+    companion object {
+        lateinit var prefs: SharedPreferences
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val cacheFile = File(this.cacheDir, "loginTF")
-//            var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
-//            val loginTF = prefLoginTF.getBoolean("login", false)
+            Log.d("meow",supabase.auth.currentIdentitiesOrNull().toString())
 
-            //-----------------------------------로그인부 에러 ㅂ있음
+            prefs = this.getSharedPreferences("loginData", MODE_PRIVATE)
+            Log.i("meow", prefs.getString("loginData","").toString()+"실행")
+            if(supabase.auth.currentIdentitiesOrNull() != null || prefs.getString("loginData","")!=""){
+                var i: Intent = Intent(this, HomeActivity::class.java)
+                startActivity(i)
+
+            }
+//            val cacheFile = File(this.cacheDir, "loginTF")
+////            var prefLoginTF = this.getSharedPreferences("loginTF", MODE_PRIVATE)
+////            val loginTF = prefLoginTF.getBoolean("login", false)
+//
+//            //-----------------------------------로그인부 에러 ㅂ있음
 //            val inputStream = FileInputStream(cacheFile)
 //            val s = Scanner(inputStream)
 //            var text = ""
 //            while (s.hasNext()) {
 //                text += s.nextLine()
 //            }
+//            Log.d("meow",text)
 //            inputStream.close()
 //            if(text.equals("true")){                                           //***로그인부
 //                Log.d("meow",text.toString())
@@ -168,15 +186,18 @@ fun GoogleSignInButton(){
                     nonce = rawNonce
                 }
 //                Log.i("meow", googleIdToken)
-                var tempLoginFile=File.createTempFile("loginTF", null, context.cacheDir)
-                val cacheFile = File(context.cacheDir, "loginTF")
-                val outputStream = FileOutputStream(cacheFile)
-                outputStream.write("true".toByteArray())
-                outputStream.close()
+//                var tempLoginFile=File.createTempFile("loginTF", null, context.cacheDir)
+//                val cacheFile = File(context.cacheDir, "loginTF")
+//                val outputStream = FileOutputStream(cacheFile)
+//                outputStream.write("true".toByteArray())
+//                outputStream.close()
 
 //                tempLoginFile.writeText(true.toString())
 //                var prefLoginTF = context.getSharedPreferences("loginTF", MODE_PRIVATE)
 //                prefLoginTF.edit().putBoolean("login",true)
+                Log.d("meow", supabase.auth.currentIdentitiesOrNull().toString())
+                prefs.edit().putString("loginData",supabase.auth.currentIdentitiesOrNull().toString()).apply()
+                Log.i("meow", prefs.getString("loginData","").toString())
                 Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
             }catch (e: GetCredentialException){
                 Log.i("meow", e.toString())
@@ -186,7 +207,6 @@ fun GoogleSignInButton(){
                 Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }
         }
-
         var i: Intent = Intent(context, HomeActivity::class.java)
         startActivity(context, i, null)
     }
