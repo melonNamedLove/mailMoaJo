@@ -14,6 +14,8 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
+import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -103,10 +105,7 @@ class GmailLoadActivity : AppCompatActivity() {
         setContentView(R.layout.activity_gmail_load)
         val btn: Button = findViewById<Button>(R.id.rrbtn)
         //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.googleapis.com")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+
         btn.setOnClickListener(View.OnClickListener {
 
             Log.d("meow", gottenData)
@@ -116,32 +115,66 @@ class GmailLoadActivity : AppCompatActivity() {
                 val access_code = temp.split("&scope")[0]
                 Log.d("meow", access_code)
                 findViewById<TextView>(R.id.accesscodeTV).setText(access_code)
+                tokenprefs.edit().putString("access_code",access_code.toString()).apply()
             }
 
-            val retrofittest2 = ServiceBuilder.buildService(AccessToken::class.java)
+//            var input = HashMap<String, String>()
+//            input["code"] =  "4%2F0AeaYSHBYaXpqBjTXNc2yKRieyt_3TtZeCIUh0JxckUnBfaiRuRUjbRhGDWPXgrjjyOW70A"
+//            input["client_id"] =  "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com"
+//            input["scope"] =  "https://www.googleapis.com/auth/gmail.readonly"
+//            input["client_secret"] =  "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"
+//            input["redirect_uri"] =  "http://localhost:5500/test.html"
+//            input["grant_type"] =  "authorization_code"
+//            ServiceBuilder.api.postAccessToken(
+//                ("code" to "4%2F0AeaYSHBJS3MPTGNi3JeLmD9_-mPotGOrK9OadvcY_FOp0jRxvAclsKtM4f1Q3kAKB1nJpQ",
+//            "code" to "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
+//            "code" to "https://www.googleapis.com/auth/gmail.readonly",
+//                "code" to "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",
+//                "code" to "http://localhost:5500/test.html",
+//                "code" to "authorization_code").
+//            )
+//
+//            enqueue(object :Callback<PostResult>{
+//                override fun onResponse(call:Call<PostResult>, response: Response<PostResult>){
+//
+//                    if (response.isSuccessful){
+//
+//                        Log.d("meow", response.body().toString())
+//                    }
+//
+//                }
+//
+//                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+//                    Log.d("meow", "failed")
+//                }
+//
+//            })
 
-            retrofittest2.postAccessToken(
-                "4%2F0AeaYSHBEK1nx0dtp9_bzyZ84ZfNdoX9pFuNt7Ey2iHCUHKU0f-l9TFLNfeC4G_7EL6FA0w",
-                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
-                "https://www.googleapis.com/auth/gmail.readonly",
-                "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",
-                "http://localhost:5500/test.html",
-                "authorization_code"
-                ).enqueue(object :Callback<PostResult>{
-                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
-                    if(response.isSuccessful.not()){
-                        Log.d("meow", "nope")
-                        return
-                    }
-
-                        Log.d("meow", response.body()?.access_token.toString())
-
-                }
-
-                override fun onFailure(call: Call<PostResult>, t: Throwable) {
-                    TODO("Not yet implemented")
-                }
-                })
+//
+//            val retrofittest2 = ServiceBuilder.buildService(AccessToken::class.java)
+//
+//            retrofittest2.postAccessToken(
+//                "4%2F0AeaYSHBbgJuaG7FbSctk-TDAQLKTlvOZqETZqqlg4PXmq4fU1qOPoFA4TuJyq4rSVDt8Pg",
+//                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
+//                "https://www.googleapis.com/auth/gmail.readonly",
+//                "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",
+//                "http://localhost:5500/test.html",
+//                "authorization_code"
+//                ).enqueue(object :Callback<PostResult>{
+//                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+//                    if(response.isSuccessful.not()){
+//                        Log.d("meow", "nope")
+//                        return
+//                    }
+//
+//                        Log.d("meow", response.body()?.access_token.toString())
+//
+//                }
+//
+//                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+//                    Log.d("meow", "failed")
+//                }
+//                })
 
 
 

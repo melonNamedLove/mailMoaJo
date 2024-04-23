@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="412dp"
-android:layout_height="760dp"
-tools:context=".fragment.ContactFragment">
-<TextView
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:text="주소록" />
+    android:layout_height="760dp"
+    android:orientation="vertical">
 
-</FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:text="주소록" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contactRcv"
+        android:layout_width="match_parent"
+        android:layout_height="745dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>
+
+

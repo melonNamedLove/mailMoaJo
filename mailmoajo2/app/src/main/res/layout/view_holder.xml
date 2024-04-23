@@ -12,7 +12,13 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/mailTV"
+            android:id="@+id/mailsenderTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TextView>
+        <TextView
+            android:id="@+id/mailTitleTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 

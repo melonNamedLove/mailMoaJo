@@ -19,10 +19,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.melon.mailmoajo.AccessToken
 import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
+import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.HomeActivity
+import com.melon.mailmoajo.PostResult
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 import com.melon.mailmoajo.supabase
@@ -33,9 +36,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URLDecoder
 import java.security.MessageDigest
+import java.util.Base64
 import java.util.UUID
 
 /**
@@ -60,7 +70,6 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val binding = FragmentSettingsBinding.inflate(layoutInflater)
 
         binding.gmailLoadBtn.setOnClickListener{
@@ -68,13 +77,94 @@ class SettingsFragment : Fragment() {
             startActivity(i)
         }
 
+        binding.retro2Btn.setOnClickListener{
+
+
+        }
+
+
+        //access token load 부
+        binding.retroBtn.setOnClickListener{
+            var accesscode = tokenprefs.getString("access_code","")
+            accesscode = URLDecoder.decode(accesscode, "UTF-8")
+            Log.i("meow",accesscode)
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://www.googleapis.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val service = retrofit.create(AccessToken::class.java)
+
+            service.postAccessToken(accesscode,
+                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
+                "https://www.googleapis.com/auth/gmail.readonly",
+                "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",
+                "http://localhost:5500/test.html",
+                "authorization_code").enqueue(object :Callback<PostResult>{
+                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+
+
+                    Log.d("meow",  response.code().toString())
+                    if(response.isSuccessful.not()){
+                        Log.d("meow", "nope")
+                        Log.d("meow", response.errorBody()?.string()!!)
+
+                        return
+                    }
+                    Log.d("meow", response.body()?.access_token.toString())
+                    if (response.body()?.access_token !=null){
+                        tokenprefs.edit().putString("accesstoken", response.body()?.access_token).apply()
+                        val tokenParts = response.body()!!.id_token.split(".")
+                        Log.d("tokenmeow",tokenParts[0])
+                        Log.d("tokenmeow",tokenParts[1])
+                        Log.d("tokenmeow",tokenParts[2])
+
+                        val decoder = Base64.getUrlDecoder()
+
+                        val header = String(decoder.decode(tokenParts[0]))
+                        val payload = String(decoder.decode(tokenParts[1]))
+                        val signature = String(decoder.decode(tokenParts[2]))
+
+                        Log.d("tokenmeow","header"+header)
+                        Log.d("tokenmeow","payload"+payload)
+                        Log.d("tokenmeow","signature"+signature)
+                    }
+                }
+
+                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+                    Log.d("meow", "Failed API call with call: " + call +
+                    " + exception: " + t)
+                }
+
+
+                })
+//            AccessToken.create().postAccessToken(
+//                accesscode.toString(),
+//                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
+//                "https://www.googleapis.com/auth/gmail.readonly",
+//                "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",
+//                "http://localhost:5500/test.html",
+//                "authorization_code"
+//            ).enqueue(object : Callback<PostResult>{
+//                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+//                    if(response.isSuccessful.not()){
+//                        Log.d("meow", "nope")
+//                        return
+//                    }
+//
+//                        Log.d("meow", response.body()?.access_token.toString())
+//
+//                }
+//
+//                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+//                    Log.d("meow", "fail")
+//                }
+//            }
+//
+//            )
+        }
+
         binding.logoutBtn.setOnClickListener{
-            val credentialManager = CredentialManager.create(requireContext())
-            val rawNonce = UUID.randomUUID().toString()
-            val bytes = rawNonce.toByteArray()
-            val md = MessageDigest.getInstance("SHA-256")
-            val digest = md.digest(bytes)
-            val hashedNonce = digest.fold(""){str, it ->str +"%02x".format(it)}
 
 
             CoroutineScope(Dispatchers.Default).launch{

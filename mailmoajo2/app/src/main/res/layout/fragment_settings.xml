@@ -18,6 +18,20 @@ android:orientation="vertical">
     <Button
         android:layout_width="100dp"
         android:layout_height="70dp"
+        android:text="get accesstoken"
+        android:id="@+id/retroBtn">
+
+    </Button>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:text="get mail list"
+        android:id="@+id/retro2Btn">
+
+    </Button>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="70dp"
         android:text="로그아웃"
         android:id="@+id/logoutBtn">
 

@@ -25,21 +25,7 @@ class RetrofitTest{
     }
 
 }
-interface AccessToken {
 
-//@FormUrlEncoded
-     @Headers("Content-Type: application/json")
-    @POST("oauth2/v4/token")
-    fun postAccessToken(
-        @Query("code") code:String,
-        @Query("client_id") client_id:String,
-        @Query("scope") scope:String,
-        @Query("client_secret") client_secret:String,
-        @Query("redirect_uri") redirect_uri:String,
-        @Query("grant_type") grant_type:String,
-
-    ):Call<PostResult>
-}
 //{
 //    "access_token": "ya29.a0Ad52N38GqbCAzLKmB92hvyHim4lgLMdsfwOePNQhVWLz8TEz4cTcJH0fTQI6ioWhE3KUAY3NdJs3B6_zdEHOVkhL5lbVhWoXm12WMcuuc_Dxna2scHhxnJ7-VvhhCVmHuxCT8Kmvx6WKRvbBrYQw8A00ML5F0wv2ggH4aCgYKAZwSARMSFQHGX2MimpRubgzWTiTBhOQaiVRi7Q0171",
 //    "expires_in": 3599,

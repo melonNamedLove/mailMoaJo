@@ -13,6 +13,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        GoogleSignInActivity.tokenprefs = this.getSharedPreferences("token", MODE_PRIVATE)
         supportFragmentManager.beginTransaction().apply{
             replace(R.id.fragArea, MailFragment())
             commit()

@@ -3,6 +3,7 @@ package com.melon.mailmoajo
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Paint.Style
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -43,6 +44,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.security.MessageDigest
+import java.security.Provider
 import java.util.Scanner
 import java.util.UUID
 
@@ -57,6 +59,7 @@ val supabase = createSupabaseClient(
 class GoogleSignInActivity : ComponentActivity() {
     companion object {
         lateinit var prefs: SharedPreferences
+        lateinit var tokenprefs: SharedPreferences
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,7 +104,7 @@ class GoogleSignInActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        InsertButton()
+//                        InsertButton()
                         GoogleSignInButton()
                     }
                 }

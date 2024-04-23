@@ -12,7 +12,7 @@ class DaAdapter (val d:MutableList<ItemData>):RecyclerView.Adapter<DaAdapter.Vie
         fun bind(item:ItemData){
 //            v.findViewById<ImageView>(R.id.imgimg1)?.setImageResource(item.img)
 //            v.findViewById<TextView>(R.id.namename1)?.text=(item.name)
-            v.findViewById<TextView>(R.id.mailTV)?.text=(item.mailID).toString()
+            v.findViewById<TextView>(R.id.mailTitleTV)?.text=(item.mailID).toString()
         }
     }
 

@@ -5,16 +5,15 @@ import com.google.gson.annotations.SerializedName
 
 
 data class PostResult (
-    @SerializedName("access_token") var access_token:String?,
+    @SerializedName("access_token") var access_token:String,
 
-    @SerializedName("expires_in") var expires_in:String?,
+    @SerializedName("expires_in") var expires_in:Int,
 
-    @SerializedName("scope") var scope:String?,
+    @SerializedName("scope") var scope:String,
 
-    @SerializedName("token_type") var token_type:String?,
+    @SerializedName("token_type") var token_type:String,
 
-    @SerializedName("id_token") var id_token:String?,
-
+    @SerializedName("id_token") var id_token:String
 
 )
 
