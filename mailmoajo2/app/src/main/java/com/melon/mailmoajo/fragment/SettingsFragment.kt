@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.melon.mailmoajo.AccessToken
 import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
@@ -28,6 +30,7 @@ import com.melon.mailmoajo.HomeActivity
 import com.melon.mailmoajo.PostResult
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
+import com.melon.mailmoajo.payload_json
 import com.melon.mailmoajo.supabase
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
@@ -95,7 +98,8 @@ class SettingsFragment : Fragment() {
                 .build()
             val service = retrofit.create(AccessToken::class.java)
 
-            service.postAccessToken(accesscode,
+            service.postAccessToken(
+                accesscode,
                 "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
                 "https://www.googleapis.com/auth/gmail.readonly",
                 "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",
@@ -128,6 +132,18 @@ class SettingsFragment : Fragment() {
                         Log.d("tokenmeow","header"+header)
                         Log.d("tokenmeow","payload"+payload)
                         Log.d("tokenmeow","signature"+signature)
+
+                        //gson 인스턴스 생성
+                        var gson = Gson()
+
+                        val stringtodataclass = gson.fromJson(payload, payload_json::class.java)
+
+                        Log.i("meow",stringtodataclass.email)
+                        tokenprefs.edit().putString("userid",stringtodataclass.email).apply()
+
+                        //json을 클래스로 변환
+
+
                     }
                 }
 
