@@ -46,7 +46,7 @@ class RecyclerViewActivity : AppCompatActivity() {
 //        listData.add(ItemData(R.drawable.img5,"신호진","99999999999",30))
 
 
-        binding!!.rcv.adapter = DaAdapter(listData)
+//        binding!!.rcv.adapter = DaAdapter(listData)
         binding!!.rcv.layoutManager= LinearLayoutManager(this)
     }
 }

@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="15dp"
         android:text="주소록" />
     <androidx.recyclerview.widget.RecyclerView

@@ -2,6 +2,7 @@ package com.melon.mailmoajo
 
 import android.R.id
 import com.google.gson.annotations.SerializedName
+import java.util.Objects
 
 
 data class PostResult (
@@ -53,3 +54,20 @@ data class payload_json(
 //    "iat": 1713797764,
 //    "exp": 1713801364
 //}
+data class gotMailList(
+
+    @SerializedName("messages") val messages:ArrayList<Any>,
+    @SerializedName("nextPageToken")val nextPageToken:String,
+    @SerializedName("resultSizeEstimate")val resultSizeEstimate:Int
+
+)
+
+data class mailData(
+
+    var id:String="",
+    var threadId:String=""
+)
+
+data class mailId(
+    var muteMail :String
+)

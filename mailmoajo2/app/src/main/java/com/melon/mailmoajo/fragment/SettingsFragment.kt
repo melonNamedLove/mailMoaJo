@@ -30,11 +30,15 @@ import com.melon.mailmoajo.HomeActivity
 import com.melon.mailmoajo.PostResult
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
+import com.melon.mailmoajo.gotMailList
+import com.melon.mailmoajo.mailData
+import com.melon.mailmoajo.mailId
 import com.melon.mailmoajo.payload_json
 import com.melon.mailmoajo.supabase
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.IDToken
+import io.github.jan.supabase.toJsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -51,13 +55,13 @@ import java.security.MessageDigest
 import java.util.Base64
 import java.util.UUID
 
+var mailmail = mutableListOf<mailId>()
 /**
  * A simple [Fragment] subclass.
  * Use the [SettingsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
 class SettingsFragment : Fragment() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -82,6 +86,50 @@ class SettingsFragment : Fragment() {
 
         binding.retro2Btn.setOnClickListener{
 
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://www.googleapis.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val service = retrofit.create(AccessToken::class.java)
+
+            val userid =tokenprefs.getString("userid","").toString()
+            service.getMailList(
+                userid,
+                "Bearer "+tokenprefs.getString("accesstoken","").toString(),
+            ).enqueue(object :Callback<gotMailList>{
+                override fun onResponse(call: Call<gotMailList>, response: Response<gotMailList>) {
+
+
+                    Log.d("meow",  response.code().toString())
+                    if(response.isSuccessful.not()){
+                        Log.d("meow", "nope")
+                        Log.d("meow", response.errorBody()?.string()!!)
+
+                        return
+                    }
+                    val msg =response.body()?.messages
+//                    msg?.get(0)
+                    Log.d("meow", response.body()?.messages.toString())
+//
+                    var gson = Gson()
+                    for (i:Int in 0 until 50){
+                        Log.w("meow", response.body()!!.messages[i].toString())
+                        val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
+                        Log.d("meow", stringtodataclass.id)
+                        mailmail.add(mailId(stringtodataclass.id))
+//        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
+                    }
+//                    Log.i("meow",stringtodataclass.mailids.toString())
+//                    item.messages[0]
+                }
+
+                override fun onFailure(call: Call<gotMailList>, t: Throwable) {
+                    Log.d("meow", "Failed API call with call: " + call +
+                            " + exception: " + t)
+                }
+
+
+            })
 
         }
 
@@ -154,6 +202,7 @@ class SettingsFragment : Fragment() {
 
 
                 })
+
 //            AccessToken.create().postAccessToken(
 //                accesscode.toString(),
 //                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",

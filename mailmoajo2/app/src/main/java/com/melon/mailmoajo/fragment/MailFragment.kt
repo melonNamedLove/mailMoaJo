@@ -5,7 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.melon.mailmoajo.DaAdapter
+import com.melon.mailmoajo.ItemData
 import com.melon.mailmoajo.R
+import com.melon.mailmoajo.databinding.FragmentMailBinding
+import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 
 class MailFragment : Fragment() {
 
@@ -20,7 +25,20 @@ class MailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mail, container, false)
+        val binding = FragmentMailBinding.inflate(layoutInflater)
+
+
+//        var listData = mutableListOf<ItemData>()
+
+//        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
+
+
+
+        binding!!.mailRcv.adapter = DaAdapter(mailmail)
+        binding!!.mailRcv.layoutManager= LinearLayoutManager(context)
+
+
+        return binding.root
     }
 
 }
