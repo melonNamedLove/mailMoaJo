@@ -3,15 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="760dp"
     android:orientation="vertical">
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:id="@+id/addContactbtn"
+        android:text="추가"
+        ></Button>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:id="@+id/contactResetbtn"
+        android:text="주소록 삭제"
+        >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="15dp"
-        android:text="주소록" />
+    </Button>
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="15dp"-->
+<!--        android:text="주소록" />-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/contactRcv"
         android:layout_width="match_parent"
-        android:layout_height="745dp">
+        android:layout_height="695dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
