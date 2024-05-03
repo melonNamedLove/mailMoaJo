@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id ("kotlin-kapt")
     kotlin("plugin.serialization") version "1.9.22"
 }
 
@@ -80,15 +81,15 @@ dependencies {
 
 //    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
 //    implementation("com.google.firebase:firebase-analytics")
-//    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.1.0")
 
 
     implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.0")
-    implementation ("com.google.android.gms:play-services-auth:20.2.0")
+//    implementation ("com.google.android.gms:play-services-auth:20.2.0")
 
 
-    implementation("androidx.credentials:credentials:1.3.0-alpha02")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-alpha02")
+    implementation("androidx.credentials:credentials:1.3.0-alpha03")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-alpha03")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
@@ -115,5 +116,11 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:gotrue-kt")
 
     implementation("io.ktor:ktor-client-android:2.3.10")
+
+
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
 
 }

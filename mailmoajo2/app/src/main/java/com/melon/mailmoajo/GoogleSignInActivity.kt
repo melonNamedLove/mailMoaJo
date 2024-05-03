@@ -161,7 +161,8 @@ fun GoogleSignInButton(){
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId("1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com")//웹 클라이언트 아이디
-
+            //05:64:38:C5:ED:0E:DF:2C:98:30:5D:2B:EC:23:65:E8:AD:D3:14:16
+            //1D:53:CD:1F:9C:BA:14:C4:A7:1B:8C:92:AF:E0:9E:A3:01:F2:49:7C
             .setNonce(hashedNonce)
             .build()
 
