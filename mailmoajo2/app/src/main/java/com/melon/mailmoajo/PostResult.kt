@@ -61,13 +61,3 @@ data class gotMailList(
     @SerializedName("resultSizeEstimate")val resultSizeEstimate:Int
 
 )
-
-data class mailData(
-
-    var id:String="",
-    var threadId:String=""
-)
-
-data class mailId(
-    var muteMail :String
-)

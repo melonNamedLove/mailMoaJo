@@ -60,7 +60,7 @@ class GoogleSignInActivity : ComponentActivity() {
     companion object {
         lateinit var prefs: SharedPreferences
         lateinit var tokenprefs: SharedPreferences
-        lateinit var contactprefs: SharedPreferences
+//        lateinit var contactprefs: SharedPreferences
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

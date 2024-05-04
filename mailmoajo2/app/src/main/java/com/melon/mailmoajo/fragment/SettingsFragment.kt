@@ -30,9 +30,9 @@ import com.melon.mailmoajo.HomeActivity
 import com.melon.mailmoajo.PostResult
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
+import com.melon.mailmoajo.dataclass.mailData
+import com.melon.mailmoajo.dataclass.mailId
 import com.melon.mailmoajo.gotMailList
-import com.melon.mailmoajo.mailData
-import com.melon.mailmoajo.mailId
 import com.melon.mailmoajo.payload_json
 import com.melon.mailmoajo.supabase
 import io.github.jan.supabase.gotrue.auth

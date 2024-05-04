@@ -7,7 +7,7 @@ import android.provider.ContactsContract.CommonDataKinds.Contactables
 import android.util.Log
 import androidx.room.Room
 import com.melon.mailmoajo.Database.ContactDatabase
-import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
+//import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.databinding.ActivityAddContactBinding
 import com.melon.mailmoajo.fragment.ContactFragment
 import entities.contacts
@@ -22,12 +22,12 @@ class AddContactActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.addbtn.setOnClickListener{
-            var contactprefset = contactprefs.getStringSet("contact", setOf<String>())
+//            var contactprefset = contactprefs.getStringSet("contact", setOf<String>())
 
-            var contactset = contactprefset!!.toMutableSet()
-            var name = "-"
-            var google = "-"
-            var outlook = "-"
+//            var contactset = contactprefset!!.toMutableSet()
+            var name = ""
+            var google = ""
+            var outlook = ""
 
             if (!binding.nameET.text.toString().equals("")){
                 name =binding.nameET.text.toString()
@@ -38,9 +38,9 @@ class AddContactActivity : AppCompatActivity() {
             if (!binding.outlookEmailET.text.toString().equals("")){
                 outlook =binding.outlookEmailET.text.toString()
             }
-            val concatContactString = name+"**"+google+"**"+outlook
-            contactset!!.add(concatContactString)
-            contactprefs.edit().putStringSet("contact", contactset.toSet()).apply()
+//            val concatContactString = name+"**"+google+"**"+outlook
+//            contactset!!.add(concatContactString)
+//            contactprefs.edit().putStringSet("contact", contactset.toSet()).apply()
 
 
             var newContact = contacts(name, google, outlook)
@@ -68,6 +68,8 @@ class AddContactActivity : AppCompatActivity() {
             var uhm = db!!.contactDao().getAll()
             Log.i("meow",uhm.toString())
             finish()
+            var i: Intent = Intent(this, HomeActivity::class.java)
+            startActivity(i)
         }
 
     }

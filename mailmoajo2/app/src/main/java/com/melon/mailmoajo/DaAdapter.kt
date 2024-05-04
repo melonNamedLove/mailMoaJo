@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.melon.mailmoajo.dataclass.mailId
+import entities.contacts
 
 class DaAdapter (val d:MutableList<mailId>):RecyclerView.Adapter<DaAdapter.ViewHolder>(){
     class ViewHolder(var v: View):RecyclerView.ViewHolder(v){
@@ -30,9 +32,9 @@ class DaAdapter (val d:MutableList<mailId>):RecyclerView.Adapter<DaAdapter.ViewH
 
     }
 }
-class ContactAdapter (val d:MutableList<contact>):RecyclerView.Adapter<ContactAdapter.ViewHolder>(){
+class ContactAdapter (val d:MutableList<contacts>):RecyclerView.Adapter<ContactAdapter.ViewHolder>(){
     class ViewHolder(var v: View):RecyclerView.ViewHolder(v){
-        fun bind(item:contact){
+        fun bind(item:contacts){
 //            v.findViewById<ImageView>(R.id.imgimg1)?.setImageResource(item.img)
 //            v.findViewById<TextView>(R.id.namename1)?.text=(item.name)
 

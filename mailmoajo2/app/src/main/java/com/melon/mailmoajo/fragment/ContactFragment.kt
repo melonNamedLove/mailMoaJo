@@ -16,15 +16,13 @@ import com.melon.mailmoajo.ContactAdapter
 import com.melon.mailmoajo.DaAdapter
 import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
-import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
+//import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.contact
 import com.melon.mailmoajo.contactName
 import com.melon.mailmoajo.databinding.FragmentContactBinding
 import com.melon.mailmoajo.databinding.FragmentMailBinding
 import com.melon.mailmoajo.listData
-import com.melon.mailmoajo.mailId
-
 
 class ContactFragment : Fragment() {
 
@@ -43,7 +41,7 @@ class ContactFragment : Fragment() {
         val binding = FragmentContactBinding.inflate(layoutInflater)
 
         binding.contactResetbtn.setOnClickListener {
-            contactprefs.edit().remove("contact").commit()
+//            contactprefs.edit().remove("contact").commit()
         }
         binding.addContactbtn.setOnClickListener{
             var i: Intent = Intent(context, AddContactActivity::class.java)
