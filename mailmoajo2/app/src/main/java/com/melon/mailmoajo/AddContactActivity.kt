@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Contactables
 import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.melon.mailmoajo.Database.ContactDatabase
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.databinding.ActivityAddContactBinding
+import com.melon.mailmoajo.databinding.FragmentContactBinding
 import com.melon.mailmoajo.fragment.ContactFragment
 import entities.contacts
 import kotlinx.coroutines.CoroutineScope
@@ -67,9 +69,14 @@ class AddContactActivity : AppCompatActivity() {
 //            }
             var uhm = db!!.contactDao().getAll()
             Log.i("meow",uhm.toString())
-            finish()
+
+            val binding2 = FragmentContactBinding.inflate(layoutInflater)
+            listData = db!!.contactDao().getAll().toMutableList()
+//            binding2!!.contactRcv.adapter = ContactAdapter(listData)
+//            binding2!!.contactRcv.layoutManager= LinearLayoutManager(this)
             var i: Intent = Intent(this, HomeActivity::class.java)
-            startActivity(i)
+            setResult(1,i)
+            finish()
         }
 
     }
