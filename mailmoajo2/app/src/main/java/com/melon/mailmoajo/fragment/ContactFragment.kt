@@ -12,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.melon.mailmoajo.AddContactActivity
 import com.melon.mailmoajo.ContactAdapter
@@ -19,6 +20,7 @@ import com.melon.mailmoajo.DaAdapter
 import com.melon.mailmoajo.Database.ContactDatabase
 import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
+import com.melon.mailmoajo.HomeActivity
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.contact
@@ -35,7 +37,6 @@ class ContactFragment : Fragment() {
 
 
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,16 +48,25 @@ class ContactFragment : Fragment() {
 //            contactprefs.edit().remove("contact").commit()
         }
 
-
-
         var re = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             if(result.resultCode == 1){
+                val db = Room.databaseBuilder(
+                    this.requireContext(),
+                    ContactDatabase::class.java,
+                    "contact-database"
+                ).allowMainThreadQueries()
+                    .build()
+                val contactList = db.contactDao().getAll().toMutableList()
+                binding.contactRcv.adapter = ContactAdapter(contactList)
 //                binding!!.registText.text ="yes"
+//                findViewById<RecyclerView>(R.id.contactRcv).adapter!!.notifyItemInserted(listData.size)
             }else if(result.resultCode == 0){
 //                binding!!.registText.text="no"
             }else{
 //                binding!!.registText.text="error"
             }
+
+//            binding.contactRcv.adapter!!.notifyDataSetChanged()
         }
         binding.addContactbtn.setOnClickListener{
             var i: Intent = Intent(context, AddContactActivity::class.java)
@@ -67,16 +77,16 @@ class ContactFragment : Fragment() {
         binding!!.contactRcv.adapter = ContactAdapter(listData)
         binding!!.contactRcv.layoutManager= LinearLayoutManager(context)
 
-        val db = Room.databaseBuilder(
-            this.requireContext(),
-            ContactDatabase::class.java,
-            "contact-database"
-        ).allowMainThreadQueries()
-            .build()
+
 //            allowMainThreadQueries() // 그냥 강제로 실행
 //
-        binding!!.contactRcv.adapter!!.notifyItemChanged(listData.size)
+//        binding!!.contactRcv.adapter!!.notifyItemChanged(listData.size)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
 }

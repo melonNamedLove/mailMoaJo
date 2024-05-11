@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Contactables
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.melon.mailmoajo.Database.ContactDatabase
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
@@ -18,10 +19,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AddContactActivity : AppCompatActivity() {
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val binding = ActivityAddContactBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
 
         binding.addbtn.setOnClickListener{
 //            var contactprefset = contactprefs.getStringSet("contact", setOf<String>())
@@ -70,14 +75,23 @@ class AddContactActivity : AppCompatActivity() {
             var uhm = db!!.contactDao().getAll()
             Log.i("meow",uhm.toString())
 
-            val binding2 = FragmentContactBinding.inflate(layoutInflater)
-            listData = db!!.contactDao().getAll().toMutableList()
+//            val binding2 = FragmentContactBinding.inflate(layoutInflater)
+//            listData = db!!.contactDao().getAll().toMutableList()
 //            binding2!!.contactRcv.adapter = ContactAdapter(listData)
 //            binding2!!.contactRcv.layoutManager= LinearLayoutManager(this)
+
+
             var i: Intent = Intent(this, HomeActivity::class.java)
             setResult(1,i)
             finish()
         }
 
+
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+//        findViewById<RecyclerView>(R.id.contactRcv).adapter?.notifyItemInserted(listData.size)
+    }
+
 }
