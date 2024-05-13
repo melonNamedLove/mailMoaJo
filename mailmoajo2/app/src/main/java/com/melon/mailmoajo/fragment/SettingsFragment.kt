@@ -27,6 +27,8 @@ import com.melon.mailmoajo.GoogleSignInActivity
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.HomeActivity
+import com.melon.mailmoajo.MSGraphRequestWrapper
+import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
 import com.melon.mailmoajo.PostResult
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
@@ -35,6 +37,14 @@ import com.melon.mailmoajo.dataclass.mailId
 import com.melon.mailmoajo.gotMailList
 import com.melon.mailmoajo.payload_json
 import com.melon.mailmoajo.supabase
+import com.microsoft.identity.client.AuthenticationCallback
+import com.microsoft.identity.client.IAccount
+import com.microsoft.identity.client.IAuthenticationResult
+import com.microsoft.identity.client.ISingleAccountPublicClientApplication
+import com.microsoft.identity.client.SignInParameters
+import com.microsoft.identity.client.exception.MsalClientException
+import com.microsoft.identity.client.exception.MsalException
+import com.microsoft.identity.client.exception.MsalServiceException
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.IDToken
@@ -43,6 +53,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,6 +63,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URLDecoder
 import java.security.MessageDigest
+import java.util.Arrays
 import java.util.Base64
 import java.util.UUID
 
@@ -62,6 +74,9 @@ var mailmail = mutableListOf<mailId>()
  * create an instance of this fragment.
  */
 class SettingsFragment : Fragment() {
+    /* Azure AD Variables */
+    private var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
+    private var mAccount: IAccount? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -281,7 +296,82 @@ class SettingsFragment : Fragment() {
 //            var p = this.context.getSharedPreferences("loginData", ComponentActivity.MODE_PRIVATE)
 
         }
+        val scopes:Array<String> = arrayOf(
+                "Mail.Read",
+                "email",
+                )
+
+
+
+        binding.MSloadBtn.setOnClickListener {
+            if(mSingleAccountApp ==null){}
+            val signInParameters: SignInParameters = SignInParameters.builder()
+                .withActivity(requireActivity())
+                .withLoginHint(null)
+                .withScopes(Arrays.asList(*scopes))
+                .withCallback(authInteractiveCallback)
+                .build()
+            mSingleAccountApp!!.signIn(signInParameters)
+
+        }
+
+
         return binding.root
     }
+    private val authInteractiveCallback: AuthenticationCallback
+        private get() = object : AuthenticationCallback {
+            override fun onSuccess(authenticationResult: IAuthenticationResult) {
+                /* Successfully got a token, use it to call a protected resource - MSGraph */
+                Log.d(TAG, "Successfully authenticated")
+                Log.d(TAG, "ID Token: " + authenticationResult.account.claims!!["id_token"])
 
+                /* Update account */mAccount = authenticationResult.account
+
+                /* call graph */callGraphAPI(authenticationResult)
+            }
+
+            override fun onError(exception: MsalException) {
+                /* Failed to acquireToken */
+                Log.d(
+                    TAG,
+                    "Authentication failed: $exception"
+                )
+//                displayError(exception)
+                if (exception is MsalClientException) {
+                    /* Exception inside MSAL, more info inside MsalError.java */
+                } else if (exception is MsalServiceException) {
+                    /* Exception when communicating with the STS, likely config issue */
+                }
+            }
+
+            override fun onCancel() {
+                /* User canceled the authentication */
+                Log.d(TAG, "User cancelled login.")
+            }
+        }
+
+    val defaultGraphResourceUrl = MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT + "v1.0/me"
+    private fun callGraphAPI(authenticationResult: IAuthenticationResult) {
+        callGraphAPIUsingVolley(
+            requireContext()!!,
+            defaultGraphResourceUrl,
+            authenticationResult.accessToken,
+            com.android.volley.Response.Listener<JSONObject> { response -> /* Successfully called graph, process data and send to UI */
+                Log.d(TAG, "Response: $response")
+//                displayGraphResult(response)
+            },
+            com.android.volley.Response.ErrorListener { error ->
+                Log.d(TAG, "Error: $error")
+//                displayError(error)
+            })
+    }
+    private fun showToastOnSignOut() {
+        val signOutText = "Signed Out."
+        Toast.makeText(context, signOutText, Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    companion object {
+        private val TAG = SettingsFragment::class.java.simpleName
+    }
 }

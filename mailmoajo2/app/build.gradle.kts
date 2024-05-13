@@ -47,6 +47,7 @@ android {
     }
     packaging {
         resources {
+            resources.excludes.add("META-INF/*")
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/DEPENDENCIES"
 
@@ -122,5 +123,20 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
     kapt ("androidx.room:room-compiler:2.6.1")
+
+//volley
+
+    implementation ("com.android.volley:volley:1.2.1")
+    //ms
+
+    implementation ("com.microsoft.identity.client:msal:5.+")
+    {
+        exclude(group = "io.opentelemetry")
+        exclude (group="com.microsoft.device.display")
+    }
+
+    implementation("com.microsoft.graph:microsoft-graph:5.80.0")
+
+    implementation("com.azure:azure-identity:1.10.0")
 
 }
