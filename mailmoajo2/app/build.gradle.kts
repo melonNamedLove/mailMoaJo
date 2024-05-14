@@ -129,14 +129,14 @@ dependencies {
     implementation ("com.android.volley:volley:1.2.1")
     //ms
 
-    implementation ("com.microsoft.identity.client:msal:5.+")
+    implementation ("com.microsoft.identity.client:msal:4.9.+")
     {
         exclude(group = "io.opentelemetry")
         exclude (group="com.microsoft.device.display")
     }
 
-    implementation("com.microsoft.graph:microsoft-graph:5.80.0")
+    implementation("com.microsoft.graph:microsoft-graph:6.+")
 
-    implementation("com.azure:azure-identity:1.10.0")
+    implementation("com.azure:azure-identity:1.12.1")
 
 }

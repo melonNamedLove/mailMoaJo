@@ -353,7 +353,7 @@ class SettingsFragment : Fragment() {
     val defaultGraphResourceUrl = MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT + "v1.0/me"
     private fun callGraphAPI(authenticationResult: IAuthenticationResult) {
         callGraphAPIUsingVolley(
-            requireContext()!!,
+            requireContext(),
             defaultGraphResourceUrl,
             authenticationResult.accessToken,
             com.android.volley.Response.Listener<JSONObject> { response -> /* Successfully called graph, process data and send to UI */
