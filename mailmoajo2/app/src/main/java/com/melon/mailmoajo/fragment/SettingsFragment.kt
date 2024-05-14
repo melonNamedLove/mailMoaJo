@@ -1,6 +1,6 @@
 package com.melon.mailmoajo.fragment
 
-import android.app.Activity
+import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,50 +8,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.fragment.app.Fragment
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.melon.mailmoajo.AccessToken
 import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
-import com.melon.mailmoajo.HomeActivity
 import com.melon.mailmoajo.MSGraphRequestWrapper
 import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
 import com.melon.mailmoajo.PostResult
-import com.melon.mailmoajo.R
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.mailId
 import com.melon.mailmoajo.gotMailList
 import com.melon.mailmoajo.payload_json
 import com.melon.mailmoajo.supabase
+import com.microsoft.graph.models.PublicClientApplication
 import com.microsoft.identity.client.AuthenticationCallback
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.IAuthenticationResult
+import com.microsoft.identity.client.IMultipleAccountPublicClientApplication
+import com.microsoft.identity.client.IPublicClientApplication
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import com.microsoft.identity.client.SignInParameters
 import com.microsoft.identity.client.exception.MsalClientException
 import com.microsoft.identity.client.exception.MsalException
 import com.microsoft.identity.client.exception.MsalServiceException
 import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.gotrue.providers.Google
-import io.github.jan.supabase.gotrue.providers.builtin.IDToken
-import io.github.jan.supabase.toJsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
@@ -59,13 +47,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
-import java.io.FileOutputStream
 import java.net.URLDecoder
-import java.security.MessageDigest
 import java.util.Arrays
 import java.util.Base64
-import java.util.UUID
+
 
 var mailmail = mutableListOf<mailId>()
 /**
@@ -296,6 +281,22 @@ class SettingsFragment : Fragment() {
 //            var p = this.context.getSharedPreferences("loginData", ComponentActivity.MODE_PRIVATE)
 
         }
+
+
+        com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
+            requireContext(),
+            com.melon.mailmoajo.R.raw.msalconfiguration,
+            object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
+                override fun onCreated(application: ISingleAccountPublicClientApplication) {
+                    mSingleAccountApp = application
+                }
+
+                override fun onError(exception: MsalException?) {
+                    //Log Exception Here
+                    Log.d(TAG, exception.toString())
+                }
+            })
+
         val scopes:Array<String> = arrayOf(
                 "Mail.Read",
                 "email",
