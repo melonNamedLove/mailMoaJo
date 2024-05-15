@@ -300,6 +300,7 @@ class SettingsFragment : Fragment() {
         val scopes:Array<String> = arrayOf(
                 "Mail.Read",
                 "email",
+                "User.Read"
                 )
 
 
@@ -315,8 +316,27 @@ class SettingsFragment : Fragment() {
             mSingleAccountApp!!.signIn(signInParameters)
 
         }
+        binding.MSsignoutBtn.setOnClickListener( {
+            if (mSingleAccountApp == null) {
+            }
 
+            /*
+                     * Removes the signed-in account and cached tokens from this app (or device, if the device is in shared mode).
+                     */mSingleAccountApp!!.signOut(object :
+            ISingleAccountPublicClientApplication.SignOutCallback {
+            override fun onSignOut() {
+                mAccount = null
+                showToastOnSignOut()
+            }
 
+            override fun onError(exception: MsalException) {
+                Log.d(
+                    TAG,
+                    "Authentication failed: $exception"
+                )
+            }
+        })
+        })
         return binding.root
     }
     private val authInteractiveCallback: AuthenticationCallback
@@ -324,11 +344,16 @@ class SettingsFragment : Fragment() {
             override fun onSuccess(authenticationResult: IAuthenticationResult) {
                 /* Successfully got a token, use it to call a protected resource - MSGraph */
                 Log.d(TAG, "Successfully authenticated")
+                Log.d(
+                    TAG,
+                    authenticationResult.accessToken.toString()
+                )
                 Log.d(TAG, "ID Token: " + authenticationResult.account.claims!!["id_token"])
 
                 /* Update account */mAccount = authenticationResult.account
 
-                /* call graph */callGraphAPI(authenticationResult)
+                /* call graph */callGraphAPI(authenticationResult, defaultGraphResourceUrl)
+                /* call graph */callGraphAPI(authenticationResult, defaultGraphResourceUrl+"/messages?\$select=sender,subject,receivedDateTime")
             }
 
             override fun onError(exception: MsalException) {
@@ -352,13 +377,14 @@ class SettingsFragment : Fragment() {
         }
 
     val defaultGraphResourceUrl = MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT + "v1.0/me"
-    private fun callGraphAPI(authenticationResult: IAuthenticationResult) {
+    private fun callGraphAPI(authenticationResult: IAuthenticationResult, url: String) {
         callGraphAPIUsingVolley(
             requireContext(),
-            defaultGraphResourceUrl,
+            url,
             authenticationResult.accessToken,
             com.android.volley.Response.Listener<JSONObject> { response -> /* Successfully called graph, process data and send to UI */
                 Log.d(TAG, "Response: $response")
+
 //                displayGraphResult(response)
             },
             com.android.volley.Response.ErrorListener { error ->

@@ -43,6 +43,12 @@ android:orientation="vertical">
         android:layout_height="70dp"
         android:text="outlook 동기화"
         android:id="@+id/MSloadBtn">
+    </Button>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:text="outlook 로그아웃"
+        android:id="@+id/MSsignoutBtn">
 
     </Button>
     <TextView
