@@ -8,6 +8,10 @@ android:orientation="vertical">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="설정" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="google" />
     <Button
         android:layout_width="100dp"
         android:layout_height="70dp"
@@ -29,6 +33,28 @@ android:orientation="vertical">
         android:id="@+id/retro2Btn">
 
     </Button>
+
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="outlook" />
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:text="outlook 동기화"
+        android:id="@+id/MSloadBtn">
+    </Button>
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:text="outlook 로그아웃"
+        android:id="@+id/MSsignoutBtn">
+
+    </Button>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-------" />
     <Button
         android:layout_width="100dp"
         android:layout_height="70dp"

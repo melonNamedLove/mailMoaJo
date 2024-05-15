@@ -34,7 +34,7 @@ class myWebViewClient: WebViewClient(){
         gottenData = ""
         res =0
         Log.d("meow", "your current url when webpage loading..$url")
-        if(url.contains("localhost", ignoreCase = true)){
+        if(url.contains("http://localhost:5500/test.html", ignoreCase = true) && !url.contains("https://accounts.google.com/v3/signin")){
             Log.d("meow", url.toString())
             gottenData = url
             res = 1

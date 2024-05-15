@@ -3,9 +3,12 @@ package com.melon.outlooktest;
 import android.app.Activity;
 import android.content.Context;
 
+import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.AuthenticationResult;
+import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.exception.MsalClientException;
+import com.microsoft.identity.client.exception.MsalException;
 
 public class AuthenticationController {
     private final String TAG = AuthenticationController.class.getSimpleName();
@@ -43,5 +46,37 @@ public class AuthenticationController {
         public void doAcquireToken (Activity activity, final MSALAuthenticationCallback msalCallback){
         mActivityCallback = msalCallback;
         mApplication.acquireToken(activity, Constants.SCOPES, getAuthInteractiveCallback());
+        }
+        public void signout(){
+
+        mApplication.remove(mAuthResult.getUser());
+        //reset the authenticationManager object
+            AuthenticationController.resetInstance();
+        }
+
+        private AuthenticationCallback getAuthInteractiveCallback(){
+            return new AuthenticationCallback() {
+                @Override
+                public void onCancel() {
+                    if(mActivityCallback!=null){
+                        mActivityCallback.onMsalAuthCancel();
+                    }
+                }
+
+                @Override
+                public void onSuccess(IAuthenticationResult authenticationResult) {
+                    mAuthResult = authenticationResult;
+                    if(mActivityCallback != null){
+                        mActivityCallback.onMsalAuthSuccess(mAuthResult);
+                    }
+                }
+
+                @Override
+                public void onError(MsalException exception) {
+                    if(mActivityCallback!=null){
+                        mActivityCallback.onMsalAuthError(exception);
+                    }
+                }
+            }
         }
 }
