@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/MailFragment">
+
+    <fragment
+        android:id="@+id/MailFragment"
+        android:name="com.melon.mailmoajo.fragment.MailFragment"
+        android:label="MailFragment"
+        tools:layout="@layout/fragment_mail" />
+    <fragment
+        android:id="@+id/ContactFragment"
+        android:name="com.melon.mailmoajo.fragment.ContactFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_contact" />
+
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="com.melon.mailmoajo.fragment.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+</navigation>
