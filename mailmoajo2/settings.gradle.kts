@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "mailmoajo2"
+rootProject.name = "mailmoajo"
 include(":app")

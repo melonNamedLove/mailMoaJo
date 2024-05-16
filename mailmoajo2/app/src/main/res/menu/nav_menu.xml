@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mailfragItem"
+        android:icon="@drawable/chat_24dp_fill0_wght400_grad0_opsz24"
+        android:title="메일함"/>
+
+    <item
+        android:id="@+id/contactfragItem"
+        android:icon="@drawable/person_24dp_fill0_wght400_grad0_opsz24"
+        android:title="주소록"/>
+
+    <item
+        android:id="@+id/SettingsfragItem"
+        android:icon="@drawable/settings_24dp_fill0_wght400_grad0_opsz24"
+        android:title="설정"/>
+
+
+</menu>

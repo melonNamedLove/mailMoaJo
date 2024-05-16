@@ -10,6 +10,7 @@ android {
     namespace = "com.melon.mailmoajo"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.melon.mailmoajo"
         minSdk = 31
@@ -138,5 +139,9 @@ dependencies {
     implementation("com.microsoft.graph:microsoft-graph:6.+")
 
     implementation("com.azure:azure-identity:1.12.1")
+
+    //nav bottom bar
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 
 }
