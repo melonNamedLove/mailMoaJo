@@ -5,6 +5,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <include
+        layout="@layout/custom_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bodyToolbar"
+        android:layout_alignParentTop="true" /><!--  툴바  -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
