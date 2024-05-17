@@ -1,65 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="760dp"
-android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="560dp"
+    android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="설정" />
+        android:text="설정"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="google" />
+
     <Button
-        android:layout_width="100dp"
+        android:id="@+id/gmailLoadBtn"
+        android:layout_width="match_parent"
         android:layout_height="70dp"
         android:text="gmail 동기화"
-        android:id="@+id/gmailLoadBtn">
-
+        android:textSize="20dp">
     </Button>
+
     <Button
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:text="get accesstoken"
-        android:id="@+id/retroBtn">
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:drawableLeft="@drawable/chat_24dp_fill0_wght400_grad0_opsz24_black"
+        android:paddingLeft="20dp"
+        android:backgroundTint="@color/white"
+        android:text="구글 이메일 동기화"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:layout_marginRight="20dp"/>
 
-    </Button>
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:text="get mail list"
-        android:id="@+id/retro2Btn">
-
-    </Button>
-
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="outlook" />
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:text="outlook 동기화"
-        android:id="@+id/MSloadBtn">
-    </Button>
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="70dp"
-        android:text="outlook 로그아웃"
-        android:id="@+id/MSsignoutBtn">
-
-    </Button>
-    <TextView
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="-------" />
+        android:id="@+id/imagebuttonTesting"
+        android:padding="0dp"
+        android:src="@drawable/imgbtn_states"
+        />
+
     <Button
-        android:layout_width="100dp"
+        android:id="@+id/retroBtn"
+        android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:text="로그아웃"
-        android:id="@+id/logoutBtn">
+        android:text="get accesstoken">
+
+    </Button>
+
+    <Button
+        android:id="@+id/retro2Btn"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="get mail list">
+
+    </Button>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="outlook" />
+
+    <Button
+        android:id="@+id/MSloadBtn"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="outlook 동기화 엔터">
+
+    </Button>
+
+    <Button
+        android:id="@+id/MSsignoutBtn"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="outlook 로그아웃">
+
+    </Button>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="-------" />
+
+    <Button
+        android:id="@+id/logoutBtn"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="로그아웃">
 
     </Button>
 
