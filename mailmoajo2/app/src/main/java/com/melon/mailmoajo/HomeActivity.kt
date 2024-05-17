@@ -32,7 +32,6 @@ class HomeActivity : AppCompatActivity() {
     private val bottomNagivationView: BottomNavigationView by lazy { // 하단 네비게이션 바
         findViewById(R.id.nav_bar)
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         var binding = ActivityHomeBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -41,24 +40,34 @@ class HomeActivity : AppCompatActivity() {
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id, MailFragment()).commit()
 
+        val toolbarBodyTemplate = binding.bodyToolbar.toolbar
+        setSupportActionBar(toolbarBodyTemplate)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbarBodyTemplate.title="메일함"
+
         // 하단 네비게이션 바 클릭 이벤트 설정
         bottomNagivationView.setOnNavigationItemSelectedListener {item ->
             when(item.itemId) {
                 R.id.mailfragItem -> {
                     replaceFragment(MailFragment())
+                    toolbarBodyTemplate.title="메일함"
                     true
                 }
                 R.id.contactfragItem -> {
                     replaceFragment(ContactFragment())
+                    toolbarBodyTemplate.title="연락처"
                     true
                 }
                 R.id.SettingsfragItem -> {
                     replaceFragment(SettingsFragment())
+                    toolbarBodyTemplate.title="설정"
                     true
                 }
                 else -> false
             }
         }
+
 
         val db = Room.databaseBuilder(
             applicationContext,
@@ -133,6 +142,7 @@ class HomeActivity : AppCompatActivity() {
     // 화면 전환 구현 메소드
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
+
     }
 
 }
