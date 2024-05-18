@@ -1,16 +1,21 @@
 package com.melon.mailmoajo.Database
 
-import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.melon.mailmoajo.DAOs.contactDao
+import com.melon.mailmoajo.DAOs.mailfolderDao
 import entities.contacts
+import entities.orderedMailFolders
 
 //@Database(entities = arrayOf(User::class, Student::class), version = 1)
-@Database(entities = [contacts::class], version = 1)
-abstract  class ContactDatabase :RoomDatabase() {
+@Database(entities = arrayOf(contacts::class, orderedMailFolders::class), version = 2, exportSchema = true,
+    autoMigrations = [
+        AutoMigration (from = 1, to = 2)
+    ])
+abstract  class MailMoaJoDatabase :RoomDatabase() {
     abstract  fun contactDao():contactDao
+//    abstract  fun mailfolderDao():mailfolderDao
 
 //    companion object {
 //        private var instance: ContactDatabase? = null

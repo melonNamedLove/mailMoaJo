@@ -10,12 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.melon.mailmoajo.Database.ContactDatabase
+import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
 import com.melon.mailmoajo.fragment.ContactFragment
-import com.melon.mailmoajo.fragment.MailFragment
+import com.melon.mailmoajo.fragment.MailFolderFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
 import entities.contacts
 
@@ -34,7 +34,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // 애플리케이션 실행 후 첫 화면 설정
-        supportFragmentManager.beginTransaction().add(frame.id, MailFragment()).commit()
+        supportFragmentManager.beginTransaction().add(frame.id, MailFolderFragment()).commit()
 
         val toolbarBodyTemplate = binding.bodyToolbar.toolbar
         setSupportActionBar(toolbarBodyTemplate)
@@ -43,10 +43,10 @@ class HomeActivity : AppCompatActivity() {
         toolbarBodyTemplate.title="메일함"
 
         // 하단 네비게이션 바 클릭 이벤트 설정
-        bottomNagivationView.setOnNavigationItemSelectedListener {item ->
+        bottomNagivationView.setOnItemSelectedListener {item ->
             when(item.itemId) {
                 R.id.mailfragItem -> {
-                    replaceFragment(MailFragment())
+                    replaceFragment(MailFolderFragment())
                     toolbarBodyTemplate.title="메일함"
 //                    if(!binding.fab.isShown){
                         binding.fab.show()
@@ -78,7 +78,7 @@ class HomeActivity : AppCompatActivity() {
             if(result.resultCode == 1){
                 val db = Room.databaseBuilder(
                     this,
-                    ContactDatabase::class.java,
+                    MailMoaJoDatabase::class.java,
                     "contact-database"
                 ).allowMainThreadQueries()
                     .build()
@@ -115,10 +115,15 @@ class HomeActivity : AppCompatActivity() {
         //db on
         val db = Room.databaseBuilder(
             applicationContext,
-            ContactDatabase::class.java,
+            MailMoaJoDatabase::class.java,
             "contact-database"
         ).allowMainThreadQueries()
             .build()
+//        Room.databaseBuilder(
+//            applicationContext,
+//            MailMoaJoDatabase::class.java,
+//            "contact-database"
+//        ).addMigrations()
         contactlistData = db!!.contactDao().getAll().toMutableList()
 
 //        contactprefs = this.getSharedPreferences("contact", MODE_PRIVATE)
@@ -170,17 +175,17 @@ class HomeActivity : AppCompatActivity() {
 
 
 //        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
-        supportFragmentManager.beginTransaction().add(binding.navHost.id, MailFragment()).commit()
-        binding.navBar.setOnClickListener{
-            replaceFragment(
-                when (it.id) {
-                    R.id.mailfragItem -> MailFragment()
-                    R.id.contactfragItem -> ContactFragment()
-                    else -> SettingsFragment()
-                }
-            )
-            true
-        }
+//        supportFragmentManager.beginTransaction().add(binding.navHost.id, MailFragment()).commit()
+//        binding.navBar.setOnClickListener{
+//            replaceFragment(
+//                when (it.id) {
+//                    R.id.mailfragItem -> MailFragment()
+//                    R.id.contactfragItem -> ContactFragment()
+//                    else -> SettingsFragment()
+//                }
+//            )
+//            true
+//        }
     }
 
     // 화면 전환 구현 메소드

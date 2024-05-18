@@ -3,20 +3,12 @@ package com.melon.mailmoajo
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Contactables
 import android.util.Log
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import com.melon.mailmoajo.Database.ContactDatabase
+import com.melon.mailmoajo.Database.MailMoaJoDatabase
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.databinding.ActivityAddContactBinding
-import com.melon.mailmoajo.databinding.FragmentContactBinding
-import com.melon.mailmoajo.fragment.ContactFragment
 import entities.contacts
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class AddContactActivity : AppCompatActivity() {
 
@@ -55,7 +47,7 @@ class AddContactActivity : AppCompatActivity() {
 //             싱글톤 패턴을 사용하지 않은 경우
             val db = Room.databaseBuilder(
                 applicationContext,
-                ContactDatabase::class.java,
+                MailMoaJoDatabase::class.java,
                 "contact-database"
             ).allowMainThreadQueries()
                 .build()
