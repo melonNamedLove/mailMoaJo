@@ -19,7 +19,7 @@ import com.melon.mailmoajo.fragment.MailFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
 import entities.contacts
 
-var listData = mutableListOf<contacts>()
+var contactlistData = mutableListOf<contacts>()
 class HomeActivity : AppCompatActivity() {
 
     private val frame: RelativeLayout by lazy { // activity_main의 화면 부분
@@ -82,8 +82,8 @@ class HomeActivity : AppCompatActivity() {
                     "contact-database"
                 ).allowMainThreadQueries()
                     .build()
-                val contactList = db.contactDao().getAll().toMutableList()
-                findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactList)
+                contactlistData = db.contactDao().getAll().toMutableList()
+                findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactlistData)
 
 //                binding!!.registText.text ="yes"
 //                findViewById<RecyclerView>(R.id.contactRcv).adapter!!.notifyItemInserted(listData.size)
@@ -119,7 +119,7 @@ class HomeActivity : AppCompatActivity() {
             "contact-database"
         ).allowMainThreadQueries()
             .build()
-        listData = db!!.contactDao().getAll().toMutableList()
+        contactlistData = db!!.contactDao().getAll().toMutableList()
 
 //        contactprefs = this.getSharedPreferences("contact", MODE_PRIVATE)
         tokenprefs = this.getSharedPreferences("token", MODE_PRIVATE)

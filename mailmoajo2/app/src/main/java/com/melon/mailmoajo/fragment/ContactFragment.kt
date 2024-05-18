@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.melon.mailmoajo.adapter.ContactAdapter
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.databinding.FragmentContactBinding
-import com.melon.mailmoajo.listData
+import com.melon.mailmoajo.contactlistData
 
 class ContactFragment : Fragment() {
 
@@ -32,7 +32,7 @@ class ContactFragment : Fragment() {
 
 
 
-        binding!!.contactRcv.adapter = ContactAdapter(listData)
+        binding!!.contactRcv.adapter = ContactAdapter(contactlistData)
         binding!!.contactRcv.layoutManager= LinearLayoutManager(context)
 
 
