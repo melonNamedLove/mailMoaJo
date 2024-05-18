@@ -1,4 +1,4 @@
-package com.melon.mailmoajo
+package com.melon.mailmoajo.dataclass
 
 import android.R.id
 import com.google.gson.annotations.SerializedName

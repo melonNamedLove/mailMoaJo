@@ -1,4 +1,4 @@
-package com.melon.mailmoajo
+package com.melon.mailmoajo.x
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -17,14 +17,14 @@ object ServiceBuilder {
 //        return retrofit.create(service)
 //    }
 
-    var api: AccessToken
-
-    init {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.googleapis.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        api = retrofit.create(AccessToken::class.java)
-    }
+//    var api: AccessToken
+//
+//    init {
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://www.googleapis.com/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        api = retrofit.create(AccessToken::class.java)
+//    }
 }

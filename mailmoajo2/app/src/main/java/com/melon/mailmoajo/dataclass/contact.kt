@@ -1,4 +1,4 @@
-package com.melon.mailmoajo
+package com.melon.mailmoajo.dataclass
 
 data class contact(
     var name:String="",

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 //import com.daelim.databinding.ActivityRecyclerViewBinding
 import com.melon.mailmoajo.databinding.ActivityRecyclerViewBinding
+import com.melon.mailmoajo.dataclass.ItemData
 
 class RecyclerViewActivity : AppCompatActivity() {
     var binding: ActivityRecyclerViewBinding? =null

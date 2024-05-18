@@ -1,6 +1,5 @@
 package com.melon.mailmoajo.fragment
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,18 +18,16 @@ import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.MSGraphRequestWrapper
 import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
-import com.melon.mailmoajo.PostResult
+import com.melon.mailmoajo.dataclass.PostResult
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.mailId
-import com.melon.mailmoajo.gotMailList
-import com.melon.mailmoajo.payload_json
+import com.melon.mailmoajo.dataclass.gotMailList
+import com.melon.mailmoajo.dataclass.payload_json
 import com.melon.mailmoajo.supabase
-import com.microsoft.graph.models.PublicClientApplication
 import com.microsoft.identity.client.AuthenticationCallback
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.IAuthenticationResult
-import com.microsoft.identity.client.IMultipleAccountPublicClientApplication
 import com.microsoft.identity.client.IPublicClientApplication
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import com.microsoft.identity.client.SignInParameters
