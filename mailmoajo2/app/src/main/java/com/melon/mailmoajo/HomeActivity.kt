@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
@@ -52,23 +53,71 @@ class HomeActivity : AppCompatActivity() {
                 R.id.mailfragItem -> {
                     replaceFragment(MailFragment())
                     toolbarBodyTemplate.title="메일함"
+//                    if(!binding.fab.isShown){
+                        binding.fab.show()
+//                    }
+                    binding.fab.setText("동기화")
+                    binding.fab.setIconResource(R.drawable.sync_24dp_fill0_wght400_grad0_opsz24)
                     true
                 }
                 R.id.contactfragItem -> {
                     replaceFragment(ContactFragment())
                     toolbarBodyTemplate.title="연락처"
+//                    if(!binding.fab.isShown){
+                        binding.fab.show()
+//                    }
+                    binding.fab.setText("추가")
+                    binding.fab.setIconResource(R.drawable.person_add_24dp_fill0_wght400_grad0_opsz24)
                     true
                 }
                 R.id.SettingsfragItem -> {
                     replaceFragment(SettingsFragment())
                     toolbarBodyTemplate.title="설정"
+                    binding.fab.hide()
                     true
                 }
                 else -> false
             }
         }
+        var re = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            if(result.resultCode == 1){
+                val db = Room.databaseBuilder(
+                    this,
+                    ContactDatabase::class.java,
+                    "contact-database"
+                ).allowMainThreadQueries()
+                    .build()
+                val contactList = db.contactDao().getAll().toMutableList()
+                findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactList)
+
+//                binding!!.registText.text ="yes"
+//                findViewById<RecyclerView>(R.id.contactRcv).adapter!!.notifyItemInserted(listData.size)
+            }else if(result.resultCode == 0){
+//                binding!!.registText.text="no"
+            }else{
+//                binding!!.registText.text="error"
+            }
+
+//            binding.contactRcv.adapter!!.notifyDataSetChanged()
+        }
+
+        //fab onclicklistener 설정
+        binding.fab.setOnClickListener{
+            if (binding.fab.text.equals("동기화")){
+
+            }else if(binding.fab.text.equals("추가")){
 
 
+                var ii: Intent = Intent(this, AddContactActivity::class.java)
+                re.launch(ii)
+
+            }else{
+                Log.d("fabfab", "dd")
+            }
+        }
+
+
+        //db on
         val db = Room.databaseBuilder(
             applicationContext,
             ContactDatabase::class.java,

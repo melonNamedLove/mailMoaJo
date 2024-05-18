@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -17,20 +18,39 @@
         android:orientation="horizontal"
         android:id="@+id/nav_host"
         >
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_bar"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:elevation="2dp"
-            android:background="@color/white"
+            android:layout_alignParentBottom="true">
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                app:layout_constraintBottom_toTopOf="@id/nav_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="7dp"
+                android:text="동기화"
+                app:icon="@drawable/sync_24dp_fill0_wght400_grad0_opsz24"
+                />
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                app:layout_constraintBottom_toBottomOf="parent"
 
-            app:menu="@menu/nav_menu"
-            app:itemBackground="@color/white"
-            app:itemIconTint="@menu/menu_selector"
-            app:itemTextColor="@menu/menu_selector"
-            app:labelVisibilityMode="labeled" />
+                android:id="@+id/nav_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:background="@color/white"
+
+                app:menu="@menu/nav_menu"
+                app:itemBackground="@color/white"
+                app:itemIconTint="@menu/menu_selector"
+                app:itemTextColor="@menu/menu_selector"
+                app:labelVisibilityMode="labeled" />
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
     <!--            app:itemRippleColor="@android:color/transparent"-->
 

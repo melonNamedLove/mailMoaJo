@@ -24,4 +24,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_login2">LoginActivity2</string>
+
+    <string name="fab_mailsync">동기화</string>
+    <string name="fab_addcontact">추가</string>
 </resources>

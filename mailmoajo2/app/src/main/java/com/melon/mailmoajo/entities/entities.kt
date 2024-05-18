@@ -16,3 +16,9 @@ data class contacts(
     @ColumnInfo(name = "gmail") var gmail: String?,
     @ColumnInfo(name = "outlook") var outlook: String?,
     ){@PrimaryKey(autoGenerate = true) var nId: Int = 0}
+@Entity
+data class orderedMailFolders(
+
+    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name = "id") var folderid: String,
+){@PrimaryKey(autoGenerate = true) var nId: Int = 0}

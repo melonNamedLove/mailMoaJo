@@ -48,30 +48,6 @@ class ContactFragment : Fragment() {
 //            contactprefs.edit().remove("contact").commit()
         }
 
-        var re = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
-            if(result.resultCode == 1){
-                val db = Room.databaseBuilder(
-                    this.requireContext(),
-                    ContactDatabase::class.java,
-                    "contact-database"
-                ).allowMainThreadQueries()
-                    .build()
-                val contactList = db.contactDao().getAll().toMutableList()
-                binding.contactRcv.adapter = ContactAdapter(contactList)
-//                binding!!.registText.text ="yes"
-//                findViewById<RecyclerView>(R.id.contactRcv).adapter!!.notifyItemInserted(listData.size)
-            }else if(result.resultCode == 0){
-//                binding!!.registText.text="no"
-            }else{
-//                binding!!.registText.text="error"
-            }
-
-//            binding.contactRcv.adapter!!.notifyDataSetChanged()
-        }
-        binding.addContactbtn.setOnClickListener{
-            var i: Intent = Intent(context, AddContactActivity::class.java)
-            re.launch(i)
-        }
 
 
         binding!!.contactRcv.adapter = ContactAdapter(listData)
