@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.adapter.ContactAdapter
+import com.melon.mailmoajo.adapter.MailFolderAdapter
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
 import com.melon.mailmoajo.fragment.ContactFragment
 import com.melon.mailmoajo.fragment.MailFolderFragment
@@ -35,6 +36,30 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        //db on
+        val db = Room.databaseBuilder(
+            applicationContext,
+            MailMoaJoDatabase::class.java,
+            "mailmoajo-database"
+        ).allowMainThreadQueries()
+            .build()
+//        Room.databaseBuilder(
+//            applicationContext,
+//            MailMoaJoDatabase::class.java,
+//            "contact-database"
+//        ).addMigrations()
+        contactlistData = db!!.contactDao().getAll().toMutableList()
+
+        mailfolderlistData = db!!.mailfolderDao().getAll().toMutableList()
+        if(mailfolderlistData.size==0){     //기본 메일함인 전체보기 생성
+            db.mailfolderDao().init(
+                orderedMailFolders(
+                    "전체보기",
+                    "ALL"
+                )
+            )
+            mailfolderlistData = db!!.mailfolderDao().getAll().toMutableList()
+        }
         // 애플리케이션 실행 후 첫 화면 설정
         supportFragmentManager.beginTransaction().add(frame.id, MailFolderFragment()).commit()
 
@@ -55,6 +80,7 @@ class HomeActivity : AppCompatActivity() {
 //                    }
                     binding.fab.setText("동기화")
                     binding.fab.setIconResource(R.drawable.sync_24dp_fill0_wght400_grad0_opsz24)
+                    mailfolderlistData = db.mailfolderDao().getAll().toMutableList()
                     true
                 }
                 R.id.contactfragItem -> {
@@ -81,7 +107,7 @@ class HomeActivity : AppCompatActivity() {
                 val db = Room.databaseBuilder(
                     this,
                     MailMoaJoDatabase::class.java,
-                    "contact-database"
+                    "mailmoajo-database"
                 ).allowMainThreadQueries()
                     .build()
                 contactlistData = db.contactDao().getAll().toMutableList()
@@ -114,37 +140,6 @@ class HomeActivity : AppCompatActivity() {
         }
 
 
-        //db on
-        val db = Room.databaseBuilder(
-            applicationContext,
-            MailMoaJoDatabase::class.java,
-            "contact-database"
-        ).allowMainThreadQueries()
-            .build()
-//        Room.databaseBuilder(
-//            applicationContext,
-//            MailMoaJoDatabase::class.java,
-//            "contact-database"
-//        ).addMigrations()
-        contactlistData = db!!.contactDao().getAll().toMutableList()
-
-        //db on
-        val mailfolderdb = Room.databaseBuilder(
-            applicationContext,
-            MailMoaJoDatabase::class.java,
-            "mailfolder-database"
-        ).allowMainThreadQueries()
-            .build()
-        mailfolderlistData = mailfolderdb!!.mailfolderDao().getAll().toMutableList()
-        if(mailfolderlistData.size==0){     //기본 메일함인 전체보기 생성
-            mailfolderdb.mailfolderDao().init(
-                orderedMailFolders(
-                    "전체보기",
-                    "ALL"
-                )
-            )
-            mailfolderlistData = mailfolderdb!!.mailfolderDao().getAll().toMutableList()
-        }
 
 //        contactprefs = this.getSharedPreferences("contact", MODE_PRIVATE)
         tokenprefs = this.getSharedPreferences("token", MODE_PRIVATE)
