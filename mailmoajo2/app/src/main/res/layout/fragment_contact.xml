@@ -2,21 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp"
     android:orientation="vertical">
 
-    <Button
-        android:layout_width="100dp"
+    <LinearLayout
+        android:layout_marginTop="7dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:id="@+id/contactResetbtn"
-        android:text="주소록 삭제"
-        >
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/mailfoldersearchET"
+            android:layout_width="250dp"
+            android:layout_height="50dp">
 
-    </Button>
+        </EditText>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="검색">
+
+        </Button>
+    </LinearLayout>
 <!--    <TextView-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="15dp"-->
 <!--        android:text="주소록" />-->
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="7dp"
         android:id="@+id/contactRcv"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -24,5 +37,6 @@
     </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>
+
 
 

@@ -1,5 +1,6 @@
 package com.melon.mailmoajo.DAOs
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -14,13 +15,16 @@ interface mailfolderDao{
     fun getAll(): List<orderedMailFolders>
 
     @Insert
-    fun insert(contact: orderedMailFolders)
+    fun insert(mailfolders: orderedMailFolders)
 
     @Update
-    fun update(contact: orderedMailFolders)
+    fun update(mailfolders: orderedMailFolders)
 
     @Delete
-    fun delete(contact: orderedMailFolders)
+    fun delete(mailfolders: orderedMailFolders)
+
+    @Insert(entity = orderedMailFolders::class)
+    fun init(mailfolders: orderedMailFolders)
 
 //    @Query("SELECT * FROM User") // 테이블의 모든 값을 가져와라
 //    fun getAll(): List<User>

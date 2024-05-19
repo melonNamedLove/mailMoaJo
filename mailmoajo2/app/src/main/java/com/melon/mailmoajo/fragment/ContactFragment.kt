@@ -26,9 +26,6 @@ class ContactFragment : Fragment() {
         // Inflate the layout for this fragment
         val binding = FragmentContactBinding.inflate(layoutInflater)
 
-        binding.contactResetbtn.setOnClickListener {
-//            contactprefs.edit().remove("contact").commit()
-        }
 
 
 

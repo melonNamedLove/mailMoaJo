@@ -15,6 +15,7 @@ import entities.orderedMailFolders
     ])
 abstract  class MailMoaJoDatabase :RoomDatabase() {
     abstract  fun contactDao():contactDao
+    abstract  fun mailfolderDao():mailfolderDao
 //    abstract  fun mailfolderDao():mailfolderDao
 
 //    companion object {

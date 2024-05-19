@@ -1,80 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <include
+        android:id="@+id/bodyToolbar"
         layout="@layout/custom_tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bodyToolbar"
-        android:layout_alignParentTop="true" /><!--  툴바  -->
+        android:layout_alignParentTop="true"
+        /><!--  툴바  -->
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
         android:id="@+id/nav_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bodyToolbar"
+        android:layout_above="@id/nav_bar"
         >
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                app:layout_constraintBottom_toTopOf="@id/nav_bar"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="7dp"
-                android:text="동기화"
-                app:icon="@drawable/sync_24dp_fill0_wght400_grad0_opsz24"
-                />
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                app:layout_constraintBottom_toBottomOf="parent"
 
-                android:id="@+id/nav_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="2dp"
-                android:background="@color/white"
-
-                app:menu="@menu/nav_menu"
-                app:itemBackground="@color/white"
-                app:itemIconTint="@menu/menu_selector"
-                app:itemTextColor="@menu/menu_selector"
-                app:labelVisibilityMode="labeled" />
-
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:text="동기화"
+        app:icon="@drawable/sync_24dp_fill0_wght400_grad0_opsz24"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/nav_bar"
+        />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_bar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="2dp"
+        app:itemBackground="@color/white"
+
+        app:itemIconTint="@menu/menu_selector"
+        app:itemTextColor="@menu/menu_selector"
+        app:labelVisibilityMode="labeled"
+
+        android:layout_alignParentBottom="true"
+
+        app:menu="@menu/nav_menu" />
+
     <!--            app:itemRippleColor="@android:color/transparent"-->
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        >-->
-<!--        <Button-->
-<!--            android:layout_width="137dp"-->
-<!--            android:layout_height="70dp"-->
-<!--            android:id="@+id/mailFragBtn"-->
-<!--            android:text="보관함" />-->
-<!--        <Button-->
-<!--            android:layout_width="137dp"-->
-<!--            android:layout_height="70dp"-->
-<!--            android:id="@+id/contactFragBtn"-->
-<!--            android:text="주소록" />-->
-<!--        <Button-->
-<!--            android:layout_width="137dp"-->
-<!--            android:layout_height="70dp"-->
-<!--            android:id="@+id/settingsFragBtn"-->
-<!--            android:text="설정" />-->
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:orientation="horizontal"-->
+    <!--        >-->
+    <!--        <Button-->
+    <!--            android:layout_width="137dp"-->
+    <!--            android:layout_height="70dp"-->
+    <!--            android:id="@+id/mailFragBtn"-->
+    <!--            android:text="보관함" />-->
+    <!--        <Button-->
+    <!--            android:layout_width="137dp"-->
+    <!--            android:layout_height="70dp"-->
+    <!--            android:id="@+id/contactFragBtn"-->
+    <!--            android:text="주소록" />-->
+    <!--        <Button-->
+    <!--            android:layout_width="137dp"-->
+    <!--            android:layout_height="70dp"-->
+    <!--            android:id="@+id/settingsFragBtn"-->
+    <!--            android:text="설정" />-->
 
-<!--    </LinearLayout>-->
+    <!--    </LinearLayout>-->
 
-</LinearLayout>
+</RelativeLayout>

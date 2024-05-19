@@ -3,15 +3,18 @@
 xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp"
     android:orientation="vertical"
     tools:context=".fragment.MailFolderFragment">
     <LinearLayout
+        android:layout_marginTop="7dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal">
         <EditText
             android:id="@+id/mailfoldersearchET"
-            android:layout_width="300dp"
+            android:layout_width="250dp"
             android:layout_height="50dp">
 
         </EditText>
@@ -23,6 +26,7 @@ xmlns:tools="http://schemas.android.com/tools"
         </Button>
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="7dp"
         android:id="@+id/mailFolderRCV"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

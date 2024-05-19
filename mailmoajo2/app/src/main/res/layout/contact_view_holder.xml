@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="75dp"
+android:background="@drawable/borderline_for_holder"
+android:layout_marginLeft="10dp"
+android:layout_marginRight="10dp"
+android:id="@+id/item"
+android:layout_alignParentLeft="true"
+android:layout_alignParentRight="true"
     >
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
 <!--        <TextView-->
 <!--            android:id="@+id/mailsenderTV"-->
 <!--            android:layout_width="200dp"-->
 <!--            android:layout_height="50dp">-->
 
 <!--        </TextView>-->
-        <TextView
-            android:id="@+id/contactNameTV"
-            android:layout_width="400dp"
-            android:layout_height="50dp">
+<TextView
+    android:textSize="25dp"
+    android:id="@+id/contactNameTV"
+    android:layout_width="250dp"
+    android:layout_height="49dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginLeft="25dp"
+    android:layout_alignParentLeft="true"
+    >
+</TextView>
+    <TextView
+        android:textSize="15dp"
+        android:layout_width="100dp"
+        android:layout_height="49dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="22dp"
+        android:text=""
+        android:textAlignment="viewEnd"
+        android:layout_alignParentRight="true"
+        >
 
-        </TextView>
+    </TextView>
 <!--        <TextView-->
 <!--            android:id="@+id/phonephone1"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content">-->
 
 <!--        </TextView>-->
-    </LinearLayout>
 
-
-</LinearLayout>
+</RelativeLayout>

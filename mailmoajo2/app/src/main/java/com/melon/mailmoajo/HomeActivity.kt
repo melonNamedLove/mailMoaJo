@@ -18,8 +18,10 @@ import com.melon.mailmoajo.fragment.ContactFragment
 import com.melon.mailmoajo.fragment.MailFolderFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
 import entities.contacts
+import entities.orderedMailFolders
 
 var contactlistData = mutableListOf<contacts>()
+var mailfolderlistData = mutableListOf<orderedMailFolders>()
 class HomeActivity : AppCompatActivity() {
 
     private val frame: RelativeLayout by lazy { // activity_main의 화면 부분
@@ -125,6 +127,24 @@ class HomeActivity : AppCompatActivity() {
 //            "contact-database"
 //        ).addMigrations()
         contactlistData = db!!.contactDao().getAll().toMutableList()
+
+        //db on
+        val mailfolderdb = Room.databaseBuilder(
+            applicationContext,
+            MailMoaJoDatabase::class.java,
+            "mailfolder-database"
+        ).allowMainThreadQueries()
+            .build()
+        mailfolderlistData = mailfolderdb!!.mailfolderDao().getAll().toMutableList()
+        if(mailfolderlistData.size==0){     //기본 메일함인 전체보기 생성
+            mailfolderdb.mailfolderDao().init(
+                orderedMailFolders(
+                    "전체보기",
+                    "ALL"
+                )
+            )
+            mailfolderlistData = mailfolderdb!!.mailfolderDao().getAll().toMutableList()
+        }
 
 //        contactprefs = this.getSharedPreferences("contact", MODE_PRIVATE)
         tokenprefs = this.getSharedPreferences("token", MODE_PRIVATE)
