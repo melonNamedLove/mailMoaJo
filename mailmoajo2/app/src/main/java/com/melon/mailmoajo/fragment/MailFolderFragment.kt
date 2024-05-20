@@ -10,6 +10,7 @@ import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.adapter.MailAdapter
 import com.melon.mailmoajo.adapter.MailFolderAdapter
+import com.melon.mailmoajo.adapter.MailFolderItemOnClickObject
 import com.melon.mailmoajo.contactlistData
 import com.melon.mailmoajo.databinding.FragmentContactBinding
 import com.melon.mailmoajo.databinding.FragmentMailFolderBinding
@@ -26,8 +27,9 @@ class MailFolderFragment : Fragment() {
 
 
 
+//        val itemLongClickInterface : MailFolderAdapter.OnLongClickInterface = obj2
 
-        binding!!.mailFolderRCV.adapter = MailFolderAdapter(mailfolderlistData)
+        binding!!.mailFolderRCV.adapter = MailFolderAdapter(mailfolderlistData,MailFolderItemOnClickObject())
         binding!!.mailFolderRCV.layoutManager= LinearLayoutManager(context)
 
 

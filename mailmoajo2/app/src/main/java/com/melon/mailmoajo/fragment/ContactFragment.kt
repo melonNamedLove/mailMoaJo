@@ -4,15 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.appbar.AppBarLayout
+import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.ContactAdapter
+import com.melon.mailmoajo.adapter.ContactItemOnClick
+import com.melon.mailmoajo.adapter.MailFolderAdapter
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.databinding.FragmentContactBinding
 import com.melon.mailmoajo.contactlistData
 
 class ContactFragment : Fragment() {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +34,7 @@ class ContactFragment : Fragment() {
 
 
 
-
-        binding!!.contactRcv.adapter = ContactAdapter(contactlistData)
+        binding!!.contactRcv.adapter = ContactAdapter(contactlistData, ContactItemOnClick())
         binding!!.contactRcv.layoutManager= LinearLayoutManager(context)
 
 
