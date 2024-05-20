@@ -89,7 +89,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 R.id.contactfragItem -> {
                     replaceFragment(ContactFragment())
-                    toolbarBodyTemplate.title="연락처"
+                    toolbarBodyTemplate.title="주소록"
 //                    if(!binding.fab.isShown){
                         binding.fab.show()
 //                    }

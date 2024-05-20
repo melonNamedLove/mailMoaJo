@@ -2,15 +2,18 @@ package com.melon.mailmoajo.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.RecyclerView
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.contactlistData
 import com.melon.mailmoajo.fragment.ContactDetailFragment
+import com.melon.mailmoajo.fragment.ContactFragment
 import com.melon.mailmoajo.fragment.MailFolderFragment
 import entities.contacts
 fun ContactItemOnClick():ContactAdapter.OnClickInterface{
@@ -18,18 +21,18 @@ fun ContactItemOnClick():ContactAdapter.OnClickInterface{
     val obj = object: ContactAdapter.OnClickInterface{
         override fun onClick(view: View, position: Int) {
             //실행코드
+            val name = contactlistData[position].name
             val activity = view!!.context as AppCompatActivity
-            activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactDetailFragment()).commit()
-
+            activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactDetailFragment(position)).commit()
             val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
-            activity.setSupportActionBar(toolbarBodyTemplate)
-            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            activity.supportActionBar?.setDisplayShowTitleEnabled(false)
-            toolbarBodyTemplate.title= contactlistData[position].name
+            toolbarBodyTemplate.title= name
 
+            activity.setSupportActionBar(toolbarBodyTemplate)
         }
     }
     val itemClickInterface : ContactAdapter.OnClickInterface = obj
+
+
     return itemClickInterface
 }
 class ContactAdapter (val d:MutableList<contacts>, onClick: ContactAdapter.OnClickInterface): RecyclerView.Adapter<ContactAdapter.ViewHolder>(){

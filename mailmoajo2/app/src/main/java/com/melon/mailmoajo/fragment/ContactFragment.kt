@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.ContactAdapter
@@ -33,6 +34,12 @@ class ContactFragment : Fragment() {
         val binding = FragmentContactBinding.inflate(layoutInflater)
 
 
+        val activity = this.context as AppCompatActivity
+        val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        activity.supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbarBodyTemplate.title="주소록"
+        activity.setSupportActionBar(toolbarBodyTemplate)
 
         binding!!.contactRcv.adapter = ContactAdapter(contactlistData, ContactItemOnClick())
         binding!!.contactRcv.layoutManager= LinearLayoutManager(context)
@@ -47,6 +54,8 @@ class ContactFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        val activity = this.context as AppCompatActivity
+        activity.findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactlistData,ContactItemOnClick())
     }
 
 }
