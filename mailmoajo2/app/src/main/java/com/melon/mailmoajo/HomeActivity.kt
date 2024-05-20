@@ -38,7 +38,6 @@ var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
 class HomeActivity : AppCompatActivity() {
 
-
     private val frame: RelativeLayout by lazy { // activity_main의 화면 부분
         findViewById(R.id.nav_host)
     }
@@ -140,6 +139,10 @@ class HomeActivity : AppCompatActivity() {
                 val currentFrag = supportFragmentManager.fragments.last()
                 if (currentFrag.instanceOf(ContactDetailFragment::class) ){
                     supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactFragment()).commit()
+
+                    toolbarBodyTemplate.title="주소록"
+                    binding.fab.setText("추가")
+
                 }else if (currentFrag.instanceOf(ContactFragment::class)){
                     supportFragmentManager.beginTransaction().replace(R.id.nav_host, MailFolderFragment()).commit()
                     toolbarBodyTemplate.title="메일함"

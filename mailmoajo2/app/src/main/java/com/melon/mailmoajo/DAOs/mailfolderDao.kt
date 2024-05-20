@@ -26,6 +26,9 @@ interface mailfolderDao{
     @Insert(entity = orderedMailFolders::class)
     fun init(mailfolders: orderedMailFolders)
 
+    @Query("DELETE FROM orderedMailFolders WHERE id = :folderid")
+    fun deleteMailFolderByFolderId(folderid: String)
+
 //    @Query("SELECT * FROM User") // 테이블의 모든 값을 가져와라
 //    fun getAll(): List<User>
 //

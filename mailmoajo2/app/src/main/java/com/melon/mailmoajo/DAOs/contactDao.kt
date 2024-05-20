@@ -25,8 +25,8 @@ interface contactDao{
 //    @Query("SELECT * FROM User") // 테이블의 모든 값을 가져와라
 //    fun getAll(): List<User>
 //
-//    @Query("DELETE FROM User WHERE name = :name") // 'name'에 해당하는 유저를 삭제해라
-//    fun deleteUserByName(name: String)
+    @Query("DELETE FROM contacts WHERE nId = :nId")
+    fun deleteUserByNId(nId: Int)
 }
 
 //@Dao
