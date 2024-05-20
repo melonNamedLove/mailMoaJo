@@ -1,12 +1,16 @@
 package com.melon.mailmoajo.fragment
 
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +32,7 @@ class ContactDetailFragment( position: Int) : Fragment() {
 
 
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,6 +54,7 @@ class ContactDetailFragment( position: Int) : Fragment() {
             activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactFragment()).commit()
         })
 
+
 //            allowMainThreadQueries() // 그냥 강제로 실행
 //
 //        binding!!.contactRcv.adapter!!.notifyItemChanged(listData.size)
@@ -62,6 +68,11 @@ class ContactDetailFragment( position: Int) : Fragment() {
     }
     override fun onResume() {
         super.onResume()
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
     }
 
