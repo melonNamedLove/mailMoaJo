@@ -4,8 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.RelativeLayout
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -13,8 +15,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.adapter.ContactAdapter
+import com.melon.mailmoajo.adapter.ContactItemOnClick
 import com.melon.mailmoajo.adapter.MailFolderAdapter
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
+import com.melon.mailmoajo.fragment.ContactDetailFragment
 import com.melon.mailmoajo.fragment.ContactFragment
 import com.melon.mailmoajo.fragment.MailFolderFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
@@ -111,7 +115,7 @@ class HomeActivity : AppCompatActivity() {
                 ).allowMainThreadQueries()
                     .build()
                 contactlistData = db.contactDao().getAll().toMutableList()
-                findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactlistData)
+                findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactlistData,ContactItemOnClick())
 
 //                binding!!.registText.text ="yes"
 //                findViewById<RecyclerView>(R.id.contactRcv).adapter!!.notifyItemInserted(listData.size)
