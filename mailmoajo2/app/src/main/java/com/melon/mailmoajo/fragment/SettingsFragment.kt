@@ -20,6 +20,7 @@ import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.MSGraphRequestWrapper
 import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
 import com.melon.mailmoajo.PostResult
+import com.melon.mailmoajo.adapter.OptionListItemAdapter
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.mailId
@@ -62,6 +63,7 @@ class SettingsFragment : Fragment() {
     /* Azure AD Variables */
     private var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
     private var mAccount: IAccount? = null
+    var listItemAdapter = OptionListItemAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -78,6 +80,11 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentSettingsBinding.inflate(layoutInflater)
+
+        binding.optionListView.adapter = listItemAdapter
+        listItemAdapter.addItem("구글 로그인","지금은 눌러도 동작하지 않습니다.")
+        listItemAdapter.addItem("구글 로그인 2","지금은 눌러도 동작하지 않습니다.")
+        listItemAdapter.addItem("구글 로그인 3","지금은 눌러도 동작하지 않습니다.")
 
         binding.gmailLoadBtn.setOnClickListener{
             var i: Intent = Intent(context, GmailLoadActivity::class.java)

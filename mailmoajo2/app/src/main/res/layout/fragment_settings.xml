@@ -16,6 +16,12 @@
         android:layout_height="wrap_content"
         android:text="google" />
 
+<!--    커스텀 리스트뷰 -->
+    <ListView
+        android:id="@+id/option_ListView"
+        android:layout_width="match_parent"
+        android:layout_height="220dp" />
+
     <Button
         android:id="@+id/gmailLoadBtn"
         android:layout_width="match_parent"
@@ -24,24 +30,29 @@
         android:textSize="20dp">
     </Button>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:drawableLeft="@drawable/chat_24dp_fill0_wght400_grad0_opsz24_black"
-        android:paddingLeft="20dp"
-        android:backgroundTint="@color/white"
-        android:text="구글 이메일 동기화"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:layout_marginRight="20dp"/>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imagebuttonTesting"
-        android:padding="0dp"
-        android:src="@drawable/imgbtn_states"
-        />
+<!--    이미지를 왼쪽에 넣는 drawalbeLeft 속성을 통해서 로고가 오른쪽에 있고 글자가 있는 버튼을 만듬.-->
+<!--    안 이쁘고 메인타이틀과 서브타이틀로 두줄을 넣을 수가 없어서 폐기-->
+<!--    <Button-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="75dp"-->
+<!--        android:drawableLeft="@drawable/chat_24dp_fill0_wght400_grad0_opsz24_black"-->
+<!--        android:paddingLeft="20dp"-->
+<!--        android:backgroundTint="@color/white"-->
+<!--        android:text="구글 이메일 동기화!!!"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textSize="20dp"-->
+<!--        android:layout_marginRight="20dp"/>-->
+
+<!--    이미지를 통째로 버튼으로 만듬. 대기 이미지와 클릭 이미지 별도 구현-->
+<!--    화질과 리소스의 문제때문에 폐기-->
+<!--    <ImageButton-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/imagebuttonTesting"-->
+<!--        android:padding="0dp"-->
+<!--        android:src="@drawable/imgbtn_states"-->
+<!--        />-->
 
     <Button
         android:id="@+id/retroBtn"
