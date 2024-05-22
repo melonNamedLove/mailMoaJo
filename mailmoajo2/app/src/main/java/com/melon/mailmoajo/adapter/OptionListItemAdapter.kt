@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.dataclass.optionItems
 
-//https://kumgo1d.tistory.com/entry/Android-Custom-ListView-%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EC%BB%A4%EC%8A%A4%ED%85%80-%EB%A6%AC%EC%8A%A4%ED%8A%B8%EB%B7%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0
+//https://odomm.tistory.com/entry/Android-studio-Custom-Listview-%EB%A7%8C%EB%93%A4%EA%B8%B0
 
 class OptionListItemAdapter : BaseAdapter() {
 
@@ -49,7 +49,16 @@ class OptionListItemAdapter : BaseAdapter() {
         return view
     }
 
+    /**
+     * option_list_item.xml 형태의 커스텀 뷰를 띄웁니다.
+     *
+     * @param title 주 제목으로, 굵은 글씨로 보여집니다. 현재로써는 10글자가 최대입니다.
+     * @param subtitle 부제목으로, 얇고 작은 글씨로 보여집니다. 20글자가 최대입니다.
+     */
     fun addItem(title: String, subtitle: String) {
+        // #####1 로고 사진 추가 기능도 추가해야함
+
+        // #####2 title이 10글자, subtitle이 20글자일시 끝 부분을 자르고 "..."으로 처리해야함
 
         val item = optionItems(title,subtitle)
         listViewItemList.add(item)

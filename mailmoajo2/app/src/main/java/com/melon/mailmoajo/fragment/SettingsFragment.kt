@@ -82,8 +82,8 @@ class SettingsFragment : Fragment() {
         val binding = FragmentSettingsBinding.inflate(layoutInflater)
 
         binding.optionListView.adapter = listItemAdapter
-        listItemAdapter.addItem("구글 로그인","지금은 눌러도 동작하지 않습니다.")
-        listItemAdapter.addItem("구글 로그인 2","지금은 눌러도 동작하지 않습니다.")
+        listItemAdapter.addItem("가나다라마바사아자차","가나다라마바사아자차카타가나다라마바사아")
+        listItemAdapter.addItem("10글자 최대","20글자 최대")
         listItemAdapter.addItem("구글 로그인 3","지금은 눌러도 동작하지 않습니다.")
 
         binding.gmailLoadBtn.setOnClickListener{
