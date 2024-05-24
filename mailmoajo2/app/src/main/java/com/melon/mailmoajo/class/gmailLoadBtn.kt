@@ -27,6 +27,10 @@ class gmailLoadBtn {
         context.startActivity(i)
     }
 
+    /**
+     * CODE - 2
+     *
+     */
     fun retroFun () {
         var accesscode = GoogleSignInActivity.tokenprefs.getString("access_code","")
         accesscode = URLDecoder.decode(accesscode, "UTF-8")
@@ -121,6 +125,10 @@ class gmailLoadBtn {
 //            )
     }
 
+    /**
+     * CODE - 3
+     *
+     */
     fun retro2Fun () {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://www.googleapis.com")
