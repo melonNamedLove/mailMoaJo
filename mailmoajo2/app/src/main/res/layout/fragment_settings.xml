@@ -20,7 +20,7 @@
     <ListView
         android:id="@+id/option_ListView"
         android:layout_width="match_parent"
-        android:layout_height="220dp" />
+        android:layout_height="350dp" />
 
     <Button
         android:id="@+id/gmailLoadBtn"
@@ -58,7 +58,7 @@
         android:id="@+id/retroBtn"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:text="get accesstoken">
+        android:text="get accesstoken (retroBtn)">
 
     </Button>
 
@@ -66,7 +66,7 @@
         android:id="@+id/retro2Btn"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:text="get mail list">
+        android:text="get mail list (retro2Btn)">
 
     </Button>
 

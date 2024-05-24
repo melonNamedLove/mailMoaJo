@@ -24,6 +24,7 @@ import com.melon.mailmoajo.adapter.OptionListItemAdapter
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.mailId
+import com.melon.mailmoajo.gmailLoadBtn
 import com.melon.mailmoajo.gotMailList
 import com.melon.mailmoajo.payload_json
 import com.melon.mailmoajo.supabase
@@ -73,8 +74,6 @@ class SettingsFragment : Fragment() {
 //        super.onPause()
 //    }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,17 +81,20 @@ class SettingsFragment : Fragment() {
         val binding = FragmentSettingsBinding.inflate(layoutInflater)
 
         binding.optionListView.adapter = listItemAdapter
-        listItemAdapter.addItem("가나다라마바사아자차","가나다라마바사아자차카타가나다라마바사아")
-        listItemAdapter.addItem("10글자 최대","20글자 최대")
-        listItemAdapter.addItem("구글 로그인 3","지금은 눌러도 동작하지 않습니다.")
 
-        binding.gmailLoadBtn.setOnClickListener{
-            var i: Intent = Intent(context, GmailLoadActivity::class.java)
-            startActivity(i)
-        }
+        //기존 지메일 로드 액티비티 이동 setOnClickListener, 1번째 리스트로 구현
+//        binding.gmailLoadBtn.setOnClickListener{
+//            var i: Intent = Intent(context, GmailLoadActivity::class.java)
+//            startActivity(i)
+//        }
 
+        listItemAdapter.addItem("0번째 리스트입니다.","로그가 찍힙니다.", requireContext(), 0)
+        listItemAdapter.addItem("1번째 리스트입니다.","gmailLoadFun과 똑같은 역할을 합니다.", requireContext(), 1)
+        listItemAdapter.addItem("2번째 리스트입니다.","retro token load 뭐뭐랑 똑같은 역할을 합니다.", requireContext(), 2)
+        listItemAdapter.addItem("3번째 리스트입니다.","retro2랑 똑같은 역할을 합니다.", requireContext(), 3)
+
+/*      기존 retro2 구현 setOnClickListener, 2번째 리스트로 구현
         binding.retro2Btn.setOnClickListener{
-
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://www.googleapis.com")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -139,9 +141,9 @@ class SettingsFragment : Fragment() {
             })
 
         }
+*/
 
-
-        //access token load 부
+/*        기존 access token load setOnClickListener, 3번째 리스트로 구현
         binding.retroBtn.setOnClickListener{
             var accesscode = tokenprefs.getString("access_code","")
             accesscode = URLDecoder.decode(accesscode, "UTF-8")
@@ -235,10 +237,9 @@ class SettingsFragment : Fragment() {
 //
 //            )
         }
+ */
 
         binding.logoutBtn.setOnClickListener{
-
-
             CoroutineScope(Dispatchers.Default).launch{
                 try {
 //                    val result = credentialManager.getCredential(

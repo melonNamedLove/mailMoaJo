@@ -1,5 +1,9 @@
 package com.melon.mailmoajo.dataclass
 
+import android.content.Context
+import com.melon.mailmoajo.databinding.FragmentSettingsBinding
+import javax.security.auth.callback.Callback
+
 /**
  * 옵션 리스트뷰에 들어갈 커스텀 리스트용 데이터 클래스
  *
@@ -9,6 +13,8 @@ package com.melon.mailmoajo.dataclass
 data class optionItems(
     var title : String,
     var subtitle : String,
+    var context : Context,
+    var code : Int,
 ) {
     override fun hashCode(): Int {
         var result = title.hashCode()
