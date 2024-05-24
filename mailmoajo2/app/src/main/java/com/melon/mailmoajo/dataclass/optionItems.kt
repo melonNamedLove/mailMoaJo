@@ -11,6 +11,7 @@ import javax.security.auth.callback.Callback
  * @property subtitle : 얇고 작은 글씨의 서브 제목
  */
 data class optionItems(
+    var logoid : Int,
     var title : String,
     var subtitle : String,
     var context : Context,

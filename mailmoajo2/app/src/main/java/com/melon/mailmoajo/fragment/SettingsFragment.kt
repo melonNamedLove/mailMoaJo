@@ -88,10 +88,13 @@ class SettingsFragment : Fragment() {
 //            startActivity(i)
 //        }
 
-        listItemAdapter.addItem("0번째 리스트입니다.","로그가 찍힙니다.", requireContext(), 0)
-        listItemAdapter.addItem("1번째 리스트입니다.","gmailLoadFun과 똑같은 역할을 합니다.", requireContext(), 1)
-        listItemAdapter.addItem("2번째 리스트입니다.","retro token load 뭐뭐랑 똑같은 역할을 합니다.", requireContext(), 2)
-        listItemAdapter.addItem("3번째 리스트입니다.","retro2랑 똑같은 역할을 합니다.", requireContext(), 3)
+        val logo_gmail : Int = com.melon.mailmoajo.R.drawable.logo_gmail
+        val logo_whitebox : Int = com.melon.mailmoajo.R.drawable.whitebox
+
+        listItemAdapter.addItem(logo_whitebox,"0번째 리스트입니다.","로그가 찍힙니다.", requireContext(), 0)
+        listItemAdapter.addItem(logo_gmail,"1번째 리스트입니다.","gmailLoadFun과 똑같은 역할을 합니다.", requireContext(), 1)
+        listItemAdapter.addItem(logo_gmail,"2번째 리스트입니다.","retro token load 뭐뭐랑 똑같은 역할을 합니다.", requireContext(), 2)
+        listItemAdapter.addItem(logo_gmail,"3번째 리스트입니다.","retro2랑 똑같은 역할을 합니다.", requireContext(), 3)
 
 /*      기존 retro2 구현 setOnClickListener, 2번째 리스트로 구현
         binding.retro2Btn.setOnClickListener{
