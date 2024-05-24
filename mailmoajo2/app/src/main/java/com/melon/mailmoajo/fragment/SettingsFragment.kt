@@ -88,10 +88,12 @@ class SettingsFragment : Fragment() {
 //            startActivity(i)
 //        }
 
-        val logo_gmail : Int = com.melon.mailmoajo.R.drawable.logo_gmail
+        //drawalbe 리소스들의 아이디 지정
         val logo_whitebox : Int = com.melon.mailmoajo.R.drawable.whitebox
+        val logo_gmail : Int = com.melon.mailmoajo.R.drawable.logo_gmail
 
-        listItemAdapter.addItem(logo_whitebox,"0번째 리스트입니다.","로그가 찍힙니다.", requireContext(), 0)
+        //커스텀 리스트 버튼 생성. addItem 함수 참조할 것
+        listItemAdapter.addItem(logo_whitebox,"[테스팅] 0번째입니다.","로그가 찍힙니다.", requireContext(), 0)
         listItemAdapter.addItem(logo_gmail,"1번째 리스트입니다.","gmailLoadFun과 똑같은 역할을 합니다.", requireContext(), 1)
         listItemAdapter.addItem(logo_gmail,"2번째 리스트입니다.","retro token load 뭐뭐랑 똑같은 역할을 합니다.", requireContext(), 2)
         listItemAdapter.addItem(logo_gmail,"3번째 리스트입니다.","retro2랑 똑같은 역할을 합니다.", requireContext(), 3)
