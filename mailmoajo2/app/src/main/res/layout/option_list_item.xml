@@ -30,13 +30,23 @@
             android:layout_marginBottom="5dp"
             android:text="111"
             android:textSize="30dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+
+            android:ems="10"
+            android:maxLines="1"
+            android:ellipsize="end"
+            />
 
         <TextView
             android:id="@+id/option_item_tv_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="222"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+
+            android:ems="20"
+            android:maxLines="1"
+            android:ellipsize="end"
+            />
     </LinearLayout>
 </LinearLayout>
