@@ -4,11 +4,14 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Paint.Style
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.WindowCompat
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
@@ -62,6 +66,15 @@ class GoogleSignInActivity : ComponentActivity() {
         lateinit var tokenprefs: SharedPreferences
 //        lateinit var contactprefs: SharedPreferences
     }
+//    override fun onAttachedToWindow() {
+//        super.onAttachedToWindow()
+//
+//    }
+//    @RequiresApi(Build.VERSION_CODES.P)
+//    private fun Window.handleCutoutInsetInSafeArea(isFullMode: Boolean) {
+//        WindowCompat.setDecorFitsSystemWindows(this, isFullMode.not())
+//
+//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -205,6 +218,7 @@ fun GoogleSignInButton(){
                 Log.i("meow", prefs.getString("loginData","").toString())
                 Toast.makeText(context,"You are signed in!", Toast.LENGTH_SHORT).show()
             }catch (e: GetCredentialException){
+                Log.i("meow", "play 스토어 로그인을 확인해주세요")
                 Log.i("meow", e.toString())
                 Toast.makeText(context,e.message, Toast.LENGTH_SHORT).show()
             }catch (e: GoogleIdTokenParsingException){
