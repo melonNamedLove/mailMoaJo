@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.melon.mailmoajo.R
@@ -27,6 +29,12 @@ class MailFolderFragment : Fragment() {
 
 
 
+        val activity = this.context as AppCompatActivity
+        val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        activity.supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbarBodyTemplate.title="메일함"
+        activity.setSupportActionBar(toolbarBodyTemplate)
 //        val itemLongClickInterface : MailFolderAdapter.OnLongClickInterface = obj2
 
         binding!!.mailFolderRCV.adapter = MailFolderAdapter(mailfolderlistData,MailFolderItemOnClickObject())
