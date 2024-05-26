@@ -35,6 +35,12 @@ import entities.orderedMailFolders
 
 class ContactDetailFragment( position: Int) : Fragment() {
     val position = position
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +61,7 @@ class ContactDetailFragment( position: Int) : Fragment() {
 
         val activity = this.context as AppCompatActivity
 
+
         val db = Room.databaseBuilder(
             activity.applicationContext,
             MailMoaJoDatabase::class.java,
@@ -69,12 +76,13 @@ class ContactDetailFragment( position: Int) : Fragment() {
         activity.setSupportActionBar(toolbarBodyTemplate)
         toolbarBodyTemplate.title= contactlistData[position].name
         toolbarBodyTemplate.setNavigationOnClickListener(View.OnClickListener(){    //appbar 뒤로가기 버튼 눌렀을 때
-            Log.d("ererer", "onclickreturn")
-            activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactFragment()).commit()
-            toolbarBodyTemplate.title="주소록"
-            fab.setIconResource(R.drawable.person_add_24dp_fill0_wght400_grad0_opsz24)
-            fab.setText("추가")
-            contactlistData = db!!.contactDao().getAll().toMutableList()
+//            Log.d("ererer", "onclickreturn")
+//            activity.supportFragmentManager.beginTransaction().remove(this).addToBackStack(null).commit()
+//            toolbarBodyTemplate.title="주소록"
+//            fab.setIconResource(R.drawable.person_add_24dp_fill0_wght400_grad0_opsz24)
+//            fab.setText("추가")
+//            contactlistData = db!!.contactDao().getAll().toMutableList()
+            activity.supportFragmentManager.popBackStack()
         })
 
 
@@ -105,7 +113,7 @@ class ContactDetailFragment( position: Int) : Fragment() {
                     db.mailfolderDao().deleteMailFolderByFolderId(
                         delContact.toString()
                     )
-                    activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactFragment()).commit()
+                    activity.supportFragmentManager.popBackStack()
                     toolbarBodyTemplate.title="주소록"
                     fab.setIconResource(R.drawable.person_add_24dp_fill0_wght400_grad0_opsz24)
                     fab.setText("추가")

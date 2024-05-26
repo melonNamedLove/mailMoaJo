@@ -23,7 +23,7 @@ fun ContactItemOnClick():ContactAdapter.OnClickInterface{
             //실행코드
             val name = contactlistData[position].name
             val activity = view!!.context as AppCompatActivity
-            activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactDetailFragment(position)).commit()
+            activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, ContactDetailFragment(position)).addToBackStack(null).commit()
             val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
             toolbarBodyTemplate.title= name
 
