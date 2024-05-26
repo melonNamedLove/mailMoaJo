@@ -6,9 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.melon.mailmoajo.R
+import com.melon.mailmoajo.contactlistData
 import com.melon.mailmoajo.dataclass.mailId
+import com.melon.mailmoajo.fragment.ContactDetailFragment
+import com.melon.mailmoajo.fragment.MailFragment
+import com.melon.mailmoajo.mailfolderlistData
 import entities.orderedMailFolders
 
 fun MailFolderItemOnClickObject():
@@ -16,6 +22,13 @@ fun MailFolderItemOnClickObject():
     val obj = object: MailFolderAdapter.OnClickInterface{
         override fun onClick(view: View, position: Int) {
             //실행코드
+            val name = mailfolderlistData[position].name
+            val activity = view!!.context as AppCompatActivity
+            activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, MailFragment(position)).addToBackStack(null).commit()
+            val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
+            toolbarBodyTemplate.title= name
+
+            activity.setSupportActionBar(toolbarBodyTemplate)
         }
     }
     val itemClickInterface : MailFolderAdapter.OnClickInterface = obj

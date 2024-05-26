@@ -165,6 +165,10 @@ class HomeActivity : AppCompatActivity() {
                     contactlistData = db.contactDao().getAll().toMutableList()
                     supportActionBar?.setDisplayHomeAsUpEnabled(false)
                     bottomNagivationView.menu.findItem(R.id.contactfragItem).setChecked(true)
+                }else if(currentFrag.instanceOf(MailFragment::class)){
+                    supportFragmentManager.beginTransaction().replace(R.id.nav_host, MailFolderFragment()).commit()
+
+                    toolbarBodyTemplate.title="메일함"
                 }
             }
         }
