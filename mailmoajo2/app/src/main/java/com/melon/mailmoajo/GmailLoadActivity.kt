@@ -14,7 +14,14 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
+import com.melon.mailmoajo.dataclass.PostResult
+import com.melon.mailmoajo.dataclass.gotMailList
+import com.melon.mailmoajo.dataclass.mailData
+import com.melon.mailmoajo.dataclass.mailId
+import com.melon.mailmoajo.dataclass.payload_json
+import com.melon.mailmoajo.fragment.mailmail
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +31,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.URLDecoder
+import java.util.Base64
 
 
 private var gottenData:String = ""
@@ -40,6 +49,121 @@ class myWebViewClient: WebViewClient(){
             res = 1
         }
         if (res ==1 && gottenData!=""){
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://www.googleapis.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val service = retrofit.create(AccessToken::class.java)
+
+            val userid =tokenprefs.getString("userid","").toString()
+            service.getMailList(
+                userid,
+                "Bearer "+tokenprefs.getString("accesstoken","").toString(),
+            ).enqueue(object :Callback<gotMailList>{
+                override fun onResponse(call: Call<gotMailList>, response: Response<gotMailList>) {
+
+
+                    Log.d("meow",  response.code().toString())
+                    if(response.isSuccessful.not()){
+                        Log.d("meow", "nope")
+                        Log.d("meow", response.errorBody()?.string()!!)
+
+                        return
+                    }
+                    val msg =response.body()?.messages
+//                    msg?.get(0)
+                    Log.d("meow", response.body()?.messages.toString())
+//
+                    var gson = Gson()
+                    for (i:Int in 0 until 50){
+                        Log.w("meow", response.body()!!.messages[i].toString())
+                        val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
+                        Log.d("meow", stringtodataclass.id)
+                        mailmail.add(mailId(stringtodataclass.id))
+//        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
+                    }
+//                    Log.i("meow",stringtodataclass.mailids.toString())
+//                    item.messages[0]
+                    var accesscode = tokenprefs.getString("access_code","")
+                    accesscode = URLDecoder.decode(accesscode, "UTF-8")
+                    Log.i("meow",accesscode)
+
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl("https://www.googleapis.com")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                    val service = retrofit.create(AccessToken::class.java)
+
+                    service.postAccessToken(
+                        accesscode,
+                        "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
+                        "https://www.googleapis.com/auth/gmail.readonly",
+                        "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",
+                        "http://localhost:5500/test.html",
+                        "authorization_code").enqueue(object :Callback<PostResult>{
+                        override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+
+
+                            Log.d("meow",  response.code().toString())
+                            if(response.isSuccessful.not()){
+                                Log.d("meow", "nope")
+                                Log.d("meow", response.errorBody()?.string()!!)
+
+                                return
+                            }
+                            Log.d("meow", response.body()?.access_token.toString())
+                            if (response.body()?.access_token !=null){
+                                tokenprefs.edit().putString("accesstoken", response.body()?.access_token).apply()
+                                val tokenParts = response.body()!!.id_token.split(".")
+                                Log.d("tokenmeow",tokenParts[0])
+                                Log.d("tokenmeow",tokenParts[1])
+                                Log.d("tokenmeow",tokenParts[2])
+
+                                val decoder = Base64.getUrlDecoder()
+
+                                val header = String(decoder.decode(tokenParts[0]))
+                                val payload = String(decoder.decode(tokenParts[1]))
+                                val signature = String(decoder.decode(tokenParts[2]))
+
+                                Log.d("tokenmeow","header"+header)
+                                Log.d("tokenmeow","payload"+payload)
+                                Log.d("tokenmeow","signature"+signature)
+
+                                //gson 인스턴스 생성
+                                var gson = Gson()
+
+                                val stringtodataclass = gson.fromJson(payload, payload_json::class.java)
+
+                                Log.i("meow",stringtodataclass.email)
+                                tokenprefs.edit().putString("userid",stringtodataclass.email).apply()
+
+                                //json을 클래스로 변환
+
+
+                            }
+                        }
+
+                        override fun onFailure(call: Call<PostResult>, t: Throwable) {
+                            Log.d("meow", "Failed API call with call: " + call +
+                                    " + exception: " + t)
+                        }
+
+
+                    })
+
+
+
+                }
+
+                override fun onFailure(call: Call<gotMailList>, t: Throwable) {
+                    Log.d("meow", "Failed API call with call: " + call +
+                            " + exception: " + t)
+                }
+
+
+            })
+
             view.setVisibility(View.GONE)                  //여기
 //            view?.goBack()
         }
@@ -107,7 +231,7 @@ class GmailLoadActivity : AppCompatActivity() {
         //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
 
         btn.setOnClickListener(View.OnClickListener {
-
+            finish()
             Log.d("meow", gottenData)
             if (gottenData !=""){
                 var temp=gottenData.substring(37)
