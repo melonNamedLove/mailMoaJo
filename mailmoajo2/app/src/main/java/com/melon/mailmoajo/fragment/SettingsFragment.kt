@@ -81,42 +81,42 @@ class SettingsFragment : Fragment() {
             startActivity(i)
         }
 
-        binding.retro2Btn.setOnClickListener{
-
-
-
-        }
-
-
-        //access token load 부
-        binding.retroBtn.setOnClickListener{
-
-
-//            AccessToken.create().postAccessToken(
-//                accesscode.toString(),
-//                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
-//                "https://www.googleapis.com/auth/gmail.readonly",
-//                "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",
-//                "http://localhost:5500/test.html",
-//                "authorization_code"
-//            ).enqueue(object : Callback<PostResult>{
-//                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
-//                    if(response.isSuccessful.not()){
-//                        Log.d("meow", "nope")
-//                        return
-//                    }
+//        binding.retro2Btn.setOnClickListener{
 //
-//                        Log.d("meow", response.body()?.access_token.toString())
 //
-//                }
 //
-//                override fun onFailure(call: Call<PostResult>, t: Throwable) {
-//                    Log.d("meow", "fail")
-//                }
-//            }
+//        }
 //
-//            )
-        }
+//
+//        //access token load 부
+//        binding.retroBtn.setOnClickListener{
+//
+//
+////            AccessToken.create().postAccessToken(
+////                accesscode.toString(),
+////                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
+////                "https://www.googleapis.com/auth/gmail.readonly",
+////                "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",
+////                "http://localhost:5500/test.html",
+////                "authorization_code"
+////            ).enqueue(object : Callback<PostResult>{
+////                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
+////                    if(response.isSuccessful.not()){
+////                        Log.d("meow", "nope")
+////                        return
+////                    }
+////
+////                        Log.d("meow", response.body()?.access_token.toString())
+////
+////                }
+////
+////                override fun onFailure(call: Call<PostResult>, t: Throwable) {
+////                    Log.d("meow", "fail")
+////                }
+////            }
+////
+////            )
+//        }
 
         binding.logoutBtn.setOnClickListener{
 
