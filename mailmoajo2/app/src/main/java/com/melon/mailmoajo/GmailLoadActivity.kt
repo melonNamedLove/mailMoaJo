@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.dataclass.PostResult
+import com.melon.mailmoajo.dataclass.gotMailData
 import com.melon.mailmoajo.dataclass.gotMailList
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.mailId
@@ -50,6 +51,14 @@ class myWebViewClient: WebViewClient(){
         }
         if (res ==1 && gottenData!=""){
 
+            var temp=gottenData.substring(37)
+            Log.d("meow", temp)
+            val access_code = temp.split("&scope")[0]
+            Log.d("meow", access_code)
+            tokenprefs.edit().putString("access_code",access_code.toString()).apply()
+
+
+            view.setVisibility(View.GONE)
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://www.googleapis.com")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -104,6 +113,9 @@ class myWebViewClient: WebViewClient(){
 
                         //json을 클래스로 변환
                         val userid =tokenprefs.getString("userid","").toString()
+
+
+
                         service.getMailList(
                             userid,
                             "Bearer "+tokenprefs.getString("accesstoken","").toString(),
@@ -127,6 +139,7 @@ class myWebViewClient: WebViewClient(){
                                     Log.w("meow", response.body()!!.messages[i].toString())
                                     val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
                                     Log.d("meow", stringtodataclass.id)
+                                    Log.d("meow", stringtodataclass.threadId)
                                     mailmail.add(mailId(stringtodataclass.id))
 //        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
                                 }
@@ -146,7 +159,6 @@ class myWebViewClient: WebViewClient(){
 
                         })
 
-                        view.setVisibility(View.GONE)
 
                     }
                 }
@@ -242,16 +254,39 @@ class GmailLoadActivity : AppCompatActivity() {
         //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
 
         btn.setOnClickListener(View.OnClickListener {
-            finish()
-            Log.d("meow", gottenData)
-            if (gottenData !=""){
-                var temp=gottenData.substring(37)
-                Log.d("meow", temp)
-                val access_code = temp.split("&scope")[0]
-                Log.d("meow", access_code)
-                findViewById<TextView>(R.id.accesscodeTV).setText(access_code)
-                tokenprefs.edit().putString("access_code",access_code.toString()).apply()
-            }
+
+            val userid =tokenprefs.getString("userid","").toString()
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://www.googleapis.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val service = retrofit.create(AccessToken::class.java)
+            service.getMailData(
+                userid,
+                mailmail[0].muteMail.toString(),
+                "Bearer "+tokenprefs.getString("accesstoken","").toString(),
+            ).enqueue(object :Callback<gotMailData> {
+                override fun onResponse(call: Call<gotMailData>, response: Response<gotMailData>) {
+                    Log.d("mailSingle",response.body().toString())
+
+                    var gson = Gson()
+                    Log.w("meow", response.body()!!.payload.headers[1].value)
+                    Log.w("meow", response.body()!!.payload.headers[2].value)
+                    Log.w("meow", response.body()!!.payload.headers[3].value)
+//                    val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
+//                    Log.d("meow", stringtodataclass.id)
+//                    Log.d("meow", stringtodataclass.threadId)
+//                    mailmail.add(mailId(stringtodataclass.id))
+                    finish()
+                }
+
+                override fun onFailure(call: Call<gotMailData>, t: Throwable) {
+                Log.d("meow", "Failed API call with call: " + call +
+                        " + exception: " + t)
+                }
+
+
+            })
 
 //            var input = HashMap<String, String>()
 //            input["code"] =  "4%2F0AeaYSHBYaXpqBjTXNc2yKRieyt_3TtZeCIUh0JxckUnBfaiRuRUjbRhGDWPXgrjjyOW70A"

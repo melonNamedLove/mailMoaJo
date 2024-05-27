@@ -61,3 +61,24 @@ data class gotMailList(
     @SerializedName("resultSizeEstimate")val resultSizeEstimate:Int
 
 )
+
+data class gotMailData(
+    val historyId: String,
+    val id: String,
+    val internalDate: String,
+    val labelIds: List<String>,
+    val payload: Payload,
+    val sizeEstimate: Int,
+    val snippet: String,
+    val threadId: String
+)
+
+data class Payload(
+    val headers: List<Header>,
+    val mimeType: String
+)
+
+data class Header(
+    val name: String,
+    val value: String
+)

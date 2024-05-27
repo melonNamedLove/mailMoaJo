@@ -1,6 +1,7 @@
 package com.melon.mailmoajo
 
 import com.melon.mailmoajo.dataclass.PostResult
+import com.melon.mailmoajo.dataclass.gotMailData
 import com.melon.mailmoajo.dataclass.gotMailList
 import retrofit2.Call
 import retrofit2.http.GET
@@ -36,4 +37,17 @@ interface AccessToken {
         @Query("includeSpamTrash") includeSpamTrash:Boolean = false,
 
     ): Call<gotMailList>
+
+
+    @GET("/gmail/v1/users/{user_id}/messages/{id}")
+    fun getMailData(
+        @Path("user_id") user_id:String,
+        @Path("id") id:String,
+        @Header("Authorization") Authorization:String,
+        @Query("format") format:String = "metadata",
+        @Query("metadataHeaders") mheader1:String = "Subject",
+        @Query("metadataHeaders") mheader2:String = "Received",
+        @Query("metadataHeaders") mheader3:String = "From",
+    ): Call<gotMailData>
+
 }
