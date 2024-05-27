@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
@@ -44,7 +46,6 @@ class HomeActivity : AppCompatActivity() {
     private val bottomNagivationView: BottomNavigationView by lazy { // 하단 네비게이션 바
         findViewById(R.id.nav_bar)
     }
-
 //    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 //        return super.onCreateOptionsMenu(menu)
 //        menuInflater.inflate(
@@ -53,6 +54,45 @@ class HomeActivity : AppCompatActivity() {
 //        )
 //        return true
 //    }
+//val MIGRATION_2_3 = object : Migration(2, 3) {
+//    override fun migrate(database: SupportSQLiteDatabase) {
+//        Log.d("Migration", "Starting migration from 2 to 3")
+//        // 새로운 mails 테이블 생성
+//        database.execSQL("""
+//            CREATE TABLE IF NOT EXISTS `new_mails` (
+//                `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+//                `receivedTime` TEXT NOT NULL,
+//                `sender` TEXT NOT NULL,
+//                `title` TEXT NOT NULL,
+//                `mailfolderid` INTEGER,
+//                FOREIGN KEY(`mailfolderid`) REFERENCES `orderedMailFolders`(`nId`)
+//                ON UPDATE CASCADE ON DELETE SET NULL
+//            )
+//        """)
+//
+//        Log.d("Migration", "new_mails table created")
+//
+//        // 기존 데이터 복사
+//        database.execSQL("""
+//            INSERT INTO `new_mails` (`nId`, `receivedTime`, `sender`, `title`, `mailfolderid`)
+//            SELECT `nId`, `receivedTime`, `sender`, `title`, `mailfolderid` FROM `mails`
+//        """)
+//
+//        Log.d("Migration", "Data copied to new_mails table")
+//
+//        // 기존 테이블 삭제
+//        database.execSQL("DROP TABLE `mails`")
+//
+//        Log.d("Migration", "Old mails table dropped")
+//
+//        // 새 테이블 이름 변경
+//        database.execSQL("ALTER TABLE `new_mails` RENAME TO `mails`")
+//
+//        Log.d("Migration", "new_mails table renamed to mails")
+//    }
+//}
+//
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
@@ -69,6 +109,7 @@ class HomeActivity : AppCompatActivity() {
             MailMoaJoDatabase::class.java,
             "mailmoajo-database"
         ).allowMainThreadQueries()
+//            .addMigrations(MIGRATION_2_3)
             .build()
 //        Room.databaseBuilder(
 //            applicationContext,

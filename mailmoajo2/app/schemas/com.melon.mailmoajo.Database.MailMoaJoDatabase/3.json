@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "d544f2993660577142a85118a7f88a2b",
+    "version": 3,
+    "identityHash": "b6f5eb6fb8d2196e827e7ee858ebe028",
     "entities": [
       {
         "tableName": "contacts",
@@ -76,7 +76,7 @@
       },
       {
         "tableName": "mails",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receivedTime` TEXT NOT NULL, `sender` TEXT NOT NULL, `title` TEXT NOT NULL, `mailfolderid` INTEGER NOT NULL, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`mailfolderid`) REFERENCES `orderedMailFolders`(`nId`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receivedTime` TEXT NOT NULL, `sender` TEXT NOT NULL, `title` TEXT NOT NULL, `mailfolderid` INTEGER NOT NULL, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "receivedTime",
@@ -116,25 +116,13 @@
           ]
         },
         "indices": [],
-        "foreignKeys": [
-          {
-            "table": "orderedMailFolders",
-            "onDelete": "SET NULL",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "mailfolderid"
-            ],
-            "referencedColumns": [
-              "nId"
-            ]
-          }
-        ]
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd544f2993660577142a85118a7f88a2b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b6f5eb6fb8d2196e827e7ee858ebe028')"
     ]
   }
 }

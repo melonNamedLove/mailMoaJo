@@ -16,7 +16,7 @@ android {
         applicationId = "com.melon.mailmoajo"
         minSdk = 31
         targetSdk = 35
-        targetSdkPreview = "VanillaIceCream"
+//        targetSdkPreview = "VanillaIceCream"
         versionCode = 1
         versionName = "1.0"
 
