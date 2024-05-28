@@ -7,14 +7,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.dataclass.mailId
+import entities.mails
 
-class MailAdapter (val d:MutableList<mailId>):RecyclerView.Adapter<MailAdapter.ViewHolder>(){
+class MailAdapter (val d:MutableList<mails>):RecyclerView.Adapter<MailAdapter.ViewHolder>(){
     class ViewHolder(var v: View):RecyclerView.ViewHolder(v){
-        fun bind(item:mailId){
+        fun bind(item:mails){
 //            v.findViewById<ImageView>(R.id.imgimg1)?.setImageResource(item.img)
 //            v.findViewById<TextView>(R.id.namename1)?.text=(item.name)
 
-            v.findViewById<TextView>(R.id.mailTitleTV)?.text=(item.muteMail).toString()
+            v.findViewById<TextView>(R.id.mailTitleTV)?.text=(item.title).toString()
         }
     }
 
