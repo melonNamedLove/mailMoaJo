@@ -12,30 +12,25 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.room.Room
 import com.google.gson.Gson
-import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
+import com.melon.mailmoajo.HomeActivity.Companion.database
 import com.melon.mailmoajo.dataclass.PostResult
 import com.melon.mailmoajo.dataclass.gotMailData
 import com.melon.mailmoajo.dataclass.gotMailList
 import com.melon.mailmoajo.dataclass.mailData
-import com.melon.mailmoajo.dataclass.mailId
 import com.melon.mailmoajo.dataclass.payload_json
-import com.melon.mailmoajo.fragment.mailmail
+import com.melon.mailmoajo.formatter.EmailFormatter
+import com.melon.mailmoajo.formatter.MailTimeFormatter
 import entities.mails
-import io.github.jan.supabase.gotrue.auth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URLDecoder
+import java.time.format.DateTimeFormatter
 import java.util.Base64
 
 
@@ -63,35 +58,11 @@ class myWebViewClient: WebViewClient(){
 
             view.setVisibility(View.GONE)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                            //여기
 //            view?.goBack()
         }
     }
-//    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
-//        super.onPageStarted(view, url, favicon)
-//        Log.d("kkkk", "your current url when webpage loading..$url")
-////                url.spl
-//        if(url.equals("URL after user logged In")){
-//            //start new activity
-//        }
-//    }
+
 
     override fun onPageFinished(view: WebView, url: String) {
         Log.d("kkkk", "your current url when webpage loading.. finish$url")
@@ -145,13 +116,7 @@ class GmailLoadActivity : AppCompatActivity() {
         setContentView(R.layout.activity_gmail_load)
         val btn: Button = findViewById<Button>(R.id.rrbtn)
         //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
-        val db = Room.databaseBuilder(
-            applicationContext,
-            MailMoaJoDatabase::class.java,
-            "mailmoajo-database"
-        ).allowMainThreadQueries()
-//            .addMigrations(MIGRATION_2_3)
-            .build()
+        val db = database(applicationContext)
 
         btn.setOnClickListener(View.OnClickListener {
             val retrofit = Retrofit.Builder()
@@ -208,21 +173,15 @@ class GmailLoadActivity : AppCompatActivity() {
 
                         //json을 클래스로 변환
                         val userid =tokenprefs.getString("userid","").toString()
-
-
-
                         service.getMailList(
                             userid,
                             "Bearer "+tokenprefs.getString("accesstoken","").toString(),
                         ).enqueue(object :Callback<gotMailList>{
                             override fun onResponse(call: Call<gotMailList>, response: Response<gotMailList>) {
-
-
                                 Log.d("meow",  response.code().toString())
                                 if(response.isSuccessful.not()){
                                     Log.d("meow", "nope")
                                     Log.d("meow", response.errorBody()?.string()!!)
-
                                     return
                                 }
                                 val msg =response.body()?.messages
@@ -250,10 +209,22 @@ class GmailLoadActivity : AppCompatActivity() {
                                             val subject = response.body()!!.payload.headers.find { it.name == "Subject" }?.value ?: "No Subject"
 
                                             // From
-                                            val from = response.body()!!.payload.headers.find { it.name == "From" }?.value ?: "Unknown Sender"
+                                            var from = ""
+                                            val EF = EmailFormatter()
+                                            from = EF.extractEmail(response.body()!!.payload.headers.find { it.name == "From" }?.value ?: "Unknown Sender")
+
 
                                             // First Received header
-                                            val received = response.body()!!.payload.headers.firstOrNull { it.name == "Received" }?.value ?: "No Received Header"
+                                            var received =""
+                                            val MTF = MailTimeFormatter()
+                                            val pacificTime = MTF.extractDateTime(response.body()!!.payload.headers.firstOrNull { it.name == "Received" }?.value ?: "No Received Header")
+                                            if (pacificTime != null) {
+                                                val localTime = MTF.convertToLocaleTime(pacificTime)
+                                                received = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                                            } else {
+                                                println("No valid datetime found in the input string.")
+                                            }
+
 
 
 
@@ -372,7 +343,7 @@ class GmailLoadActivity : AppCompatActivity() {
 
 
         webView.settings.javaScriptEnabled = true
-//        webView.settings.domStorageEnabled = true
+        webView.settings.domStorageEnabled = true
         webView.webViewClient = myWebViewClient()
 //        webView.webChromeClient = WebChromeClient()
         webView.getSettings().setUserAgentString(System.getProperty("http.agent"))

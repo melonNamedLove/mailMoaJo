@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
+import com.melon.mailmoajo.HomeActivity.Companion.database
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.MailAdapter
 import com.melon.mailmoajo.contactlistData
@@ -36,12 +37,7 @@ class MailFragment ( position: Int) : Fragment() {
         val activity = this.context as AppCompatActivity
 
 
-        val db = Room.databaseBuilder(
-            activity.applicationContext,
-            MailMoaJoDatabase::class.java,
-            "mailmoajo-database"
-        ).allowMainThreadQueries()
-            .build()
+        val db = database(activity)
 
 //        var listData = mutableListOf<ItemData>()
 

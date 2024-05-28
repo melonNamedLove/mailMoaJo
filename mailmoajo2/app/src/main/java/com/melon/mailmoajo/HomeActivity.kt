@@ -39,60 +39,24 @@ import io.ktor.util.reflect.instanceOf
 var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
 class HomeActivity : AppCompatActivity() {
+    companion object{
+        fun database(context: Context):MailMoaJoDatabase{
 
+            val db = Room.databaseBuilder(
+                context,
+                MailMoaJoDatabase::class.java,
+                "mailmoajo-database"
+            ).allowMainThreadQueries()
+                .build()
+            return db
+        }
+    }
     private val frame: RelativeLayout by lazy { // activity_main의 화면 부분
         findViewById(R.id.nav_host)
     }
     private val bottomNagivationView: BottomNavigationView by lazy { // 하단 네비게이션 바
         findViewById(R.id.nav_bar)
     }
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        return super.onCreateOptionsMenu(menu)
-//        menuInflater.inflate(
-//            R.menu.template_toolbar_menu,
-//            menu
-//        )
-//        return true
-//    }
-//val MIGRATION_2_3 = object : Migration(2, 3) {
-//    override fun migrate(database: SupportSQLiteDatabase) {
-//        Log.d("Migration", "Starting migration from 2 to 3")
-//        // 새로운 mails 테이블 생성
-//        database.execSQL("""
-//            CREATE TABLE IF NOT EXISTS `new_mails` (
-//                `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-//                `receivedTime` TEXT NOT NULL,
-//                `sender` TEXT NOT NULL,
-//                `title` TEXT NOT NULL,
-//                `mailfolderid` INTEGER,
-//                FOREIGN KEY(`mailfolderid`) REFERENCES `orderedMailFolders`(`nId`)
-//                ON UPDATE CASCADE ON DELETE SET NULL
-//            )
-//        """)
-//
-//        Log.d("Migration", "new_mails table created")
-//
-//        // 기존 데이터 복사
-//        database.execSQL("""
-//            INSERT INTO `new_mails` (`nId`, `receivedTime`, `sender`, `title`, `mailfolderid`)
-//            SELECT `nId`, `receivedTime`, `sender`, `title`, `mailfolderid` FROM `mails`
-//        """)
-//
-//        Log.d("Migration", "Data copied to new_mails table")
-//
-//        // 기존 테이블 삭제
-//        database.execSQL("DROP TABLE `mails`")
-//
-//        Log.d("Migration", "Old mails table dropped")
-//
-//        // 새 테이블 이름 변경
-//        database.execSQL("ALTER TABLE `new_mails` RENAME TO `mails`")
-//
-//        Log.d("Migration", "new_mails table renamed to mails")
-//    }
-//}
-//
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
@@ -104,18 +68,8 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //db on
-        val db = Room.databaseBuilder(
-            applicationContext,
-            MailMoaJoDatabase::class.java,
-            "mailmoajo-database"
-        ).allowMainThreadQueries()
-//            .addMigrations(MIGRATION_2_3)
-            .build()
-//        Room.databaseBuilder(
-//            applicationContext,
-//            MailMoaJoDatabase::class.java,
-//            "contact-database"
-//        ).addMigrations()
+        val db = database(applicationContext)
+
         contactlistData = db!!.contactDao().getAll().toMutableList()
 
         mailfolderlistData = db!!.mailfolderDao().getAll().toMutableList()
@@ -216,12 +170,6 @@ class HomeActivity : AppCompatActivity() {
 
         var re = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
             if(result.resultCode == 1){
-                val db = Room.databaseBuilder(
-                    this,
-                    MailMoaJoDatabase::class.java,
-                    "mailmoajo-database"
-                ).allowMainThreadQueries()
-                    .build()
                 contactlistData = db.contactDao().getAll().toMutableList()
                 findViewById<RecyclerView>(R.id.contactRcv).adapter = ContactAdapter(contactlistData,ContactItemOnClick())
 
@@ -251,66 +199,10 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-//        contactprefs = this.getSharedPreferences("contact", MODE_PRIVATE)
         tokenprefs = this.getSharedPreferences("token", MODE_PRIVATE)
-//        supportFragmentManager.beginTransaction().apply{
-//            replace(R.id.fragArea, MailFragment())
-//            commit()
-//        }
-        //mail fragment 버튼
-//        binding.navBar
-//        setOnClickListener {
-//            supportFragmentManager.beginTransaction().apply{
-//                replace(R.id.fragArea, MailFragment())
-//                commit()
-//            }
-//        }
+
         this.onBackPressedDispatcher.addCallback(this, onBackPressed)
 
-        //contact fragment 버튼
-//        binding.contactFragBtn.setOnClickListener {
-//
-////            var contactprefset = contactprefs.getStringSet("contact", setOf<String>())
-////            var contactset = contactprefset!!.toMutableSet()
-////            if(contactset.size != 0){
-////                for(data in contactset){
-////                    var c:contact = contact(
-////                        data.split("**")[0].toString(),
-////                        data.split("**")[1].toString(),
-////                        data.split("**")[2].toString()
-////                    )
-////                    Log.d("meow",data.split("**")[0])
-////                    listData.add(c)
-////                }
-////            }
-//            supportFragmentManager.beginTransaction().apply{
-//                replace(R.id.fragArea, ContactFragment())
-//                commit()
-//            }
-//        }
-
-//        //settings fragment 버튼
-//        binding.settingsFragBtn.setOnClickListener {
-//            supportFragmentManager.beginTransaction().apply{
-//                replace(R.id.fragArea, SettingsFragment())
-//                commit()
-//            }
-//        }
-
-
-
-//        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
-//        supportFragmentManager.beginTransaction().add(binding.navHost.id, MailFragment()).commit()
-//        binding.navBar.setOnClickListener{
-//            replaceFragment(
-//                when (it.id) {
-//                    R.id.mailfragItem -> MailFragment()
-//                    R.id.contactfragItem -> ContactFragment()
-//                    else -> SettingsFragment()
-//                }
-//            )
-//            true
-//        }
     }
 
     // 화면 전환 구현 메소드

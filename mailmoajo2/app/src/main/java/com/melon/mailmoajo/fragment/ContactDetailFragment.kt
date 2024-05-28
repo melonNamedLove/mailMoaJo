@@ -22,6 +22,7 @@ import androidx.room.Room
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
+import com.melon.mailmoajo.HomeActivity.Companion.database
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.adapter.ContactItemOnClick
@@ -62,12 +63,7 @@ class ContactDetailFragment( position: Int) : Fragment() {
         val activity = this.context as AppCompatActivity
 
 
-        val db = Room.databaseBuilder(
-            activity.applicationContext,
-            MailMoaJoDatabase::class.java,
-            "mailmoajo-database"
-        ).allowMainThreadQueries()
-            .build()
+        val db = database(activity)
 
         val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
 //        toolbarBodyTemplate.title= contactlistData[position].name
