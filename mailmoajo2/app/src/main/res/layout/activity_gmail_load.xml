@@ -27,7 +27,9 @@
         android:layout_height="match_parent">
 
     </WebView>
-
+    <ProgressBar
+        android:layout_width="200dp"
+        android:layout_height="200dp"/>
     <Button
         android:layout_width="100dp"
         android:layout_height="100dp"

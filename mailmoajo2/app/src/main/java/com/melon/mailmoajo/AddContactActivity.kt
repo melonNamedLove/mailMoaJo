@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
@@ -23,6 +24,21 @@ class AddContactActivity : AppCompatActivity() {
         val binding = ActivityAddContactBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        val toolbarBodyTemplate = binding.bodyToolbar.toolbar
+        setSupportActionBar(toolbarBodyTemplate)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbarBodyTemplate.title="주소록 추가"
+        toolbarBodyTemplate.setNavigationOnClickListener(View.OnClickListener(){    //appbar 뒤로가기 버튼 눌렀을 때
+//            Log.d("ererer", "onclickreturn")
+//            activity.supportFragmentManager.beginTransaction().remove(this).addToBackStack(null).commit()
+//            toolbarBodyTemplate.title="주소록"
+//            fab.setIconResource(R.drawable.person_add_24dp_fill0_wght400_grad0_opsz24)
+//            fab.setText("추가")
+//            contactlistData = db!!.contactDao().getAll().toMutableList()
+            finish()
+        })
 
         var i: Intent = Intent(this, HomeActivity::class.java)
 
