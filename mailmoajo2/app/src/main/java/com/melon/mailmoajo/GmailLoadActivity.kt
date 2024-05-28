@@ -14,7 +14,9 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
 import com.google.gson.Gson
+import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.dataclass.PostResult
 import com.melon.mailmoajo.dataclass.gotMailData
@@ -23,6 +25,7 @@ import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.mailId
 import com.melon.mailmoajo.dataclass.payload_json
 import com.melon.mailmoajo.fragment.mailmail
+import entities.mails
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,17 +51,109 @@ class myWebViewClient: WebViewClient(){
             Log.d("meow", url.toString())
             gottenData = url
             res = 1
-        }
-        if (res ==1 && gottenData!=""){
-
             var temp=gottenData.substring(37)
             Log.d("meow", temp)
             val access_code = temp.split("&scope")[0]
             Log.d("meow", access_code)
             tokenprefs.edit().putString("access_code",access_code.toString()).apply()
+        }
+        if (res ==1 && gottenData!=""){
+
 
 
             view.setVisibility(View.GONE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                           //여기
+//            view?.goBack()
+        }
+    }
+//    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
+//        super.onPageStarted(view, url, favicon)
+//        Log.d("kkkk", "your current url when webpage loading..$url")
+////                url.spl
+//        if(url.equals("URL after user logged In")){
+//            //start new activity
+//        }
+//    }
+
+    override fun onPageFinished(view: WebView, url: String) {
+        Log.d("kkkk", "your current url when webpage loading.. finish$url")
+        super.onPageFinished(view, url)
+
+
+    }
+
+    override fun onLoadResource(view: WebView, url: String) {
+//        Log.d("kkkk", "여기")
+        // TODO Auto-generated method stub
+        super.onLoadResource(view, url)
+    }
+
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        println("when you click on any interlink on webview that time you got url :-${request?.url.toString()}")
+
+        return super.shouldOverrideUrlLoading(view, request)
+    }
+    override fun onReceivedHttpError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        errorResponse: WebResourceResponse?
+    ) {
+        super.onReceivedHttpError(view, request, errorResponse)
+    }
+
+    override fun onReceivedError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?
+    ) {
+        super.onReceivedError(view, request, error)
+    }
+
+    override fun onReceivedSslError(
+        view: WebView?, handler: SslErrorHandler,
+        error: SslError?
+    ) {
+
+    }
+
+
+}
+
+class GmailLoadActivity : AppCompatActivity() {
+
+    var currentUrl: String = ""
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_gmail_load)
+        val btn: Button = findViewById<Button>(R.id.rrbtn)
+        //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
+        val db = Room.databaseBuilder(
+            applicationContext,
+            MailMoaJoDatabase::class.java,
+            "mailmoajo-database"
+        ).allowMainThreadQueries()
+//            .addMigrations(MIGRATION_2_3)
+            .build()
+
+        btn.setOnClickListener(View.OnClickListener {
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://www.googleapis.com")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -135,12 +230,51 @@ class myWebViewClient: WebViewClient(){
                                 Log.d("meow", response.body()?.messages.toString())
 //
                                 var gson = Gson()
+                                db.mailDao().resetmails()  //------------------------------------------------------------------------------reset mail db
                                 for (i:Int in 0 until 50){
                                     Log.w("meow", response.body()!!.messages[i].toString())
                                     val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
                                     Log.d("meow", stringtodataclass.id)
                                     Log.d("meow", stringtodataclass.threadId)
-                                    mailmail.add(mailId(stringtodataclass.id))
+
+
+                                    service.getMailData(
+                                        userid,
+                                        stringtodataclass.id,
+                                        "Bearer "+tokenprefs.getString("accesstoken","").toString(),
+                                    ).enqueue(object :Callback<gotMailData> {
+                                        override fun onResponse(call: Call<gotMailData>, response: Response<gotMailData>) {
+                                            Log.d("mailSingle",response.body().toString())
+//                                            val stringtodataclass2 = gson.fromJson(response.body()!!.payload.headers.toString(), gotMailData::class.java)
+
+                                            val subject = response.body()!!.payload.headers.find { it.name == "Subject" }?.value ?: "No Subject"
+
+                                            // From
+                                            val from = response.body()!!.payload.headers.find { it.name == "From" }?.value ?: "Unknown Sender"
+
+                                            // First Received header
+                                            val received = response.body()!!.payload.headers.firstOrNull { it.name == "Received" }?.value ?: "No Received Header"
+
+
+
+                                            db.mailDao().insert(mails(received,from,subject, 0))
+                                            Log.w("meow", subject)
+                                            Log.w("meow", from)
+                                            Log.w("meow", received)
+//                    val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
+//                    Log.d("meow", stringtodataclass.id)
+//                    Log.d("meow", stringtodataclass.threadId)
+//                    mailmail.add(mailId(stringtodataclass.id))
+                                            finish()
+                                        }
+
+                                        override fun onFailure(call: Call<gotMailData>, t: Throwable) {
+                                            Log.d("meow", "Failed API call with call: " + call +
+                                                    " + exception: " + t)
+                                        }
+
+
+                                    })
 //        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
                                 }
 //                    Log.i("meow",stringtodataclass.mailids.toString())
@@ -171,122 +305,6 @@ class myWebViewClient: WebViewClient(){
 
             })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                           //여기
-//            view?.goBack()
-        }
-    }
-//    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
-//        super.onPageStarted(view, url, favicon)
-//        Log.d("kkkk", "your current url when webpage loading..$url")
-////                url.spl
-//        if(url.equals("URL after user logged In")){
-//            //start new activity
-//        }
-//    }
-
-    override fun onPageFinished(view: WebView, url: String) {
-        Log.d("kkkk", "your current url when webpage loading.. finish$url")
-        super.onPageFinished(view, url)
-
-
-    }
-
-    override fun onLoadResource(view: WebView, url: String) {
-        Log.d("kkkk", "여기")
-        // TODO Auto-generated method stub
-        super.onLoadResource(view, url)
-    }
-
-    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-        println("when you click on any interlink on webview that time you got url :-${request?.url.toString()}")
-
-        return super.shouldOverrideUrlLoading(view, request)
-    }
-    override fun onReceivedHttpError(
-        view: WebView?,
-        request: WebResourceRequest?,
-        errorResponse: WebResourceResponse?
-    ) {
-        super.onReceivedHttpError(view, request, errorResponse)
-    }
-
-    override fun onReceivedError(
-        view: WebView?,
-        request: WebResourceRequest?,
-        error: WebResourceError?
-    ) {
-        super.onReceivedError(view, request, error)
-    }
-
-    override fun onReceivedSslError(
-        view: WebView?, handler: SslErrorHandler,
-        error: SslError?
-    ) {
-
-    }
-
-
-}
-
-class GmailLoadActivity : AppCompatActivity() {
-
-    var currentUrl: String = ""
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gmail_load)
-        val btn: Button = findViewById<Button>(R.id.rrbtn)
-        //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
-
-        btn.setOnClickListener(View.OnClickListener {
-
-            val userid =tokenprefs.getString("userid","").toString()
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://www.googleapis.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val service = retrofit.create(AccessToken::class.java)
-            service.getMailData(
-                userid,
-                mailmail[0].muteMail.toString(),
-                "Bearer "+tokenprefs.getString("accesstoken","").toString(),
-            ).enqueue(object :Callback<gotMailData> {
-                override fun onResponse(call: Call<gotMailData>, response: Response<gotMailData>) {
-                    Log.d("mailSingle",response.body().toString())
-
-                    var gson = Gson()
-                    Log.w("meow", response.body()!!.payload.headers[1].value)
-                    Log.w("meow", response.body()!!.payload.headers[2].value)
-                    Log.w("meow", response.body()!!.payload.headers[3].value)
-//                    val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
-//                    Log.d("meow", stringtodataclass.id)
-//                    Log.d("meow", stringtodataclass.threadId)
-//                    mailmail.add(mailId(stringtodataclass.id))
-                    finish()
-                }
-
-                override fun onFailure(call: Call<gotMailData>, t: Throwable) {
-                Log.d("meow", "Failed API call with call: " + call +
-                        " + exception: " + t)
-                }
-
-
-            })
 
 //            var input = HashMap<String, String>()
 //            input["code"] =  "4%2F0AeaYSHBYaXpqBjTXNc2yKRieyt_3TtZeCIUh0JxckUnBfaiRuRUjbRhGDWPXgrjjyOW70A"

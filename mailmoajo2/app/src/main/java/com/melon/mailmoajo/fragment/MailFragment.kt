@@ -62,6 +62,7 @@ class MailFragment ( position: Int) : Fragment() {
             activity.supportFragmentManager.popBackStack()
         })
 
+        mailmail = db.mailDao().getAll().toMutableList()
 
         binding!!.mailRcv.adapter = MailAdapter(mailmail)
         binding!!.mailRcv.layoutManager= LinearLayoutManager(context)

@@ -9,8 +9,8 @@ import entities.mails
 import entities.orderedMailFolders
 @Dao
 interface mailDao {
-//    @Query("SELECT * FROM mails")
-//    fun getAll(): List<mails>
+    @Query("SELECT * FROM mails")
+    fun getAll(): List<mails>
 
     @Insert
     fun insert(mails: mails)
@@ -23,4 +23,6 @@ interface mailDao {
 
     @Insert(entity = mails::class)
     fun init(mails: mails)
+    @Query("DELETE FROM contacts WHERE nId = 0")
+    fun resetmails()
 }

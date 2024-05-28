@@ -34,6 +34,7 @@ import com.microsoft.identity.client.SignInParameters
 import com.microsoft.identity.client.exception.MsalClientException
 import com.microsoft.identity.client.exception.MsalException
 import com.microsoft.identity.client.exception.MsalServiceException
+import entities.mails
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +50,7 @@ import java.util.Arrays
 import java.util.Base64
 
 
-var mailmail = mutableListOf<mailId>()
+var mailmail = mutableListOf<mails>()
 /**
  * A simple [Fragment] subclass.
  * Use the [SettingsFragment.newInstance] factory method to
