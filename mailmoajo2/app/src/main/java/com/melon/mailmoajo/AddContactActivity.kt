@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
+import com.melon.mailmoajo.HomeActivity.Companion.database
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
 import com.melon.mailmoajo.databinding.ActivityAddContactBinding
 import entities.contacts
@@ -51,12 +52,7 @@ class AddContactActivity : AppCompatActivity() {
             var newContact = contacts(name, google, outlook)
 
 //             싱글톤 패턴을 사용하지 않은 경우
-            val db = Room.databaseBuilder(
-                applicationContext,
-                MailMoaJoDatabase::class.java,
-                "mailmoajo-database"
-            ).allowMainThreadQueries()
-                .build()
+            val db = database(applicationContext)
 //            allowMainThreadQueries() // 그냥 강제로 실행
 //
 
