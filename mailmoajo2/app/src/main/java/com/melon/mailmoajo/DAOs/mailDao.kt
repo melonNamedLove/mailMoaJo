@@ -23,6 +23,7 @@ interface mailDao {
 
     @Insert(entity = mails::class)
     fun init(mails: mails)
-    @Query("DELETE FROM contacts WHERE nId = 0")
+
+    @Query("DELETE FROM mails")
     fun resetmails()
 }
