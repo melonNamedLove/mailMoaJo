@@ -348,7 +348,7 @@ class SettingsFragment : Fragment() {
                     TAG,
                     authenticationResult.accessToken.toString()
                 )
-                Log.d(TAG, "ID Token: " + authenticationResult.account.claims!!["id_token"])
+                Log.d(TAG, "ID Token: " + authenticationResult.account.idToken)
 
                 /* Update account */mAccount = authenticationResult.account
 
@@ -384,7 +384,8 @@ class SettingsFragment : Fragment() {
             authenticationResult.accessToken,
             com.android.volley.Response.Listener<JSONObject> { response -> /* Successfully called graph, process data and send to UI */
                 Log.d(TAG, "Response: $response")
-
+                for (i:Int in 0 until response.length()){
+                }
 //                displayGraphResult(response)
             },
             com.android.volley.Response.ErrorListener { error ->
