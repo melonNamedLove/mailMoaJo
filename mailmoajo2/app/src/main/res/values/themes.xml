@@ -2,7 +2,11 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Mailmoajo2" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/themeColor2</item>
+        <item name="colorPrimaryDark">@color/themeColor5</item>
+        <item name="colorAccent">@color/themeColor3</item>
+        <item name="android:windowBackground">@color/themeColor1</item>
+
     </style>
 
     <style name="Theme.Mailmoajo2" parent="Base.Theme.Mailmoajo2" />
