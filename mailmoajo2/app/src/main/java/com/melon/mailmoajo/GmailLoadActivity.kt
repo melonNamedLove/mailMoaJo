@@ -110,20 +110,78 @@ class myWebViewClient: WebViewClient(){
 
 class GmailLoadActivity : AppCompatActivity() {
 
-    var currentUrl: String = ""
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gmail_load)
         val btn: Button = findViewById<Button>(R.id.rrbtn)
         //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
         val db = database(applicationContext)
 
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://www.googleapis.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(AccessToken::class.java)
+
+        fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String) {
+            service.getMailData(userid, mailId, tokenWithBearer).enqueue(object : Callback<gotMailData> {
+                override fun onResponse(call: Call<gotMailData>, response: Response<gotMailData>) {
+                    response.body()?.let {
+                        val subject = it.payload.headers.find { header -> header.name == "Subject" }?.value ?: "No Subject"
+                        val from = EmailFormatter().extractEmail(it.payload.headers.find { header -> header.name == "From" }?.value ?: "Unknown Sender")
+                        val receivedHeader = it.payload.headers.firstOrNull { header -> header.name == "Received" }?.value ?: "No Received Header"
+                        val received = MailTimeFormatter().extractDateTime(receivedHeader)?.let { pacificTime ->
+                            MailTimeFormatter().convertToLocaleTime(pacificTime).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        } ?: "No valid datetime found in the input string."
+
+                        db.mailDao().insert(mails(received, from, subject, 0))
+                        Log.w("meow", "Subject: $subject, From: $from, Received: $received")
+                    }
+                }
+
+                override fun onFailure(call: Call<gotMailData>, t: Throwable) {
+                    Log.d("meow", "Failed API call with call: $call + exception: $t")
+                }
+            })
+        }
+        fun fetchMailList(userid: String, token: String, pageToken: String?) {
+            val tokenWithBearer = "Bearer $token"
+            service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object : Callback<gotMailList> {
+                override fun onResponse(call: Call<gotMailList>, response: Response<gotMailList>) {
+                    if (!response.isSuccessful) {
+                        Log.d("meow", "nope")
+                        response.errorBody()?.string()?.let { Log.d("meow", it) }
+                        return
+                    }
+
+                    val mailList = response.body()
+                    mailList?.messages?.forEach { message ->
+                        val gson = Gson()
+                        val stringToDataClass = gson.fromJson(message.toString(), mailData::class.java)
+                        fetchMailData(userid, stringToDataClass.id, tokenWithBearer)
+                    }
+
+                    // 다음 페이지가 있으면 재귀 호출
+                    val nextPageToken = mailList?.nextPageToken
+                    if (nextPageToken != null && nextPageToken.isNotEmpty()) {
+                        fetchMailList(userid, token, nextPageToken)
+                    } else {
+                        Log.d("meow", "모든 페이지 로딩 완료")
+                        finish()
+                    }
+                }
+
+                override fun onFailure(call: Call<gotMailList>, t: Throwable) {
+                    Log.d("meow", "Failed API call with call: $call + exception: $t")
+                }
+            })
+        }
+
+
         btn.setOnClickListener(View.OnClickListener {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://www.googleapis.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val service = retrofit.create(AccessToken::class.java)
             var accesscode = tokenprefs.getString("access_code","")
             accesscode = URLDecoder.decode(accesscode, "UTF-8")
             Log.i("meow",accesscode)
@@ -171,98 +229,11 @@ class GmailLoadActivity : AppCompatActivity() {
                         Log.i("meow",stringtodataclass.email)
                         tokenprefs.edit().putString("userid",stringtodataclass.email).apply()
 
-                        //json을 클래스로 변환
-                        val userid =tokenprefs.getString("userid","").toString()
-                        service.getMailList(
-                            userid,
-                            "Bearer "+tokenprefs.getString("accesstoken","").toString(),
-                        ).enqueue(object :Callback<gotMailList>{
-                            override fun onResponse(call: Call<gotMailList>, response: Response<gotMailList>) {
-                                Log.d("meow",  response.code().toString())
-                                if(response.isSuccessful.not()){
-                                    Log.d("meow", "nope")
-                                    Log.d("meow", response.errorBody()?.string()!!)
-                                    return
-                                }
-                                val msg =response.body()?.messages
-//                    msg?.get(0)
-                                Log.d("meow", response.body()?.messages.toString())
-//
-                                var gson = Gson()
-                                db.mailDao().resetmails()  //------------------------------------------------------------------------------reset mail db
-                                for (i:Int in 0 until 50){
-                                    Log.w("meow", response.body()!!.messages[i].toString())
-                                    val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
-                                    Log.d("meow", stringtodataclass.id)
-                                    Log.d("meow", stringtodataclass.threadId)
+                        db.mailDao().resetmails()  //------------------------------------------------------------------------------reset mail db
+                        var pageTokenString = ""
+                        var userid =  tokenprefs.getString("userid", "").toString()
 
-
-                                    service.getMailData(
-                                        userid,
-                                        stringtodataclass.id,
-                                        "Bearer "+tokenprefs.getString("accesstoken","").toString(),
-                                    ).enqueue(object :Callback<gotMailData> {
-                                        override fun onResponse(call: Call<gotMailData>, response: Response<gotMailData>) {
-                                            Log.d("mailSingle",response.body().toString())
-//                                            val stringtodataclass2 = gson.fromJson(response.body()!!.payload.headers.toString(), gotMailData::class.java)
-
-                                            val subject = response.body()!!.payload.headers.find { it.name == "Subject" }?.value ?: "No Subject"
-
-                                            // From
-                                            var from = ""
-                                            val EF = EmailFormatter()
-                                            from = EF.extractEmail(response.body()!!.payload.headers.find { it.name == "From" }?.value ?: "Unknown Sender")
-
-
-                                            // First Received header
-                                            var received =""
-                                            val MTF = MailTimeFormatter()
-                                            val pacificTime = MTF.extractDateTime(response.body()!!.payload.headers.firstOrNull { it.name == "Received" }?.value ?: "No Received Header")
-                                            if (pacificTime != null) {
-                                                val localTime = MTF.convertToLocaleTime(pacificTime)
-                                                received = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                                            } else {
-                                                println("No valid datetime found in the input string.")
-                                            }
-
-
-
-
-                                            db.mailDao().insert(mails(received,from,subject, 0))
-                                            Log.w("meow", subject)
-                                            Log.w("meow", from)
-                                            Log.w("meow", received)
-//                    val stringtodataclass = gson.fromJson(response.body()!!.messages[i].toString(), mailData::class.java)
-//                    Log.d("meow", stringtodataclass.id)
-//                    Log.d("meow", stringtodataclass.threadId)
-//                    mailmail.add(mailId(stringtodataclass.id))
-                                            finish()
-                                        }
-
-                                        override fun onFailure(call: Call<gotMailData>, t: Throwable) {
-                                            Log.d("meow", "Failed API call with call: " + call +
-                                                    " + exception: " + t)
-                                        }
-
-
-                                    })
-//        listData.add(ItemData(R.drawable.img1,"정석현","01077585738", 1))
-                                }
-//                    Log.i("meow",stringtodataclass.mailids.toString())
-//                    item.messages[0]
-
-
-
-
-                            }
-
-                            override fun onFailure(call: Call<gotMailList>, t: Throwable) {
-                                Log.d("meow", "Failed API call with call: " + call +
-                                        " + exception: " + t)
-                            }
-
-
-                        })
+                        fetchMailList(userid, tokenprefs.getString("accesstoken","").toString(), pageTokenString)
 
 
                     }
@@ -275,7 +246,6 @@ class GmailLoadActivity : AppCompatActivity() {
 
 
             })
-
 
 //            var input = HashMap<String, String>()
 //            input["code"] =  "4%2F0AeaYSHBYaXpqBjTXNc2yKRieyt_3TtZeCIUh0JxckUnBfaiRuRUjbRhGDWPXgrjjyOW70A"
@@ -405,7 +375,7 @@ class GmailLoadActivity : AppCompatActivity() {
 //        webView.webChromeClient = WebChromeClient()
 
 
-            
+
 
 
     }

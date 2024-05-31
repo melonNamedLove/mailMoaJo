@@ -33,11 +33,21 @@ interface AccessToken {
     fun getMailList(
         @Path("user_id") user_id:String,
         @Header("Authorization") Authorization:String,
+        @Query("pageToken") pageToken:String?,
         @Query("maxResults") maxResults:Int = 50,
         @Query("includeSpamTrash") includeSpamTrash:Boolean = false,
 
-    ): Call<gotMailList>
+        ): Call<gotMailList>
 
+//    @GET("/gmail/v1/users/{user_id}/messages")
+//    fun getMailList1(
+//        @Path("user_id") user_id:String,
+//        @Header("Authorization") Authorization:String,
+//        @Query("pageToken") pageToken:String?,
+//        @Query("maxResults") maxResults:Int = 50,
+//        @Query("includeSpamTrash") includeSpamTrash:Boolean = false,
+//
+//        ): Call<gotMailList>
 
     @GET("/gmail/v1/users/{user_id}/messages/{id}")
     fun getMailData(

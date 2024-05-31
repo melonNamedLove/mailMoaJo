@@ -57,7 +57,7 @@ data class payload_json(
 data class gotMailList(
 
     @SerializedName("messages") val messages:ArrayList<Any>,
-    @SerializedName("nextPageToken")val nextPageToken:String,
+    @SerializedName("nextPageToken")val nextPageToken:String?,
     @SerializedName("resultSizeEstimate")val resultSizeEstimate:Int
 
 )
