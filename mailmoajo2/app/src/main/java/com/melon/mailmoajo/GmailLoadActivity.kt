@@ -17,8 +17,8 @@ import com.google.gson.Gson
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.HomeActivity.Companion.database
 import com.melon.mailmoajo.dataclass.PostResult
-import com.melon.mailmoajo.dataclass.gotMailData
-import com.melon.mailmoajo.dataclass.gotMailList
+import com.melon.mailmoajo.dataclass.gotGMailData
+import com.melon.mailmoajo.dataclass.gotGMailList
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.payload_json
 import com.melon.mailmoajo.formatter.EmailFormatter
@@ -127,8 +127,8 @@ class GmailLoadActivity : AppCompatActivity() {
         val service = retrofit.create(AccessToken::class.java)
 
         fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String) {
-            service.getMailData(userid, mailId, tokenWithBearer).enqueue(object : Callback<gotMailData> {
-                override fun onResponse(call: Call<gotMailData>, response: Response<gotMailData>) {
+            service.getMailData(userid, mailId, tokenWithBearer).enqueue(object : Callback<gotGMailData> {
+                override fun onResponse(call: Call<gotGMailData>, response: Response<gotGMailData>) {
                     response.body()?.let {
                         val subject = it.payload.headers.find { header -> header.name == "Subject" }?.value ?: "No Subject"
                         val from = EmailFormatter().extractEmail(it.payload.headers.find { header -> header.name == "From" }?.value ?: "Unknown Sender")
@@ -142,15 +142,15 @@ class GmailLoadActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<gotMailData>, t: Throwable) {
+                override fun onFailure(call: Call<gotGMailData>, t: Throwable) {
                     Log.d("meow", "Failed API call with call: $call + exception: $t")
                 }
             })
         }
         fun fetchMailList(userid: String, token: String, pageToken: String?) {
             val tokenWithBearer = "Bearer $token"
-            service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object : Callback<gotMailList> {
-                override fun onResponse(call: Call<gotMailList>, response: Response<gotMailList>) {
+            service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object : Callback<gotGMailList> {
+                override fun onResponse(call: Call<gotGMailList>, response: Response<gotGMailList>) {
                     if (!response.isSuccessful) {
                         Log.d("meow", "nope")
                         response.errorBody()?.string()?.let { Log.d("meow", it) }
@@ -174,7 +174,7 @@ class GmailLoadActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<gotMailList>, t: Throwable) {
+                override fun onFailure(call: Call<gotGMailList>, t: Throwable) {
                     Log.d("meow", "Failed API call with call: $call + exception: $t")
                 }
             })

@@ -1,8 +1,8 @@
 package com.melon.mailmoajo
 
 import com.melon.mailmoajo.dataclass.PostResult
-import com.melon.mailmoajo.dataclass.gotMailData
-import com.melon.mailmoajo.dataclass.gotMailList
+import com.melon.mailmoajo.dataclass.gotGMailData
+import com.melon.mailmoajo.dataclass.gotGMailList
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -37,7 +37,7 @@ interface AccessToken {
         @Query("maxResults") maxResults:Int = 50,
         @Query("includeSpamTrash") includeSpamTrash:Boolean = false,
 
-        ): Call<gotMailList>
+        ): Call<gotGMailList>
 
 //    @GET("/gmail/v1/users/{user_id}/messages")
 //    fun getMailList1(
@@ -58,6 +58,6 @@ interface AccessToken {
         @Query("metadataHeaders") mheader1:String = "Subject",
         @Query("metadataHeaders") mheader2:String = "Received",
         @Query("metadataHeaders") mheader3:String = "From",
-    ): Call<gotMailData>
+    ): Call<gotGMailData>
 
 }

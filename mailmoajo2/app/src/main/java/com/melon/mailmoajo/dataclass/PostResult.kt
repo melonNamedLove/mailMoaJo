@@ -1,8 +1,6 @@
 package com.melon.mailmoajo.dataclass
 
-import android.R.id
 import com.google.gson.annotations.SerializedName
-import java.util.Objects
 
 
 data class PostResult (
@@ -54,7 +52,7 @@ data class payload_json(
 //    "iat": 1713797764,
 //    "exp": 1713801364
 //}
-data class gotMailList(
+data class gotGMailList(
 
     @SerializedName("messages") val messages:ArrayList<Any>,
     @SerializedName("nextPageToken")val nextPageToken:String?,
@@ -62,7 +60,7 @@ data class gotMailList(
 
 )
 
-data class gotMailData(
+data class gotGMailData(
     val historyId: String,
     val id: String,
     val internalDate: String,
@@ -81,4 +79,29 @@ data class Payload(
 data class Header(
     val name: String,
     val value: String
+)
+
+
+data class gotOutlookMail(
+
+    @SerializedName("@odata.context") val datacontext:String,
+    @SerializedName("@odata.nextLink") val nextLink:String,
+    @SerializedName("value") val value:List<Value>
+)
+
+data class Value(
+    @SerializedName("@odata.etag") val etag:String,
+    @SerializedName("id") val valueid:String,
+    @SerializedName("receivedDateTime") val receivedDateTime:String,
+    @SerializedName("subject") val subject:String,
+    @SerializedName("sender") val sender:Sender
+)
+
+data class Sender(
+    val emailAddress: EmailAddress
+)
+
+data class EmailAddress(
+    val address: String,
+    val name: String
 )

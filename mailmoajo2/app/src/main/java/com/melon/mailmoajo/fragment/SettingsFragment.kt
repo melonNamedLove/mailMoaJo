@@ -11,19 +11,14 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.fragment.app.Fragment
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.gson.Gson
-import com.melon.mailmoajo.AccessToken
 import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
-import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.MSGraphRequestWrapper
 import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
-import com.melon.mailmoajo.dataclass.PostResult
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
-import com.melon.mailmoajo.dataclass.mailData
-import com.melon.mailmoajo.dataclass.mailId
-import com.melon.mailmoajo.dataclass.gotMailList
-import com.melon.mailmoajo.dataclass.payload_json
+import com.melon.mailmoajo.dataclass.Value
+import com.melon.mailmoajo.dataclass.gotOutlookMail
 import com.melon.mailmoajo.supabase
 import com.microsoft.identity.client.AuthenticationCallback
 import com.microsoft.identity.client.IAccount
@@ -40,14 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.net.URLDecoder
 import java.util.Arrays
-import java.util.Base64
 
 
 var mailmail = mutableListOf<mails>()
@@ -60,6 +48,18 @@ class SettingsFragment : Fragment() {
     /* Azure AD Variables */
     private var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
     private var mAccount: IAccount? = null
+
+    fun handleMailData(data: gotOutlookMail) {
+        // gotOutlookMail 데이터를 처리하는 코드
+        Log.d(TAG, "Received mail data: $data")
+
+//        data.nextLink
+    }
+
+    fun handleMailDataError(error: Throwable) {
+        // 에러 처리 코드
+        Log.e(TAG, "Error receiving mail data: $error")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,83 +81,17 @@ class SettingsFragment : Fragment() {
             var i: Intent = Intent(context, GmailLoadActivity::class.java)
             startActivity(i)
         }
-
-//        binding.retro2Btn.setOnClickListener{
-//
-//
-//
-//        }
-//
-//
-//        //access token load 부
-//        binding.retroBtn.setOnClickListener{
-//
-//
-////            AccessToken.create().postAccessToken(
-////                accesscode.toString(),
-////                "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
-////                "https://www.googleapis.com/auth/gmail.readonly",
-////                "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",
-////                "http://localhost:5500/test.html",
-////                "authorization_code"
-////            ).enqueue(object : Callback<PostResult>{
-////                override fun onResponse(call: Call<PostResult>, response: Response<PostResult>) {
-////                    if(response.isSuccessful.not()){
-////                        Log.d("meow", "nope")
-////                        return
-////                    }
-////
-////                        Log.d("meow", response.body()?.access_token.toString())
-////
-////                }
-////
-////                override fun onFailure(call: Call<PostResult>, t: Throwable) {
-////                    Log.d("meow", "fail")
-////                }
-////            }
-////
-////            )
-//        }
-
         binding.logoutBtn.setOnClickListener{
 
 
             CoroutineScope(Dispatchers.Default).launch{
                 try {
-//                    val result = credentialManager.getCredential(
-//                        request = request,
-//                        context = requireContext()
-//                    )
-//                    val credential = result.credential
 //
-//                    val googleIdTokenCredential = GoogleIdTokenCredential
-//                        .createFrom(credential.data)
-//
-//                    val googleIdToken = googleIdTokenCredential.idToken
-//                    Log.i("meow", googleIdTokenCredential.id)                //google email
-//                    googleIdTokenCredential.displayName
-//                    googleIdTokenCredential
-//                    supabase.auth.signInWith(IDToken){              //supabase  auth
-//                        idToken = googleIdToken
-//                        provider = Google
-//                        nonce = rawNonce
-//                    }
-//                    Log.d("meow",supabase.auth.currentIdentitiesOrNull().toString())
                     prefs.edit().remove("loginData").commit()
                     Log.i("meow", prefs.getString("loginData","").toString()+"로그아웃")
                     supabase.auth.signOut()
                     var i: Intent = Intent(context, GoogleSignInActivity::class.java)
                     startActivity(i)
-//                Log.i("meow", googleIdToken)
-//                var tempLoginFile=File.createTempFile("loginTF", null, context.cacheDir)
-//                    val cacheFile = File(requireContext().cacheDir, "loginTF")
-//                    val outputStream = FileOutputStream(cacheFile)
-//                    outputStream.write("false".toByteArray())
-//                    outputStream.close()
-
-//                tempLoginFile.writeText(true.toString())
-//                var prefLoginTF = context.getSharedPreferences("loginTF", MODE_PRIVATE)
-//                prefLoginTF.edit().putBoolean("login",true)
                     Toast.makeText(context,"You signed out", Toast.LENGTH_SHORT).show()
                 }catch (e: GetCredentialException){
                     Log.i("meow", e.toString())
@@ -188,10 +122,10 @@ class SettingsFragment : Fragment() {
             })
 
         val scopes:Array<String> = arrayOf(
-                "Mail.Read",
-                "email",
-                "User.Read"
-                )
+            "Mail.Read",
+            "email",
+            "User.Read"
+        )
 
 
 
@@ -227,6 +161,8 @@ class SettingsFragment : Fragment() {
             }
         })
         })
+
+        Log.d("meow",_gotOutLookMail.toString())
         return binding.root
     }
     private val authInteractiveCallback: AuthenticationCallback
@@ -238,12 +174,26 @@ class SettingsFragment : Fragment() {
                     TAG,
                     authenticationResult.accessToken.toString()
                 )
-                Log.d(TAG, "ID Token: " + authenticationResult.account.idToken)
+                Log.d(TAG, "ID Token: " + authenticationResult.account.claims!!["id_token"])
 
                 /* Update account */mAccount = authenticationResult.account
 
-                /* call graph */callGraphAPI(authenticationResult, defaultGraphResourceUrl)
-                /* call graph */callGraphAPI(authenticationResult, defaultGraphResourceUrl+"/messages?\$select=sender,subject,receivedDateTime")
+                val olMailAPIUrl = "$defaultGraphResourceUrl/messages?\$select=sender,subject,receivedDateTime"
+
+                callGraphAPI(
+                    authenticationResult,
+                    olMailAPIUrl,
+                    {result->
+                        Log.d(TAG, result.toString())
+                        handleMailData(result) // Fragment의 메서드 호출
+                    },
+                    {error ->
+                        Log.e(TAG, "Failed to call API: $error")
+                        handleMailDataError(error) // Fragment의 메서드 호출
+
+                    }
+                )
+
             }
 
             override fun onError(exception: MsalException) {
@@ -267,14 +217,21 @@ class SettingsFragment : Fragment() {
         }
 
     val defaultGraphResourceUrl = MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT + "v1.0/me"
-    private fun callGraphAPI(authenticationResult: IAuthenticationResult, url: String) {
+    private fun callGraphAPI(authenticationResult: IAuthenticationResult, url: String,
+                             onResponse: (gotOutlookMail) -> Unit,
+                             onError: (Throwable) -> Unit
+    ) {
         callGraphAPIUsingVolley(
             requireContext(),
             url,
             authenticationResult.accessToken,
-            com.android.volley.Response.Listener<JSONObject> { response -> /* Successfully called graph, process data and send to UI */
-                Log.d(TAG, "Response: $response")
-                for (i:Int in 0 until response.length()){
+            com.android.volley.Response.Listener{ response -> /* Successfully called graph, process data and send to UI */
+                try {
+                    val gson = Gson()
+                    val result = gson.fromJson(response.toString(), gotOutlookMail::class.java)
+                    onResponse(result)
+                } catch (e: Exception) {
+                    onError(e)
                 }
 //                displayGraphResult(response)
             },
@@ -282,6 +239,8 @@ class SettingsFragment : Fragment() {
                 Log.d(TAG, "Error: $error")
 //                displayError(error)
             })
+
+
     }
     private fun showToastOnSignOut() {
         val signOutText = "Signed Out."
@@ -291,5 +250,7 @@ class SettingsFragment : Fragment() {
 
     companion object {
         private val TAG = SettingsFragment::class.java.simpleName
+
+        private var _gotOutLookMail:gotOutlookMail = gotOutlookMail("","",listOf<Value>())
     }
 }
