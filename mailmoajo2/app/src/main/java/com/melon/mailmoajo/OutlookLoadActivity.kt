@@ -9,6 +9,9 @@ import com.android.volley.Response
 import com.google.gson.Gson
 import com.melon.mailmoajo.databinding.ActivityOutlookLoadBinding
 import com.melon.mailmoajo.dataclass.gotOutlookMail
+import com.melon.mailmoajo.fragment.SettingsFragment
+import com.melon.mailmoajo.fragment.SettingsFragment.Companion.mAccount
+import com.melon.mailmoajo.fragment.SettingsFragment.Companion.mSingleAccountApp
 import com.microsoft.identity.client.AuthenticationCallback
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.IAuthenticationResult
@@ -25,9 +28,6 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
     private lateinit var binding: ActivityOutlookLoadBinding
 
     companion object {
-        /* Azure AD Variables */
-        var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
-        var mAccount: IAccount? = null
         private const val TAG = "OutlookLoadActivity"
     }
 
@@ -44,37 +44,24 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
         enableEdgeToEdge()
 
         binding.outlookprogressbar.visibility = View.GONE
+        val scopes = arrayOf(
+            "Mail.Read",
+            "email",
+            "User.Read"
+        )
 
-        // MSAL 설정
-        com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
-            this,
-            com.melon.mailmoajo.R.raw.msalconfiguration,
-            object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
-                override fun onCreated(application: ISingleAccountPublicClientApplication) {
-                    mSingleAccountApp = application
-
-                    val scopes = arrayOf(
-                        "Mail.Read",
-                        "email",
-                        "User.Read"
-                    )
-
-                    val signInParameters: SignInParameters = SignInParameters.builder()
-                        .withActivity(this@OutlookLoadActivity)
-                        .withLoginHint(null)
-                        .withScopes(scopes.toList())
+        val signInParameters: SignInParameters = SignInParameters.builder()
+            .withActivity(this)
+            .withLoginHint(null)
+            .withScopes(scopes.toList())
                         .withCallback(authInteractiveCallback)
-                        .build()
+            .build()
 
-                    // mSingleAccountApp 체크 후 signIn 호출
-                    mSingleAccountApp?.signIn(signInParameters)
-                        ?: Log.e(TAG, "mSingleAccountApp is null")
-                }
 
-                override fun onError(exception: MsalException?) {
-                    Log.d(TAG, exception.toString())
-                }
-            })
+        // mSingleAccountApp 체크 후 signIn 호출
+        mSingleAccountApp?.signIn(signInParameters)
+            ?: Log.e(TAG, "mSingleAccountApp is null")
+
     }
 
     private val authInteractiveCallback: AuthenticationCallback
@@ -102,6 +89,8 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
                         onMailDataError(error)
                     }
                 )
+
+
             }
 
             override fun onError(exception: MsalException) {

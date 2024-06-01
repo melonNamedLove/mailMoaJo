@@ -20,8 +20,6 @@ import com.melon.mailmoajo.HomeActivity.Companion.database
 import com.melon.mailmoajo.MSGraphRequestWrapper
 import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
 import com.melon.mailmoajo.OutlookLoadActivity
-import com.melon.mailmoajo.OutlookLoadActivity.Companion.mAccount
-import com.melon.mailmoajo.OutlookLoadActivity.Companion.mSingleAccountApp
 import com.melon.mailmoajo.databinding.FragmentSettingsBinding
 import com.melon.mailmoajo.dataclass.Value
 import com.melon.mailmoajo.dataclass.gotOutlookMail
@@ -53,6 +51,14 @@ var mailmail = mutableListOf<mails>()
  */
 class SettingsFragment : Fragment(){
 
+    companion object {
+        /* Azure AD Variables */
+        var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
+        var mAccount: IAccount? = null
+        private val TAG = SettingsFragment::class.java.simpleName
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,6 +75,7 @@ class SettingsFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentSettingsBinding.inflate(layoutInflater)
+// MSAL 설정
 
         binding.gmailLoadBtn.setOnClickListener{
             var i: Intent = Intent(context, GmailLoadActivity::class.java)
@@ -100,19 +107,31 @@ class SettingsFragment : Fragment(){
         }
 
 
+        com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
+            requireContext(),
+            com.melon.mailmoajo.R.raw.msalconfiguration,
+            object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
+                override fun onCreated(application: ISingleAccountPublicClientApplication) {
+                    mSingleAccountApp = application
 
 
+                }
+
+                override fun onError(exception: MsalException?) {
+                    Log.d(TAG, exception.toString())
+                }
+            })
 
 
         binding.MSloadBtn.setOnClickListener {
-            if(mSingleAccountApp ==null){
+            if(mSingleAccountApp ==null){ }
 
                 // ProgressActivity로 이동
                 val intent = Intent(context, OutlookLoadActivity::class.java).apply {
 //                    putExtra("TOKEN", _OLtoken)
                 }
                 startActivity(intent)
-            }
+
 
         }
         binding.MSsignoutBtn.setOnClickListener( {
@@ -148,9 +167,4 @@ class SettingsFragment : Fragment(){
     }
 
 
-
-    companion object {
-        private val TAG = SettingsFragment::class.java.simpleName
-
-    }
 }
