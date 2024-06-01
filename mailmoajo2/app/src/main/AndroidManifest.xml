@@ -17,6 +17,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="26">
         <activity
+            android:name=".OutlookLoadActivity"
+            android:exported="false">
+
+        </activity>
+        <activity
             android:name=".AddContactActivity"
             android:exported="false" />
 
@@ -58,7 +63,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -66,6 +70,7 @@
                     android:host="com.melon.mailmoajo"
                     android:path="/yG7xh+P47vHoeLFfL//4ro3XLfc="
                     android:scheme="msauth" />
+
             </intent-filter>
         </activity>
     </application>

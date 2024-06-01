@@ -32,6 +32,8 @@ import com.melon.mailmoajo.fragment.ContactFragment
 import com.melon.mailmoajo.fragment.MailFolderFragment
 import com.melon.mailmoajo.fragment.MailFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
+import com.microsoft.identity.client.IAccount
+import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import entities.contacts
 import entities.orderedMailFolders
 import io.ktor.util.reflect.instanceOf
@@ -39,7 +41,7 @@ import io.ktor.util.reflect.instanceOf
 var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
 class HomeActivity : AppCompatActivity() {
-    companion object{
+    companion object {
         fun database(context: Context):MailMoaJoDatabase{
 
             val db = Room.databaseBuilder(

@@ -33,3 +33,21 @@ data class mails(
     @ColumnInfo(name = "mailfolderid") var mailfolderid: Int
 ){@PrimaryKey(autoGenerate = true) var nId: Int = 0
 }
+
+@Entity
+data class Gmails(
+    @ColumnInfo(name = "receivedTime") var receivedTime: String,
+    @ColumnInfo(name = "sender") var sender: String,
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "mailfolderid") var mailfolderid: Int
+){@PrimaryKey(autoGenerate = true) var nId: Int = 0
+}
+
+@Entity
+data class OutlookMails(
+    @ColumnInfo(name = "receivedTime") var receivedTime: String,
+    @ColumnInfo(name = "sender") var sender: String,
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "mailfolderid") var mailfolderid: Int
+){@PrimaryKey(autoGenerate = true) var nId: Int = 0
+}
