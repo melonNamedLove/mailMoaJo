@@ -85,7 +85,7 @@ data class Header(
 data class gotOutlookMail(
 
     @SerializedName("@odata.context") val datacontext:String,
-    @SerializedName("@odata.nextLink") val nextLink:String,
+    @SerializedName("@odata.nextLink") val nextLink:String?,
     @SerializedName("value") val value:List<Value>
 )
 
