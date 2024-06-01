@@ -5,26 +5,26 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import entities.mails
+import entities.Gmails
 
 @Dao
 interface GmailDao {
 
-    @Query("SELECT * FROM mails")
-    fun getAll(): List<mails>
+    @Query("SELECT * FROM Gmails")
+    fun getAll(): List<Gmails>
 
     @Insert
-    fun insert(mails: mails)
+    fun insert(mails: Gmails)
 
     @Update
-    fun update(mails: mails)
+    fun update(mails: Gmails)
 
     @Delete
-    fun delete(mails: mails)
+    fun delete(mails: Gmails)
 
-    @Insert(entity = mails::class)
-    fun init(mails: mails)
+    @Insert(entity = Gmails::class)
+    fun init(mails: Gmails)
 
-    @Query("DELETE FROM mails")
+    @Query("DELETE FROM Gmails")
     fun resetmails()
 }
