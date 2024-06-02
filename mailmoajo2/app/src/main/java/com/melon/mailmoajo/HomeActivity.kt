@@ -21,12 +21,18 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.Gson
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.adapter.ContactItemOnClick
 import com.melon.mailmoajo.adapter.MailFolderAdapter
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
+import com.melon.mailmoajo.dataclass.gotGMailData
+import com.melon.mailmoajo.dataclass.gotGMailList
+import com.melon.mailmoajo.dataclass.mailData
+import com.melon.mailmoajo.formatter.EmailFormatter
+import com.melon.mailmoajo.formatter.MailTimeFormatter
 import com.melon.mailmoajo.fragment.ContactDetailFragment
 import com.melon.mailmoajo.fragment.ContactFragment
 import com.melon.mailmoajo.fragment.MailFolderFragment
@@ -34,9 +40,15 @@ import com.melon.mailmoajo.fragment.MailFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
+import entities.Gmails
 import entities.contacts
 import entities.orderedMailFolders
 import io.ktor.util.reflect.instanceOf
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
@@ -190,19 +202,22 @@ class HomeActivity : AppCompatActivity() {
         binding.fab.setOnClickListener{
             if (binding.fab.text.equals("동기화")){
 
-                //gmail이 비어있을 경우
-                //outlook이 비어있을 경우
-                //아무것도 없을 경우
-                //둘 다 있을 경우
+
+
                 val gmailCount:Int = db.gmailDao().getGmailCount()
                 val outlookCount:Int = db.outlookDao().getOutlookCount()
-                if(gmailCount>0 && outlookCount>0){
+                if(gmailCount>0 && outlookCount>0){//둘 다 있을 경우
 
-                } else if(gmailCount ==0  || outlookCount==0){
+                    Log.d("wow", TokenManager(this).getRefreshToken().toString())
+                TokenManager(this).refreshAccessToken()
+                } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
+                    Log.d("wow", TokenManager(this).getRefreshToken().toString())
+                TokenManager(this).refreshAccessToken()
 
-                }else if(gmailCount ==0  && outlookCount==0){
+                }else if(gmailCount==0  || outlookCount>0){//outlook만 load됐을 때
+                }else if(gmailCount ==0  && outlookCount==0){//아무것도 없을 경우
                     Log.d("meow","로그인부터 하슈")
-                }else{
+                }else{//이상한놈
                     Log.d("meow","뭔가 잘못됐다!")
                 }
 
@@ -229,6 +244,69 @@ class HomeActivity : AppCompatActivity() {
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
 
+    }
+
+    //gmail reload로직
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://www.googleapis.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val service = retrofit.create(ApiService::class.java)
+
+    fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String) {
+        service.getMailData(userid, mailId, tokenWithBearer).enqueue(object :
+            Callback<gotGMailData> {
+            override fun onResponse(call: Call<gotGMailData>, response: Response<gotGMailData>) {
+                response.body()?.let {
+                    val subject = it.payload.headers.find { header -> header.name == "Subject" }?.value ?: "No Subject"
+                    val from = EmailFormatter().extractEmail(it.payload.headers.find { header -> header.name == "From" }?.value ?: "Unknown Sender")
+                    val receivedHeader = it.payload.headers.firstOrNull { header -> header.name == "Received" }?.value ?: "No Received Header"
+                    val received = MailTimeFormatter().extractDateTime(receivedHeader)?.let { pacificTime ->
+                        MailTimeFormatter().convertToLocaleTimeAndFormat(pacificTime)
+                    } ?: "0000-00-00 00:00:00"
+
+//                    db.gmailDao().insert(Gmails(received, from, subject, 0))
+                    Log.w("meow", "Subject: $subject, From: $from, Received: $received")
+                }
+            }
+
+            override fun onFailure(call: Call<gotGMailData>, t: Throwable) {
+                Log.d("meow", "Failed API call with call: $call + exception: $t")
+            }
+        })
+    }
+    fun fetchMailList(userid: String, token: String, pageToken: String?) {
+        val tokenWithBearer = "Bearer $token"
+        service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object :
+            Callback<gotGMailList> {
+            override fun onResponse(call: Call<gotGMailList>, response: Response<gotGMailList>) {
+                if (!response.isSuccessful) {
+                    Log.d("meow", "nope")
+                    response.errorBody()?.string()?.let { Log.d("meow", it) }
+                    return
+                }
+
+                val mailList = response.body()
+                mailList?.messages?.forEach { message ->
+                    val gson = Gson()
+                    val stringToDataClass = gson.fromJson(message.toString(), mailData::class.java)
+                    fetchMailData(userid, stringToDataClass.id, tokenWithBearer)
+                }
+
+                // 다음 페이지가 있으면 재귀 호출
+                val nextPageToken = mailList?.nextPageToken
+                if (nextPageToken != null && nextPageToken.isNotEmpty()) {
+                    fetchMailList(userid, token, nextPageToken)
+                } else {
+                    Log.d("meow", "모든 페이지 로딩 완료")
+                    finish()
+                }
+            }
+
+            override fun onFailure(call: Call<gotGMailList>, t: Throwable) {
+                Log.d("meow", "Failed API call with call: $call + exception: $t")
+            }
+        })
     }
 
 }

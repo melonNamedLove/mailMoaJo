@@ -135,7 +135,7 @@ class GmailLoadActivity : AppCompatActivity() {
                         val receivedHeader = it.payload.headers.firstOrNull { header -> header.name == "Received" }?.value ?: "No Received Header"
                         val received = MailTimeFormatter().extractDateTime(receivedHeader)?.let { pacificTime ->
                             MailTimeFormatter().convertToLocaleTimeAndFormat(pacificTime)
-                        } ?: "No valid datetime found in the input string."
+                        } ?: "0000-00-00 00:00:00"
 
                         db.gmailDao().insert(Gmails(received, from, subject, 0))
                         Log.w("meow", "Subject: $subject, From: $from, Received: $received")

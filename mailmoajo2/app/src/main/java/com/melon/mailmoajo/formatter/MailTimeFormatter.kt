@@ -8,7 +8,7 @@ import java.util.Locale
 class MailTimeFormatter {
     fun extractDateTime(input: String): String? {
         val isoRegex = """\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z""".toRegex()
-        val gmailTZRegex = """\b\w{3},\s\d{1,2}\s\w{3}\s\d{4}\s\d{2}:\d{2}:\d{2}\s-\d{4}\b""".toRegex()
+        val gmailTZRegex = """\b\w{3},\s\d{1,2}\s\w{3}\s\d{4}\s\d{2}:\d{2}:\d{2}\s[-+]\d{4}\b""".toRegex()
 
         val isoMatch = isoRegex.find(input)
         val gmailTZMatch = gmailTZRegex.find(input)
@@ -16,8 +16,8 @@ class MailTimeFormatter {
         return isoMatch?.value ?: gmailTZMatch?.value
     }
 
-    fun convertToLocaleTimeAndFormat(dateTime: String): String  {
-        val OFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH)
+    fun convertToLocaleTimeAndFormat(dateTime: String): String {
+        val OFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH)
         val Gformatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
 
         val zonedDateTime = try {

@@ -9,6 +9,7 @@ import com.android.volley.Response
 import com.google.gson.Gson
 import com.melon.mailmoajo.databinding.ActivityOutlookLoadBinding
 import com.melon.mailmoajo.dataclass.gotOutlookMail
+import com.melon.mailmoajo.formatter.MailTimeFormatter
 import com.melon.mailmoajo.fragment.SettingsFragment
 import com.melon.mailmoajo.fragment.SettingsFragment.Companion.mAccount
 import com.melon.mailmoajo.fragment.SettingsFragment.Companion.mSingleAccountApp
@@ -49,7 +50,7 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
             "Mail.Read",
             "email",
             "User.Read",
-            "offline_access"
+//            "offline_access"
         )
 
         val signInParameters: SignInParameters = SignInParameters.builder()
@@ -166,12 +167,21 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
     private fun saveMailDataToDatabase(data: gotOutlookMail) {
         val db = HomeActivity.database(this)
         data.value.forEach { mail ->
+
+            val received = MailTimeFormatter().extractDateTime(mail.receivedDateTime)
+            val formatted = MailTimeFormatter().convertToLocaleTimeAndFormat(received!!)
+            Log.d("wow", formatted)
+
             val mailEntity = OutlookMails(
                 title = mail.subject,
-                receivedTime = mail.receivedDateTime,
+                receivedTime = formatted,
                 sender = mail.sender.emailAddress.address,
                 mailfolderid = 0
             )
+//            Log.d("wow", mailEntity.receivedTime.toString())
+//
+//            Log.d("wow", MailTimeFormatter().convertToLocaleTimeAndFormat(received!!).toString())
+
             db.outlookDao().insert(mailEntity)
             remainingMails-- // 저장할 메일 수를 감소
             checkIfAllMailsSaved() // 메일 저장이 완료되었는지 확인
