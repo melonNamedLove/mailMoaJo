@@ -8,6 +8,8 @@ data class PostResult (
 
     @SerializedName("expires_in") var expires_in:Int,
 
+    @SerializedName("refresh_token") var refresh_token:String,
+
     @SerializedName("scope") var scope:String,
 
     @SerializedName("token_type") var token_type:String,
@@ -17,6 +19,16 @@ data class PostResult (
 )
 
 
+data class RefAccessTokenResult (
+    @SerializedName("access_token") var access_token:String,
+
+    @SerializedName("expires_in") var expires_in:Int,
+
+    @SerializedName("scope") var scope:String,
+
+    @SerializedName("token_type") var token_type:String,
+
+)
 //{
 //    "access_token": "ya29.a0Ad52N39WdUB5YuJC3PB-zBWbLrG1MzgW1faw9LaHYP_Xx-l7kF_aygAWw_RUP12VfqWsng_l5pNQ_kPix6123YlJh5XsoqFo4e6IrY6dZozgSgclm0mwTRWiTm6Q6e4exInSsye-i3NZG25cvMosc7Nv-aEr-7q85S6eaCgYKATgSARISFQHGX2MiQqlEZHeVyr_SUiExPgnqzA0171",
 //    "expires_in": 3599,

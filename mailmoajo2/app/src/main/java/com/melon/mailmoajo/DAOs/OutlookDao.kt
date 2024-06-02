@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import entities.Gmails
 import entities.OutlookMails
 
 @Dao
@@ -27,4 +28,12 @@ interface OutlookDao {
 
     @Query("DELETE FROM OutlookMails")
     fun resetmails()
+
+
+    @Query("SELECT COUNT(*) FROM OutlookMails")
+    fun getOutlookCount(): Int
+
+
+    @Query("SELECT * FROM OutlookMails ORDER BY receivedTime DESC LIMIT 1")
+    fun getMostRecentMail(): OutlookMails?
 }
