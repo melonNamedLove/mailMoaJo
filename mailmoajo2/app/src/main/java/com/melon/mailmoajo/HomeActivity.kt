@@ -3,6 +3,7 @@ package com.melon.mailmoajo
 import android.app.ActionBar.DISPLAY_SHOW_CUSTOM
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,9 +17,12 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import androidx.room.migration.Migration
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
@@ -44,6 +48,10 @@ import entities.Gmails
 import entities.contacts
 import entities.orderedMailFolders
 import io.ktor.util.reflect.instanceOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -197,29 +205,57 @@ class HomeActivity : AppCompatActivity() {
 
 //            binding.contactRcv.adapter!!.notifyDataSetChanged()
         }
+        fun getEncryptedSharedPreferences(): SharedPreferences {
+            val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
+            return EncryptedSharedPreferences.create(
+                "encrypted_prefs",
+                masterKeyAlias,
+                this@HomeActivity,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
         //fab onclicklistener 설정
         binding.fab.setOnClickListener{
             if (binding.fab.text.equals("동기화")){
+                CoroutineScope(Dispatchers.IO).launch {
+                    val gmailCount:Int = db.gmailDao().getGmailCount()
+                    val outlookCount:Int = db.outlookDao().getOutlookCount()
+                        if(gmailCount>0 && outlookCount>0){//둘 다 있을 경우
+                            Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
+
+                            val tokenRefreshed = TokenManager(this@HomeActivity).refreshAccessTokenSuspend()
+                            withContext(Dispatchers.Main){
+                                if (tokenRefreshed) {
+                                    val sharedPreferences = TokenManager(this@HomeActivity).getEncryptedSharedPreferences()
+                                    val token = sharedPreferences.getString("access_token", null)
+                                    val latestGmail: Gmails = db.gmailDao().getMostRecentMail() ?: Gmails("0000-00-00 00:00:00", "not Found", "not Found", 0)
+                                    Log.d("wow", latestGmail.toString())
+                                    fetchMailList_toUpdate(token = token!!, userid = tokenprefs.getString("userid", "").toString(), latestMail = latestGmail, pageToken = "")
+                                } else {
+                                    Log.d("wow", "토큰 갱신 실패")
+                                }
+                            }
+
+                        } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
+                            Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
+//                            TokenManager(this@HomeActivity).refreshAccessToken()
+//                            val latestGmail:Gmails = db.gmailDao().getMostRecentMail()?:Gmails("0000-00-00 00:00:00","not Found","not Found",0)
+
+                        }else if(gmailCount==0  || outlookCount>0){//outlook만 load됐을 때
+
+
+                        }else if(gmailCount ==0  && outlookCount==0){//아무것도 없을 경우
+                            Log.d("meow","로그인부터 하슈")
+                        }else{//이상한놈
+                            Log.d("meow","뭔가 잘못됐다!")
+                        }
 
 
 
-                val gmailCount:Int = db.gmailDao().getGmailCount()
-                val outlookCount:Int = db.outlookDao().getOutlookCount()
-                if(gmailCount>0 && outlookCount>0){//둘 다 있을 경우
-
-                    Log.d("wow", TokenManager(this).getRefreshToken().toString())
-                TokenManager(this).refreshAccessToken()
-                } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
-                    Log.d("wow", TokenManager(this).getRefreshToken().toString())
-                TokenManager(this).refreshAccessToken()
-
-                }else if(gmailCount==0  || outlookCount>0){//outlook만 load됐을 때
-                }else if(gmailCount ==0  && outlookCount==0){//아무것도 없을 경우
-                    Log.d("meow","로그인부터 하슈")
-                }else{//이상한놈
-                    Log.d("meow","뭔가 잘못됐다!")
                 }
+
 
 
 
@@ -245,6 +281,9 @@ class HomeActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
 
     }
+    var sync_count = 0
+
+
 
     //gmail reload로직
     val retrofit = Retrofit.Builder()
@@ -253,7 +292,7 @@ class HomeActivity : AppCompatActivity() {
         .build()
     val service = retrofit.create(ApiService::class.java)
 
-    fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String) {
+    fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String, latestMail: Gmails, onNewMailFetched: (Boolean) -> Unit) {
         service.getMailData(userid, mailId, tokenWithBearer).enqueue(object :
             Callback<gotGMailData> {
             override fun onResponse(call: Call<gotGMailData>, response: Response<gotGMailData>) {
@@ -265,8 +304,16 @@ class HomeActivity : AppCompatActivity() {
                         MailTimeFormatter().convertToLocaleTimeAndFormat(pacificTime)
                     } ?: "0000-00-00 00:00:00"
 
-//                    db.gmailDao().insert(Gmails(received, from, subject, 0))
                     Log.w("meow", "Subject: $subject, From: $from, Received: $received")
+                    if(subject == latestMail.title && from == latestMail.sender && received == latestMail.receivedTime){
+                        Log.d("wow","no new mail")
+                        onNewMailFetched(false) // 새로운 메일이 없음
+                    }else{
+                        database(this@HomeActivity).gmailDao().insert(Gmails(received, from, subject, 0))
+                        Log.d("wow"," new mail!")
+                        onNewMailFetched(true) // 새로운 메일이 있음
+                    }
+
                 }
             }
 
@@ -275,7 +322,7 @@ class HomeActivity : AppCompatActivity() {
             }
         })
     }
-    fun fetchMailList(userid: String, token: String, pageToken: String?) {
+    fun fetchMailList_toUpdate(userid: String, token: String, pageToken: String?, latestMail:Gmails) {
         val tokenWithBearer = "Bearer $token"
         service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object :
             Callback<gotGMailList> {
@@ -286,23 +333,44 @@ class HomeActivity : AppCompatActivity() {
                     return
                 }
 
+
                 val mailList = response.body()
+                var stopFetching = false // Fetch를 멈출지 여부를 결정하는 플래그
+                var pendingResponses = mailList?.messages?.size ?: 0 // 비동기 작업 수
+
                 mailList?.messages?.forEach { message ->
                     val gson = Gson()
                     val stringToDataClass = gson.fromJson(message.toString(), mailData::class.java)
-                    fetchMailData(userid, stringToDataClass.id, tokenWithBearer)
+                    fetchMailData(userid, stringToDataClass.id, tokenWithBearer, latestMail) { newMailFetched ->
+                        pendingResponses--
+                        if (!newMailFetched) {
+                            stopFetching = true
+                        }
+
+                        if (pendingResponses == 0) {
+                            if (stopFetching) {
+                                Log.d("meow", "Fetching stopped")
+                            } else {
+                                // 모든 비동기 작업이 완료된 후 재귀 호출 결정
+                                val nextPageToken = mailList.nextPageToken
+                                if (nextPageToken != null && nextPageToken.isNotEmpty()) {
+                                    fetchMailList_toUpdate(userid, token, nextPageToken, latestMail)
+                                } else {
+                                    Log.d("meow", "모든 페이지 로딩 완료")
+                                }
+                            }
+                        }
+                    }
+
+                    if (stopFetching) {
+                        return@forEach
+                    }
                 }
 
-                // 다음 페이지가 있으면 재귀 호출
-                val nextPageToken = mailList?.nextPageToken
-                if (nextPageToken != null && nextPageToken.isNotEmpty()) {
-                    fetchMailList(userid, token, nextPageToken)
-                } else {
-                    Log.d("meow", "모든 페이지 로딩 완료")
-                    finish()
+                if (mailList?.messages.isNullOrEmpty()) {
+                    Log.d("meow", "메일 없음")
                 }
             }
-
             override fun onFailure(call: Call<gotGMailList>, t: Throwable) {
                 Log.d("meow", "Failed API call with call: $call + exception: $t")
             }

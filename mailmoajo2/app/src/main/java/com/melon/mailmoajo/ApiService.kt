@@ -34,7 +34,7 @@ interface ApiService {
 
 
     @FormUrlEncoded
-    @POST("/token/")
+    @POST("/token")
     fun postTokenRefresh(
         @Field("client_id") client_id:String,
         @Field("client_secret") client_secret:String,

@@ -32,4 +32,8 @@ interface GmailDao {
 
     @Query("SELECT COUNT(*) FROM Gmails")
     fun getGmailCount(): Int
+
+
+    @Query("SELECT * FROM Gmails ORDER BY receivedTime DESC LIMIT 1")
+    fun getMostRecentMail(): Gmails?
 }
