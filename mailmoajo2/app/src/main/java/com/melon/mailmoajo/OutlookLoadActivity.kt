@@ -21,6 +21,7 @@ import com.microsoft.identity.client.SignInParameters
 import com.microsoft.identity.client.exception.MsalClientException
 import com.microsoft.identity.client.exception.MsalException
 import com.microsoft.identity.client.exception.MsalServiceException
+import entities.OutlookMails
 import entities.mails
 
 class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
@@ -132,6 +133,8 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
     override fun onMailDataReceived(data: gotOutlookMail) {
         Log.d(TAG, "Received mail data: $data")
         remainingMails += data.value.size // 저장할 메일 수
+        val db = HomeActivity.database(applicationContext)
+        db.outlookDao().resetmails()  //------------------------------------------------------------------------------reset mail db
         saveMailDataToDatabase(data)
 
         data.nextLink?.let { nextPageUrl ->
@@ -162,13 +165,13 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
     private fun saveMailDataToDatabase(data: gotOutlookMail) {
         val db = HomeActivity.database(this)
         data.value.forEach { mail ->
-            val mailEntity = mails(
+            val mailEntity = OutlookMails(
                 title = mail.subject,
                 receivedTime = mail.receivedDateTime,
                 sender = mail.sender.emailAddress.address,
                 mailfolderid = 0
             )
-            db.mailDao().insert(mailEntity)
+            db.outlookDao().insert(mailEntity)
             remainingMails-- // 저장할 메일 수를 감소
             checkIfAllMailsSaved() // 메일 저장이 완료되었는지 확인
         }

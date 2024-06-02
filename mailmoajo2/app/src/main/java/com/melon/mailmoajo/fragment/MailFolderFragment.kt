@@ -1,13 +1,16 @@
 package com.melon.mailmoajo.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.melon.mailmoajo.HomeActivity
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.adapter.MailAdapter
@@ -17,9 +20,9 @@ import com.melon.mailmoajo.contactlistData
 import com.melon.mailmoajo.databinding.FragmentContactBinding
 import com.melon.mailmoajo.databinding.FragmentMailFolderBinding
 import com.melon.mailmoajo.mailfolderlistData
+import com.melon.mailmoajo.viewModel.MailViewModel
 
 class MailFolderFragment : Fragment() {
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

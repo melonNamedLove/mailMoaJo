@@ -1,21 +1,25 @@
 package com.melon.mailmoajo.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
+import com.melon.mailmoajo.HomeActivity
 import com.melon.mailmoajo.HomeActivity.Companion.database
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.adapter.MailAdapter
 import com.melon.mailmoajo.contactlistData
 import com.melon.mailmoajo.databinding.FragmentMailBinding
 import com.melon.mailmoajo.mailfolderlistData
+import com.melon.mailmoajo.viewModel.MailViewModel
 
 class MailFragment ( position: Int) : Fragment() {
     val position = position
@@ -57,9 +61,12 @@ class MailFragment ( position: Int) : Fragment() {
 //            contactlistData = db!!.contactDao().getAll().toMutableList()
             activity.supportFragmentManager.popBackStack()
         })
+// Observe LiveData from ViewModel
 
-        mailmail = db.mailDao().getAll().toMutableList()
-
+        Log.d("meow",  db.mailDao().getAllMailsOrderedByTime(position).toString())
+        mailmail = db.mailDao().getAllMailsOrderedByTime(position).toMutableList()
+//        mailmail = mailViewModel.getAllMailsOrderedByTime(position).value!!.toMutableList()
+//        binding!!.mailRcv.adapter = MailAdapter(mailmail)
         binding!!.mailRcv.adapter = MailAdapter(mailmail)
         binding!!.mailRcv.layoutManager= LinearLayoutManager(context)
 

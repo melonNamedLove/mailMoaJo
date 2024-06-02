@@ -9,7 +9,7 @@ import com.melon.mailmoajo.R
 import com.melon.mailmoajo.dataclass.mailId
 import entities.mails
 
-class MailAdapter (val d:MutableList<mails>):RecyclerView.Adapter<MailAdapter.ViewHolder>(){
+class MailAdapter (var d:MutableList<mails>):RecyclerView.Adapter<MailAdapter.ViewHolder>(){
     class ViewHolder(var v: View):RecyclerView.ViewHolder(v){
         fun bind(item:mails){
 //            v.findViewById<ImageView>(R.id.imgimg1)?.setImageResource(item.img)
@@ -23,6 +23,10 @@ class MailAdapter (val d:MutableList<mails>):RecyclerView.Adapter<MailAdapter.Vi
         return d.count()
     }
 
+    fun updateData(newMailList: MutableList<mails>) {
+        d = newMailList
+        notifyDataSetChanged()
+    }
     override fun onCreateViewHolder(p: ViewGroup, type:Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(p.context).inflate(R.layout.mail_view_holder, null))
     }
