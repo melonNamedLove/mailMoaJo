@@ -203,6 +203,9 @@ class GmailLoadActivity : AppCompatActivity() {
                         return
                     }
                     Log.d("meow", response.body()?.access_token.toString())
+                    Log.d("meow", response.body()?.refresh_token.toString())
+                    TokenManager(applicationContext).saveRefreshToken(response.body()?.refresh_token.toString())
+
 
                     if (response.body()?.access_token !=null){
                         tokenprefs.edit().putString("accesstoken", response.body()?.access_token).apply()
@@ -260,7 +263,7 @@ class GmailLoadActivity : AppCompatActivity() {
         webView.webViewClient = myWebViewClient()
 //        webView.webChromeClient = WebChromeClient()
         webView.getSettings().setUserAgentString(System.getProperty("http.agent"))
-        webView.loadUrl("https://accounts.google.com/o/oauth2/v2/auth?client_id=1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com&redirect_uri=http://localhost:5500/test.html&scope=https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/userinfo.email&response_type=code")
+        webView.loadUrl("https://accounts.google.com/o/oauth2/v2/auth?client_id=1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com&redirect_uri=http://localhost:5500/test.html&response_type=code&scope=https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/userinfo.email&prompt=consent&access_type=offline")
 
 
 

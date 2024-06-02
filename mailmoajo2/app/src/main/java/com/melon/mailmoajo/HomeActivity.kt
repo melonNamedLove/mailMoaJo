@@ -190,6 +190,24 @@ class HomeActivity : AppCompatActivity() {
         binding.fab.setOnClickListener{
             if (binding.fab.text.equals("동기화")){
 
+                //gmail이 비어있을 경우
+                //outlook이 비어있을 경우
+                //아무것도 없을 경우
+                //둘 다 있을 경우
+                val gmailCount:Int = db.gmailDao().getGmailCount()
+                val outlookCount:Int = db.outlookDao().getOutlookCount()
+                if(gmailCount>0 && outlookCount>0){
+
+                } else if(gmailCount ==0  || outlookCount==0){
+
+                }else if(gmailCount ==0  && outlookCount==0){
+                    Log.d("meow","로그인부터 하슈")
+                }else{
+                    Log.d("meow","뭔가 잘못됐다!")
+                }
+
+
+
             }else if(binding.fab.text.equals("추가")){
 
 

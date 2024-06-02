@@ -48,7 +48,8 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
         val scopes = arrayOf(
             "Mail.Read",
             "email",
-            "User.Read"
+            "User.Read",
+            "offline_access"
         )
 
         val signInParameters: SignInParameters = SignInParameters.builder()

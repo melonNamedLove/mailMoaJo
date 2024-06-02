@@ -13,6 +13,7 @@ interface GmailDao {
     @Query("SELECT * FROM Gmails")
     fun getAll(): List<Gmails>
 
+
     @Insert
     fun insert(mails: Gmails)
 
@@ -27,4 +28,8 @@ interface GmailDao {
 
     @Query("DELETE FROM Gmails")
     fun resetmails()
+
+
+    @Query("SELECT COUNT(*) FROM Gmails")
+    fun getGmailCount(): Int
 }

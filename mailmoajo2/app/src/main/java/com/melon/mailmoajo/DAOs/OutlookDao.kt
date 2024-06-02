@@ -27,4 +27,8 @@ interface OutlookDao {
 
     @Query("DELETE FROM OutlookMails")
     fun resetmails()
+
+
+    @Query("SELECT COUNT(*) FROM OutlookMails")
+    fun getOutlookCount(): Int
 }
