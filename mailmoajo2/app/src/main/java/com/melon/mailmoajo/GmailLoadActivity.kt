@@ -23,6 +23,7 @@ import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.dataclass.payload_json
 import com.melon.mailmoajo.formatter.EmailFormatter
 import com.melon.mailmoajo.formatter.MailTimeFormatter
+import entities.Gmails
 import entities.mails
 import retrofit2.Call
 import retrofit2.Callback
@@ -117,7 +118,6 @@ class GmailLoadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gmail_load)
         val btn: Button = findViewById<Button>(R.id.rrbtn)
-        //retrofit 구현체가 생성이 되서 retrofit이라는 변수에 할당이 된다.
         val db = database(applicationContext)
 
         val retrofit = Retrofit.Builder()
@@ -134,10 +134,10 @@ class GmailLoadActivity : AppCompatActivity() {
                         val from = EmailFormatter().extractEmail(it.payload.headers.find { header -> header.name == "From" }?.value ?: "Unknown Sender")
                         val receivedHeader = it.payload.headers.firstOrNull { header -> header.name == "Received" }?.value ?: "No Received Header"
                         val received = MailTimeFormatter().extractDateTime(receivedHeader)?.let { pacificTime ->
-                            MailTimeFormatter().convertToLocaleTime(pacificTime).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                            MailTimeFormatter().convertToLocaleTimeAndFormat(pacificTime)
                         } ?: "No valid datetime found in the input string."
 
-                        db.mailDao().insert(mails(received, from, subject, 0))
+                        db.gmailDao().insert(Gmails(received, from, subject, 0))
                         Log.w("meow", "Subject: $subject, From: $from, Received: $received")
                     }
                 }
@@ -229,7 +229,7 @@ class GmailLoadActivity : AppCompatActivity() {
                         Log.i("meow",stringtodataclass.email)
                         tokenprefs.edit().putString("userid",stringtodataclass.email).apply()
 
-                        db.mailDao().resetmails()  //------------------------------------------------------------------------------reset mail db
+                        db.gmailDao().resetmails()  //------------------------------------------------------------------------------reset mail db
                         var pageTokenString = ""
                         var userid =  tokenprefs.getString("userid", "").toString()
 

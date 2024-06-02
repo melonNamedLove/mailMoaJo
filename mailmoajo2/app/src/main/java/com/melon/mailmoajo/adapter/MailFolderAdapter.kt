@@ -8,6 +8,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.melon.mailmoajo.R
 import com.melon.mailmoajo.contactlistData
@@ -15,6 +16,7 @@ import com.melon.mailmoajo.dataclass.mailId
 import com.melon.mailmoajo.fragment.ContactDetailFragment
 import com.melon.mailmoajo.fragment.MailFragment
 import com.melon.mailmoajo.mailfolderlistData
+import com.melon.mailmoajo.viewModel.MailViewModel
 import entities.orderedMailFolders
 
 fun MailFolderItemOnClickObject():
@@ -25,6 +27,7 @@ fun MailFolderItemOnClickObject():
             val name = mailfolderlistData[position].name
             val activity = view!!.context as AppCompatActivity
             activity.supportFragmentManager.beginTransaction().replace(R.id.nav_host, MailFragment(position)).addToBackStack(null).commit()
+            Log.d("meow",position.toString())
             val toolbarBodyTemplate = activity.findViewById<Toolbar>(R.id.toolbar)
             toolbarBodyTemplate.title= name
 

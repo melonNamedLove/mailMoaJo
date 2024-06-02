@@ -1,7 +1,9 @@
 package com.melon.mailmoajo.Database
 
+import android.content.Context
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.melon.mailmoajo.DAOs.GmailDao
 import com.melon.mailmoajo.DAOs.OutlookDao
@@ -28,6 +30,23 @@ abstract  class MailMoaJoDatabase :RoomDatabase() {
     abstract  fun mailDao(): mailDao
     abstract  fun gmailDao(): GmailDao
     abstract  fun outlookDao(): OutlookDao
+
+
+    companion object {
+        @Volatile
+        private var INSTANCE: MailMoaJoDatabase? = null
+        fun getDatabase(context: Context): MailMoaJoDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    MailMoaJoDatabase::class.java,
+                    "mail_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 //    abstract  fun mailfolderDao():mailfolderDao
 
 //    companion object {
