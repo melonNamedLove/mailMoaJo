@@ -17,6 +17,8 @@ import com.melon.mailmoajo.GmailLoadActivity
 import com.melon.mailmoajo.GoogleSignInActivity
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.prefs
 import com.melon.mailmoajo.HomeActivity.Companion.database
+import com.melon.mailmoajo.HomeActivity.Companion.mAccount
+import com.melon.mailmoajo.HomeActivity.Companion.mSingleAccountApp
 import com.melon.mailmoajo.MSGraphRequestWrapper
 import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPIUsingVolley
 import com.melon.mailmoajo.OutlookLoadActivity
@@ -52,9 +54,6 @@ var mailmail = mutableListOf<mails>()
 class SettingsFragment : Fragment(){
 
     companion object {
-        /* Azure AD Variables */
-        var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
-        var mAccount: IAccount? = null
         private val TAG = SettingsFragment::class.java.simpleName
 
     }
