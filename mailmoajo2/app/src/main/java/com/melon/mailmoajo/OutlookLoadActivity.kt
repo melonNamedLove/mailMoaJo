@@ -7,12 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Response
 import com.google.gson.Gson
+import com.melon.mailmoajo.HomeActivity.Companion.mAccount
+import com.melon.mailmoajo.HomeActivity.Companion.mSingleAccountApp
 import com.melon.mailmoajo.databinding.ActivityOutlookLoadBinding
 import com.melon.mailmoajo.dataclass.gotOutlookMail
 import com.melon.mailmoajo.formatter.MailTimeFormatter
 import com.melon.mailmoajo.fragment.SettingsFragment
-import com.melon.mailmoajo.fragment.SettingsFragment.Companion.mAccount
-import com.melon.mailmoajo.fragment.SettingsFragment.Companion.mSingleAccountApp
 import com.microsoft.identity.client.AuthenticationCallback
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.IAuthenticationResult
@@ -109,7 +109,7 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
             }
         }
 
-    private fun callGraphAPI(token: String, url: String,
+    fun callGraphAPI(token: String, url: String,
                              onResponse: (gotOutlookMail) -> Unit,
                              onError: (Throwable) -> Unit) {
         MSGraphRequestWrapper.callGraphAPIUsingVolley(

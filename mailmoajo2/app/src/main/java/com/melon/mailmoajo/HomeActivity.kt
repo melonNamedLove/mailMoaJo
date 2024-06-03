@@ -34,6 +34,7 @@ import com.melon.mailmoajo.adapter.MailFolderAdapter
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
 import com.melon.mailmoajo.dataclass.gotGMailData
 import com.melon.mailmoajo.dataclass.gotGMailList
+import com.melon.mailmoajo.dataclass.gotOutlookMail
 import com.melon.mailmoajo.dataclass.mailData
 import com.melon.mailmoajo.formatter.EmailFormatter
 import com.melon.mailmoajo.formatter.MailTimeFormatter
@@ -45,6 +46,7 @@ import com.melon.mailmoajo.fragment.SettingsFragment
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import entities.Gmails
+import entities.OutlookMails
 import entities.contacts
 import entities.orderedMailFolders
 import io.ktor.util.reflect.instanceOf
@@ -66,7 +68,9 @@ import kotlin.coroutines.resumeWithException
 
 var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(),CallbackInterface {
+    private var remainingMails = 0 // 저장할 메일의 수
+    var olToken:String = ""
     companion object {
 
         /* Azure AD Variables */
@@ -248,7 +252,22 @@ class HomeActivity : AppCompatActivity() {
                                     Log.d("wow", "토큰 갱신 실패")
                                 }
                             }
-                            TokenManager(this@HomeActivity).refreshToken()
+                            olToken = TokenManager(this@HomeActivity).refreshToken()//    outlook update
+
+                            val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
+
+                            OutlookLoadActivity().callGraphAPI(
+                                olToken.toString(),
+                                olMailAPIUrl,
+                                { result ->
+                                    Log.d("yeah", result.toString())
+                                    onMailDataReceived(result)
+                                },
+                                { error ->
+                                    Log.e("yeah", "Failed to call API: $error")
+                                    onMailDataError(error)
+                                }
+                            )
                         } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
                             Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
 //                            TokenManager(this@HomeActivity).refreshAccessToken()
@@ -305,6 +324,9 @@ class HomeActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
 
     }
+
+
+    //gmail update 메소드
     var sync_stop = false
 
 
@@ -407,7 +429,60 @@ class HomeActivity : AppCompatActivity() {
         })
     }
 
+    //outlook callback
+    override fun onMailDataReceived(data: gotOutlookMail) {
+        Log.d("yeah", "Received mail data: $data")
+        remainingMails += data.value.size // 저장할 메일 수
+        saveMailDataToDatabase(data)
 
+        data.nextLink?.let { nextPageUrl ->
+            OutlookLoadActivity().callGraphAPI(
+                olToken, nextPageUrl,
+                { result ->
+                    Log.d("yeah", result.toString())
+                    onMailDataReceived(result)
+                },
+                { error ->
+                    Log.e("yeah", "Failed to call API: $error")
+                    onMailDataError(error)
+                }
+            )
+        }
+    }
 
+    override fun onMailDataError(error: Throwable) {
+        Log.e("yeah", "Error receiving mail data: $error")
+    }
+    private fun saveMailDataToDatabase(data: gotOutlookMail) {
+        val db = HomeActivity.database(this)
+        val latestOutlook: OutlookMails = db.outlookDao().getMostRecentMail() ?: OutlookMails("0000-00-00 00:00:00", "not Found", "not Found", 0)
+        data.value.forEach { mail ->
 
+            val subject = mail.subject
+            val from = mail.sender.emailAddress.address
+            val received = MailTimeFormatter().extractDateTime(mail.receivedDateTime)?.let { pacificTime ->
+                MailTimeFormatter().convertToLocaleTimeAndFormat(pacificTime)
+            } ?: "0000-00-00 00:00:00"
+
+            if (subject == latestOutlook.title && from == latestOutlook.sender && received == latestOutlook.receivedTime) {
+                Log.d("yeah", "no new mail")
+                return@forEach
+            }else{
+                Log.d("yeah", "new mail!")
+            }
+
+            val mailEntity = OutlookMails(
+                title = mail.subject,
+                receivedTime = received,
+                sender = mail.sender.emailAddress.address,
+                mailfolderid = 0
+            )
+//            Log.d("wow", mailEntity.receivedTime.toString())
+//
+//            Log.d("wow", MailTimeFormatter().convertToLocaleTimeAndFormat(received!!).toString())
+
+//            db.outlookDao().insert(mailEntity)
+            remainingMails-- // 저장할 메일 수를 감소
+        }
+    }
 }
