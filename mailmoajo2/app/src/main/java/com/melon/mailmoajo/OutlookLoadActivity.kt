@@ -49,8 +49,7 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
         val scopes = arrayOf(
             "Mail.Read",
             "email",
-            "User.Read",
-//            "offline_access"
+            "User.Read"
         )
 
         val signInParameters: SignInParameters = SignInParameters.builder()
@@ -65,6 +64,7 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
         mSingleAccountApp?.signIn(signInParameters)
             ?: Log.e(TAG, "mSingleAccountApp is null")
 
+
     }
 
     private val authInteractiveCallback: AuthenticationCallback
@@ -75,7 +75,6 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
                 Log.d(TAG, "ID Token: " + authenticationResult.account.claims!!["id_token"])
 
                 mAccount = authenticationResult.account
-
                 binding.outlookprogressbar.visibility = View.VISIBLE
 
                 val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"

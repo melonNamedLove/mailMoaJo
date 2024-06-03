@@ -68,6 +68,11 @@ var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
 class HomeActivity : AppCompatActivity() {
     companion object {
+
+        /* Azure AD Variables */
+        var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
+        var mAccount: IAccount? = null
+
         fun database(context: Context):MailMoaJoDatabase{
 
             val db = Room.databaseBuilder(
@@ -229,7 +234,7 @@ class HomeActivity : AppCompatActivity() {
                     val gmailCount:Int = db.gmailDao().getGmailCount()
                     val outlookCount:Int = db.outlookDao().getOutlookCount()
                         if(gmailCount>0 && outlookCount>0){//둘 다 있을 경우
-                            Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
+                            Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())      //gmail update
 
                             val tokenRefreshed = TokenManager(this@HomeActivity).refreshAccessTokenSuspend()
                             withContext(Dispatchers.Main){
@@ -243,11 +248,24 @@ class HomeActivity : AppCompatActivity() {
                                     Log.d("wow", "토큰 갱신 실패")
                                 }
                             }
-
+                            TokenManager(this@HomeActivity).refreshToken()
                         } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
                             Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
 //                            TokenManager(this@HomeActivity).refreshAccessToken()
 //                            val latestGmail:Gmails = db.gmailDao().getMostRecentMail()?:Gmails("0000-00-00 00:00:00","not Found","not Found",0)
+
+                            val tokenRefreshed = TokenManager(this@HomeActivity).refreshAccessTokenSuspend()
+                            withContext(Dispatchers.Main){
+                                if (tokenRefreshed) {
+                                    val sharedPreferences = TokenManager(this@HomeActivity).getEncryptedSharedPreferences()
+                                    val token = sharedPreferences.getString("access_token", null)
+                                    val latestGmail: Gmails = db.gmailDao().getMostRecentMail() ?: Gmails("0000-00-00 00:00:00", "not Found", "not Found", 0)
+                                    Log.d("wow", latestGmail.toString())
+                                    fetchMailList_toUpdate(token = token!!, userid = tokenprefs.getString("userid", "").toString(), latestMail = latestGmail, pageToken = "")
+                                } else {
+                                    Log.d("wow", "토큰 갱신 실패")
+                                }
+                            }
 
                         }else if(gmailCount==0  || outlookCount>0){//outlook만 load됐을 때
 
