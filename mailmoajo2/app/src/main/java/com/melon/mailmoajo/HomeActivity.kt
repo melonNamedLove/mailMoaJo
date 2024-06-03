@@ -48,15 +48,21 @@ import entities.Gmails
 import entities.contacts
 import entities.orderedMailFolders
 import io.ktor.util.reflect.instanceOf
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.coroutines.resumeWithException
 
 var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
@@ -281,21 +287,29 @@ class HomeActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(frame.id, fragment).commit()
 
     }
-    var sync_count = 0
+    var sync_stop = false
 
 
-
+    private var stopFetching = false // Fetch를 멈출지 여부를 결정하는 플래그
     //gmail reload로직
     val retrofit = Retrofit.Builder()
         .baseUrl("https://www.googleapis.com")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     val service = retrofit.create(ApiService::class.java)
+    private suspend fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String, latestMail: Gmails): Boolean = suspendCancellableCoroutine { continuation ->
+        if (sync_stop) {
+            continuation.resume(false) { }
+            return@suspendCancellableCoroutine
+        }
 
-    fun fetchMailData(userid: String, mailId: String, tokenWithBearer: String, latestMail: Gmails, onNewMailFetched: (Boolean) -> Unit) {
-        service.getMailData(userid, mailId, tokenWithBearer).enqueue(object :
-            Callback<gotGMailData> {
+        service.getMailData(userid, mailId, tokenWithBearer).enqueue(object : Callback<gotGMailData> {
             override fun onResponse(call: Call<gotGMailData>, response: Response<gotGMailData>) {
+                if (sync_stop) {
+                    continuation.resume(false) { }
+                    return
+                }
+
                 response.body()?.let {
                     val subject = it.payload.headers.find { header -> header.name == "Subject" }?.value ?: "No Subject"
                     val from = EmailFormatter().extractEmail(it.payload.headers.find { header -> header.name == "From" }?.value ?: "Unknown Sender")
@@ -305,27 +319,36 @@ class HomeActivity : AppCompatActivity() {
                     } ?: "0000-00-00 00:00:00"
 
                     Log.w("meow", "Subject: $subject, From: $from, Received: $received")
-                    if(subject == latestMail.title && from == latestMail.sender && received == latestMail.receivedTime){
-                        Log.d("wow","no new mail")
-                        onNewMailFetched(false) // 새로운 메일이 없음
-                    }else{
+                    Log.w("meow", latestMail.title + latestMail.sender + latestMail.receivedTime)
+                    if (subject == latestMail.title && from == latestMail.sender && received == latestMail.receivedTime) {
+                        Log.d("wow", "no new mail")
+                        sync_stop = true
+                        Log.d("meow", sync_stop.toString())
+                        continuation.resume(false) { }
+                    } else {
                         database(this@HomeActivity).gmailDao().insert(Gmails(received, from, subject, 0))
-                        Log.d("wow"," new mail!")
-                        onNewMailFetched(true) // 새로운 메일이 있음
+                        Log.d("wow", "new mail!")
+                        sync_stop = false
+                        continuation.resume(true) { }
                     }
-
-                }
+                } ?: continuation.resumeWithException(IllegalStateException("Response body is null"))
             }
 
             override fun onFailure(call: Call<gotGMailData>, t: Throwable) {
                 Log.d("meow", "Failed API call with call: $call + exception: $t")
+                continuation.resumeWithException(t)
             }
         })
     }
-    fun fetchMailList_toUpdate(userid: String, token: String, pageToken: String?, latestMail:Gmails) {
+
+    private suspend fun fetchMailList_toUpdate(userid: String, token: String, pageToken: String?, latestMail: Gmails) {
+        if (stopFetching) {
+            Log.d("meow", "Fetching stopped")
+            return
+        }
+
         val tokenWithBearer = "Bearer $token"
-        service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object :
-            Callback<gotGMailList> {
+        service.getMailList(userid, tokenWithBearer, pageToken).enqueue(object : Callback<gotGMailList> {
             override fun onResponse(call: Call<gotGMailList>, response: Response<gotGMailList>) {
                 if (!response.isSuccessful) {
                     Log.d("meow", "nope")
@@ -333,48 +356,40 @@ class HomeActivity : AppCompatActivity() {
                     return
                 }
 
-
+                sync_stop = false
                 val mailList = response.body()
-                var stopFetching = false // Fetch를 멈출지 여부를 결정하는 플래그
                 var pendingResponses = mailList?.messages?.size ?: 0 // 비동기 작업 수
 
-                mailList?.messages?.forEach { message ->
-                    val gson = Gson()
-                    val stringToDataClass = gson.fromJson(message.toString(), mailData::class.java)
-                    fetchMailData(userid, stringToDataClass.id, tokenWithBearer, latestMail) { newMailFetched ->
-                        pendingResponses--
+                CoroutineScope(Dispatchers.IO).launch {
+                    mailList?.messages?.forEach { message ->
+                        val gson = Gson()
+                        val stringToDataClass = gson.fromJson(message.toString(), mailData::class.java)
+                        val newMailFetched = fetchMailData(userid, stringToDataClass.id, tokenWithBearer, latestMail)
                         if (!newMailFetched) {
                             stopFetching = true
-                        }
-
-                        if (pendingResponses == 0) {
-                            if (stopFetching) {
-                                Log.d("meow", "Fetching stopped")
-                            } else {
-                                // 모든 비동기 작업이 완료된 후 재귀 호출 결정
-                                val nextPageToken = mailList.nextPageToken
-                                if (nextPageToken != null && nextPageToken.isNotEmpty()) {
-                                    fetchMailList_toUpdate(userid, token, nextPageToken, latestMail)
-                                } else {
-                                    Log.d("meow", "모든 페이지 로딩 완료")
-                                }
-                            }
+                            return@forEach
                         }
                     }
 
-                    if (stopFetching) {
-                        return@forEach
+                    // 모든 비동기 작업이 완료된 후 재귀 호출 결정
+                    if (!stopFetching) {
+                        val nextPageToken = mailList?.nextPageToken
+                        if (nextPageToken != null && nextPageToken.isNotEmpty()) {
+                            fetchMailList_toUpdate(userid, token, nextPageToken, latestMail)
+                        } else {
+                            Log.d("meow", "모든 페이지 로딩 완료")
+                        }
                     }
-                }
-
-                if (mailList?.messages.isNullOrEmpty()) {
-                    Log.d("meow", "메일 없음")
                 }
             }
+
             override fun onFailure(call: Call<gotGMailList>, t: Throwable) {
                 Log.d("meow", "Failed API call with call: $call + exception: $t")
             }
         })
     }
+
+
+
 
 }
