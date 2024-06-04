@@ -1,36 +1,26 @@
 package com.melon.mailmoajo
 
-import android.app.ActionBar.DISPLAY_SHOW_CUSTOM
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.replace
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import androidx.room.migration.Migration
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.adapter.ContactItemOnClick
-import com.melon.mailmoajo.adapter.MailFolderAdapter
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
 import com.melon.mailmoajo.dataclass.gotGMailData
 import com.melon.mailmoajo.dataclass.gotGMailList
@@ -50,12 +40,8 @@ import entities.OutlookMails
 import entities.contacts
 import entities.orderedMailFolders
 import io.ktor.util.reflect.instanceOf
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -69,13 +55,12 @@ import kotlin.coroutines.resumeWithException
 var contactlistData = mutableListOf<contacts>()
 var mailfolderlistData = mutableListOf<orderedMailFolders>()
 class HomeActivity : AppCompatActivity(),CallbackInterface {
-    private var remainingMails = 0 // 저장할 메일의 수
-    var olToken:String = ""
     companion object {
 
         /* Azure AD Variables */
         var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
         var mAccount: IAccount? = null
+        var olToken:String = ""
 
         fun database(context: Context):MailMoaJoDatabase{
 
@@ -252,22 +237,27 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                                     Log.d("wow", "토큰 갱신 실패")
                                 }
                             }
-                            olToken = TokenManager(this@HomeActivity).refreshToken()//    outlook update
-
-                            val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
-
-                            OutlookLoadActivity().callGraphAPI(
-                                olToken.toString(),
-                                olMailAPIUrl,
-                                { result ->
-                                    Log.d("yeah", result.toString())
-                                    onMailDataReceived(result)
-                                },
-                                { error ->
-                                    Log.e("yeah", "Failed to call API: $error")
-                                    onMailDataError(error)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val token = TokenManager(this@HomeActivity).refreshToken()
+                                if (token != null) {
+                                    // 토큰 갱신 성공, 추가 작업 수행
+                                    val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
+                                    OutlookLoadActivity().callGraphAPI(
+                                        token,
+                                        olMailAPIUrl,
+                                        { result ->
+                                            Log.d("yeah", result.toString())
+                                            // onMailDataReceived(result)
+                                        },
+                                        { error ->
+                                            Log.e("yeah", "Failed to call API: $error")
+                                            // onMailDataError(error)
+                                        }
+                                    )
+                                } else {
+                                    Log.d("yeah", "토큰 갱신 실패")
                                 }
-                            )
+                            }
                         } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
                             Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
 //                            TokenManager(this@HomeActivity).refreshAccessToken()
@@ -428,25 +418,27 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
             }
         })
     }
-
+var outlookUpdateStopFlag = false
     //outlook callback
     override fun onMailDataReceived(data: gotOutlookMail) {
         Log.d("yeah", "Received mail data: $data")
-        remainingMails += data.value.size // 저장할 메일 수
         saveMailDataToDatabase(data)
 
-        data.nextLink?.let { nextPageUrl ->
-            OutlookLoadActivity().callGraphAPI(
-                olToken, nextPageUrl,
-                { result ->
-                    Log.d("yeah", result.toString())
-                    onMailDataReceived(result)
-                },
-                { error ->
-                    Log.e("yeah", "Failed to call API: $error")
-                    onMailDataError(error)
-                }
-            )
+        if(!outlookUpdateStopFlag){
+            data.nextLink?.let { nextPageUrl ->
+                OutlookLoadActivity().callGraphAPI(
+                    olToken, nextPageUrl,
+                    { result ->
+                        Log.d("yeah", result.toString())
+                        onMailDataReceived(result)
+                    },
+                    { error ->
+                        Log.e("yeah", "Failed to call API: $error")
+                        onMailDataError(error)
+                    }
+                )
+            }
+
         }
     }
 
@@ -466,23 +458,24 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
 
             if (subject == latestOutlook.title && from == latestOutlook.sender && received == latestOutlook.receivedTime) {
                 Log.d("yeah", "no new mail")
+                outlookUpdateStopFlag= true
                 return@forEach
             }else{
+                val mailEntity = OutlookMails(
+                    title = mail.subject,
+                    receivedTime = received,
+                    sender = mail.sender.emailAddress.address,
+                    mailfolderid = 0
+                )
                 Log.d("yeah", "new mail!")
+                database(this@HomeActivity).outlookDao().insert(mailEntity)
             }
 
-            val mailEntity = OutlookMails(
-                title = mail.subject,
-                receivedTime = received,
-                sender = mail.sender.emailAddress.address,
-                mailfolderid = 0
-            )
 //            Log.d("wow", mailEntity.receivedTime.toString())
 //
 //            Log.d("wow", MailTimeFormatter().convertToLocaleTimeAndFormat(received!!).toString())
 
 //            db.outlookDao().insert(mailEntity)
-            remainingMails-- // 저장할 메일 수를 감소
         }
     }
 }

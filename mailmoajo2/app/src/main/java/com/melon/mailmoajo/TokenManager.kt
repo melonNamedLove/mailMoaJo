@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.melon.mailmoajo.HomeActivity.Companion.mSingleAccountApp
+import com.melon.mailmoajo.HomeActivity.Companion.olToken
 import com.melon.mailmoajo.dataclass.RefAccessTokenResult
 import com.melon.mailmoajo.fragment.SettingsFragment
 import com.microsoft.identity.client.AcquireTokenSilentParameters
@@ -138,46 +139,86 @@ class TokenManager(private val context: Context) {
         "email",
         "User.Read"
     )
-    fun refreshToken() {
 
-        com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
-            context,
-            com.melon.mailmoajo.R.raw.msalconfiguration,
-            object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
-                override fun onCreated(application: ISingleAccountPublicClientApplication) {
-                    mSingleAccountApp = application
+//    fun refreshToken(){//outlook refresh
+//
+//
+//        com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
+//            context,
+//            com.melon.mailmoajo.R.raw.msalconfiguration,
+//            object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
+//                override fun onCreated(application: ISingleAccountPublicClientApplication) {
+//                    mSingleAccountApp = application
+//
+//
+//                }
+//
+//                override fun onError(exception: MsalException?) {
+//                    Log.d("yeah", exception.toString())
+//                }
+//            })
+//
+//        val parameters = AcquireTokenSilentParameters.Builder()
+//            .withScopes(scopes.toList())
+//            .forAccount(mSingleAccountApp?.getCurrentAccount()?.currentAccount)
+//            .fromAuthority("https://login.microsoftonline.com/common")
+//            .withCallback(object : AuthenticationCallback {
+//                override fun onSuccess(authenticationResult: IAuthenticationResult) {
+//                    olToken = authenticationResult.accessToken
+//                    // 갱신된 access token을 사용하여 필요한 작업을 수행하십시오.
+//                    Log.d("yeah",olToken)
+//                }
+//
+//                override fun onError(exception: MsalException) {
+//                    Log.d("yeah",exception.toString())
+//                    // 예외 처리
+//                }
+//
+//                override fun onCancel() {
+//                    // 취소 처리
+//                }
+//            })
+//            .build()
+//
+//        mSingleAccountApp?.acquireTokenSilentAsync(parameters)
+//    }
+suspend fun refreshToken(): String? = suspendCancellableCoroutine { continuation ->
+    com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
+        context,
+        com.melon.mailmoajo.R.raw.msalconfiguration,
+        object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
+            override fun onCreated(application: ISingleAccountPublicClientApplication) {
+                mSingleAccountApp = application
 
+                val parameters = AcquireTokenSilentParameters.Builder()
+                    .withScopes(scopes.toList())
+                    .forAccount(mSingleAccountApp?.getCurrentAccount()?.currentAccount)
+                    .fromAuthority("https://login.microsoftonline.com/common")
+                    .withCallback(object : AuthenticationCallback {
+                        override fun onSuccess(authenticationResult: IAuthenticationResult) {
+                            val olToken = authenticationResult.accessToken
+                            Log.d("yeah", olToken)
+                            continuation.resume(olToken) // 갱신된 토큰을 반환
+                        }
 
-                }
+                        override fun onError(exception: MsalException) {
+                            Log.d("yeah", exception.toString())
+                            continuation.resume(null) // 오류 시 null 반환
+                        }
 
-                override fun onError(exception: MsalException?) {
-                    Log.d("yeah", exception.toString())
-                }
-            })
+                        override fun onCancel() {
+                            continuation.cancel()
+                        }
+                    })
+                    .build()
 
-        val parameters = AcquireTokenSilentParameters.Builder()
-            .withScopes(scopes.toList())
-            .forAccount(mSingleAccountApp?.getCurrentAccount()?.currentAccount)
-            .fromAuthority("https://login.microsoftonline.com/common")
-            .withCallback(object : AuthenticationCallback {
-                override fun onSuccess(authenticationResult: IAuthenticationResult) {
-                    val accessToken = authenticationResult.accessToken
-                    // 갱신된 access token을 사용하여 필요한 작업을 수행하십시오.
-                    Log.d("yeah",accessToken)
-                }
+                mSingleAccountApp?.acquireTokenSilentAsync(parameters)
+            }
 
-                override fun onError(exception: MsalException) {
-                    // 예외 처리
-                }
-
-                override fun onCancel() {
-                    // 취소 처리
-                }
-            })
-            .build()
-
-        mSingleAccountApp?.acquireTokenSilentAsync(parameters)
-
-    }
-
+            override fun onError(exception: MsalException?) {
+                Log.d("yeah", exception.toString())
+                continuation.resume(null) // 오류 시 null 반환
+            }
+        })
+}
 }
