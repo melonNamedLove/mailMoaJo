@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.GoogleSignInActivity.Companion.tokenprefs
+import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPI
 import com.melon.mailmoajo.adapter.ContactAdapter
 import com.melon.mailmoajo.adapter.ContactItemOnClick
 import com.melon.mailmoajo.databinding.ActivityHomeBinding
@@ -34,7 +35,9 @@ import com.melon.mailmoajo.fragment.MailFolderFragment
 import com.melon.mailmoajo.fragment.MailFragment
 import com.melon.mailmoajo.fragment.SettingsFragment
 import com.microsoft.identity.client.IAccount
+import com.microsoft.identity.client.IPublicClientApplication
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
+import com.microsoft.identity.client.exception.MsalException
 import entities.Gmails
 import entities.OutlookMails
 import entities.contacts
@@ -205,17 +208,21 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
 
 //            binding.contactRcv.adapter!!.notifyDataSetChanged()
         }
-        fun getEncryptedSharedPreferences(): SharedPreferences {
-            val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
-            return EncryptedSharedPreferences.create(
-                "encrypted_prefs",
-                masterKeyAlias,
-                this@HomeActivity,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        }
+        com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
+            this@HomeActivity,
+            com.melon.mailmoajo.R.raw.msalconfiguration,
+            object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
+                override fun onCreated(application: ISingleAccountPublicClientApplication) {
+                    mSingleAccountApp = application
+
+
+                }
+
+                override fun onError(exception: MsalException?) {
+                    Log.d("yeah", exception.toString())
+                }
+            })
         //fab onclicklistener 설정
         binding.fab.setOnClickListener{
             if (binding.fab.text.equals("동기화")){
@@ -223,13 +230,12 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                     val gmailCount:Int = db.gmailDao().getGmailCount()
                     val outlookCount:Int = db.outlookDao().getOutlookCount()
                         if(gmailCount>0 && outlookCount>0){//둘 다 있을 경우
-                            Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())      //gmail update
+                            Log.d("wow", TokenManager(this@HomeActivity).GgetRefreshToken().toString())      //gmail update
 
                             val tokenRefreshed = TokenManager(this@HomeActivity).refreshAccessTokenSuspend()
                             withContext(Dispatchers.Main){
                                 if (tokenRefreshed) {
-                                    val sharedPreferences = TokenManager(this@HomeActivity).getEncryptedSharedPreferences()
-                                    val token = sharedPreferences.getString("access_token", null)
+                                    val token = TokenManager(this@HomeActivity).GgetRefreshToken()
                                     val latestGmail: Gmails = db.gmailDao().getMostRecentMail() ?: Gmails("0000-00-00 00:00:00", "not Found", "not Found", 0)
                                     Log.d("wow", latestGmail.toString())
                                     fetchMailList_toUpdate(token = token!!, userid = tokenprefs.getString("userid", "").toString(), latestMail = latestGmail, pageToken = "")
@@ -237,13 +243,15 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                                     Log.d("wow", "토큰 갱신 실패")
                                 }
                             }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val token = TokenManager(this@HomeActivity).refreshToken()
-                                if (token != null) {
-                                    // 토큰 갱신 성공, 추가 작업 수행
+
+
+                            val OLtoken = TokenManager(this@HomeActivity).refreshToken()
+                            withContext(Dispatchers.Main) {             //outlook Update
+                                    if (OLtoken != null) {
                                     val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
-                                    OutlookLoadActivity().callGraphAPI(
-                                        token,
+                                    callGraphAPI(
+                                        this@HomeActivity,
+                                        OLtoken,
                                         olMailAPIUrl,
                                         { result ->
                                             Log.d("yeah", result.toString())
@@ -255,11 +263,13 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                                         }
                                     )
                                 } else {
-                                    Log.d("yeah", "토큰 갱신 실패")
+                                        Log.d("yeah", "토큰 갱신 실패")
+                                        Log.d("yeah", mAccount.toString())
+                                        Log.d("yeah", mSingleAccountApp.toString())
                                 }
                             }
                         } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
-                            Log.d("wow", TokenManager(this@HomeActivity).getRefreshToken().toString())
+                            Log.d("wow", TokenManager(this@HomeActivity).GgetRefreshToken().toString())
 //                            TokenManager(this@HomeActivity).refreshAccessToken()
 //                            val latestGmail:Gmails = db.gmailDao().getMostRecentMail()?:Gmails("0000-00-00 00:00:00","not Found","not Found",0)
 
@@ -426,7 +436,8 @@ var outlookUpdateStopFlag = false
 
         if(!outlookUpdateStopFlag){
             data.nextLink?.let { nextPageUrl ->
-                OutlookLoadActivity().callGraphAPI(
+                callGraphAPI(
+                    this,
                     olToken, nextPageUrl,
                     { result ->
                         Log.d("yeah", result.toString())
@@ -441,7 +452,27 @@ var outlookUpdateStopFlag = false
 
         }
     }
+    private fun loadAccount() {
+        mSingleAccountApp?.getCurrentAccountAsync(object : ISingleAccountPublicClientApplication.CurrentAccountCallback {
+            override fun onAccountLoaded(activeAccount: IAccount?) {
+                mAccount = activeAccount
+                if (activeAccount == null) {
+                    Log.d("MSAL", "No active account found.")
+                }
+            }
 
+            override fun onAccountChanged(priorAccount: IAccount?, currentAccount: IAccount?) {
+                HomeActivity.mAccount = currentAccount
+                if (currentAccount == null) {
+                    Log.d("MSAL", "Account changed to null.")
+                }
+            }
+
+            override fun onError(exception: MsalException) {
+                Log.d("MSAL", "Error loading account: ${exception.toString()}")
+            }
+        })
+    }
     override fun onMailDataError(error: Throwable) {
         Log.e("yeah", "Error receiving mail data: $error")
     }

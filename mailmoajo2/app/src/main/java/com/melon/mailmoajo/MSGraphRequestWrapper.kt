@@ -28,6 +28,8 @@ import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
+import com.melon.mailmoajo.dataclass.gotOutlookMail
 import org.json.JSONObject
 
 object MSGraphRequestWrapper {
@@ -36,6 +38,29 @@ object MSGraphRequestWrapper {
     // See: https://docs.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
     const val MS_GRAPH_ROOT_ENDPOINT = "https://graph.microsoft.com/"
 
+
+
+    fun callGraphAPI(context: Context, token: String, url: String,
+                     onResponse: (gotOutlookMail) -> Unit,
+                     onError: (Throwable) -> Unit) {
+        MSGraphRequestWrapper.callGraphAPIUsingVolley(
+            context,
+            url,
+            token,
+            Response.Listener { response ->
+                try {
+                    val gson = Gson()
+                    val result = gson.fromJson(response.toString(), gotOutlookMail::class.java)
+                    onResponse(result)
+                } catch (e: Exception) {
+                    onError(e)
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.d("yeah", "Error: $error")
+                onError(error)
+            })
+    }
     /**
      * Use Volley to make an HTTP request with
      * 1) a given MSGraph resource URL

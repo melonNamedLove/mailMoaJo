@@ -204,7 +204,7 @@ class GmailLoadActivity : AppCompatActivity() {
                     }
                     Log.d("meow", response.body()?.access_token.toString())
                     Log.d("meow", response.body()?.refresh_token.toString())
-                    TokenManager(applicationContext).saveRefreshToken(response.body()?.refresh_token.toString())
+                    TokenManager(applicationContext).GsaveRefreshToken(response.body()?.refresh_token.toString())
 
 
                     if (response.body()?.access_token !=null){
