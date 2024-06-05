@@ -9,6 +9,7 @@ import com.android.volley.Response
 import com.google.gson.Gson
 import com.melon.mailmoajo.HomeActivity.Companion.mAccount
 import com.melon.mailmoajo.HomeActivity.Companion.mSingleAccountApp
+import com.melon.mailmoajo.MSGraphRequestWrapper.callGraphAPI
 import com.melon.mailmoajo.databinding.ActivityOutlookLoadBinding
 import com.melon.mailmoajo.dataclass.gotOutlookMail
 import com.melon.mailmoajo.formatter.MailTimeFormatter
@@ -80,6 +81,7 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
                 val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
 
                 callGraphAPI(
+                    this@OutlookLoadActivity,
                     _OLtoken,
                     olMailAPIUrl,
                     { result ->
@@ -109,27 +111,6 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
             }
         }
 
-    fun callGraphAPI(token: String, url: String,
-                             onResponse: (gotOutlookMail) -> Unit,
-                             onError: (Throwable) -> Unit) {
-        MSGraphRequestWrapper.callGraphAPIUsingVolley(
-            this,
-            url,
-            token,
-            Response.Listener { response ->
-                try {
-                    val gson = Gson()
-                    val result = gson.fromJson(response.toString(), gotOutlookMail::class.java)
-                    onResponse(result)
-                } catch (e: Exception) {
-                    onError(e)
-                }
-            },
-            Response.ErrorListener { error ->
-                Log.d(TAG, "Error: $error")
-                onError(error)
-            })
-    }
 
     override fun onMailDataReceived(data: gotOutlookMail) {
         Log.d(TAG, "Received mail data: $data")
@@ -140,7 +121,7 @@ class OutlookLoadActivity : AppCompatActivity(), CallbackInterface {
 
         data.nextLink?.let { nextPageUrl ->
             callGraphAPI(
-                _OLtoken, nextPageUrl,
+                this,_OLtoken, nextPageUrl,
                 { result ->
                     Log.d(TAG, result.toString())
                     onMailDataReceived(result)

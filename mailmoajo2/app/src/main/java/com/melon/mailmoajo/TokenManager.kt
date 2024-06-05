@@ -36,62 +36,34 @@ class TokenManager(private val context: Context) {
         )
     }
 
-    fun saveRefreshToken(refreshToken: String) {
+    fun GsaveRefreshToken(refreshToken: String) {
         val sharedPreferences = getEncryptedSharedPreferences()
         val editor = sharedPreferences.edit()
-        editor.putString("refresh_token", refreshToken)
+        editor.putString("Gmailrefresh_token", refreshToken)
         editor.apply()
     }
-    fun getRefreshToken(): String? {
+    fun GgetRefreshToken(): String? {
         val sharedPreferences = getEncryptedSharedPreferences()
-        return sharedPreferences.getString("refresh_token", null)
+        return sharedPreferences.getString("Gmailrefresh_token", null)
     }
 
-    fun refreshAccessToken(callback: (Boolean) -> Unit) {
-        val refreshToken = getRefreshToken()
-        if (refreshToken == null) {
-            // Refresh token이 없으면 처리
-            return
-        }
-
-        val retrofit  = Retrofit.Builder()
-            .baseUrl("https://oauth2.googleapis.com")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service = retrofit.create(ApiService::class.java)
-
-        service.postTokenRefresh(
-            "1050701672933-0p8rutpvp8gtafrdqoj9akg2lnp1dcfc.apps.googleusercontent.com",
-            "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",
-            "refresh_token",
-            refreshToken
-        ).enqueue(object : retrofit2.Callback<RefAccessTokenResult> {
-            override fun onResponse(call: Call<RefAccessTokenResult>, response: Response<RefAccessTokenResult>) {
-                if (response.isSuccessful) {
-                    val accessTokenResponse = response.body()
-                    if (accessTokenResponse != null) {
-                        val sharedPreferences = getEncryptedSharedPreferences()
-                        with(sharedPreferences.edit()) {
-                            putString("access_token", accessTokenResponse.access_token)
-                            apply()
-                        }
-                    }
-                } else {
-                    // 에러 처리
-                }
-            }
-
-            override fun onFailure(call: Call<RefAccessTokenResult>, t: Throwable) {
-                // 네트워크 오류 처리
-            }
-        })
-
+    fun OLsaveRefreshToken(refreshToken: String) {
+        val sharedPreferences = getEncryptedSharedPreferences()
+        val editor = sharedPreferences.edit()
+        editor.putString("Outlookrefresh_token", refreshToken)
+        editor.apply()
     }
+    fun OLgetRefreshToken(): String? {
+        val sharedPreferences = getEncryptedSharedPreferences()
+        return sharedPreferences.getString("Outlookrefresh_token", null)
+    }
+
+
 
     // 기존 refreshAccessToken 함수에 suspend 함수로 변환
     suspend fun refreshAccessTokenSuspend(): Boolean {
         return suspendCancellableCoroutine { continuation ->
-            val refreshToken = getRefreshToken()
+            val refreshToken = GgetRefreshToken()
             if (refreshToken == null) {
                 continuation.resume(false)
                 return@suspendCancellableCoroutine
@@ -115,7 +87,7 @@ class TokenManager(private val context: Context) {
                         if (accessTokenResponse != null) {
                             val sharedPreferences = getEncryptedSharedPreferences()
                             with(sharedPreferences.edit()) {
-                                putString("access_token", accessTokenResponse.access_token)
+                                putString("Gmailrefresh_token", accessTokenResponse.access_token)
                                 apply()
                             }
                             continuation.resume(true)
@@ -182,43 +154,45 @@ class TokenManager(private val context: Context) {
 //
 //        mSingleAccountApp?.acquireTokenSilentAsync(parameters)
 //    }
-suspend fun refreshToken(): String? = suspendCancellableCoroutine { continuation ->
-    com.microsoft.identity.client.PublicClientApplication.createSingleAccountPublicClientApplication(
-        context,
-        com.melon.mailmoajo.R.raw.msalconfiguration,
-        object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
-            override fun onCreated(application: ISingleAccountPublicClientApplication) {
-                mSingleAccountApp = application
 
-                val parameters = AcquireTokenSilentParameters.Builder()
-                    .withScopes(scopes.toList())
-                    .forAccount(mSingleAccountApp?.getCurrentAccount()?.currentAccount)
-                    .fromAuthority("https://login.microsoftonline.com/common")
-                    .withCallback(object : AuthenticationCallback {
-                        override fun onSuccess(authenticationResult: IAuthenticationResult) {
-                            val olToken = authenticationResult.accessToken
-                            Log.d("yeah", olToken)
-                            continuation.resume(olToken) // 갱신된 토큰을 반환
-                        }
+    //outlook
+    suspend fun refreshToken(): String? = suspendCancellableCoroutine { continuation ->
 
-                        override fun onError(exception: MsalException) {
-                            Log.d("yeah", exception.toString())
-                            continuation.resume(null) // 오류 시 null 반환
-                        }
 
-                        override fun onCancel() {
-                            continuation.cancel()
-                        }
-                    })
-                    .build()
+        val mSingleAccountApp = HomeActivity.mSingleAccountApp
 
-                mSingleAccountApp?.acquireTokenSilentAsync(parameters)
-            }
+        if (mSingleAccountApp == null) {
+            continuation.resume(null) // If the MSAL application is not initialized, return null
+            return@suspendCancellableCoroutine
+        }
 
-            override fun onError(exception: MsalException?) {
-                Log.d("yeah", exception.toString())
-                continuation.resume(null) // 오류 시 null 반환
-            }
-        })
-}
+        val currentAccount = mSingleAccountApp.getCurrentAccount()?.currentAccount
+        if (currentAccount == null) {
+            continuation.resume(null) // If there is no current account, return null
+            return@suspendCancellableCoroutine
+        }
+
+        val parameters = AcquireTokenSilentParameters.Builder()
+            .withScopes(scopes.toList())
+            .forAccount(currentAccount)
+            .fromAuthority("https://login.microsoftonline.com/common")
+            .withCallback(object : AuthenticationCallback {
+                override fun onSuccess(authenticationResult: IAuthenticationResult) {
+                    OLsaveRefreshToken(authenticationResult.accessToken)
+                    val olToken = OLgetRefreshToken()
+                    continuation.resume(olToken) // Return the refreshed token
+                }
+
+                override fun onError(exception: MsalException) {
+                    continuation.resume(null) // Return null on error
+                }
+
+                override fun onCancel() {
+                    continuation.cancel()
+                }
+            })
+            .build()
+
+        mSingleAccountApp.acquireTokenSilentAsync(parameters)
+    }
 }
