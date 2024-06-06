@@ -249,17 +249,18 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                             withContext(Dispatchers.Main) {             //outlook Update
                                     if (OLtoken != null) {
                                     val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
-                                    callGraphAPI(
+
+                                        callGraphAPI(
                                         this@HomeActivity,
                                         OLtoken,
                                         olMailAPIUrl,
                                         { result ->
                                             Log.d("yeah", result.toString())
-                                            // onMailDataReceived(result)
+                                             onMailDataReceived(result)
                                         },
                                         { error ->
                                             Log.e("yeah", "Failed to call API: $error")
-                                            // onMailDataError(error)
+                                             onMailDataError(error)
                                         }
                                     )
                                 } else {
@@ -452,34 +453,15 @@ var outlookUpdateStopFlag = false
 
         }
     }
-    private fun loadAccount() {
-        mSingleAccountApp?.getCurrentAccountAsync(object : ISingleAccountPublicClientApplication.CurrentAccountCallback {
-            override fun onAccountLoaded(activeAccount: IAccount?) {
-                mAccount = activeAccount
-                if (activeAccount == null) {
-                    Log.d("MSAL", "No active account found.")
-                }
-            }
-
-            override fun onAccountChanged(priorAccount: IAccount?, currentAccount: IAccount?) {
-                HomeActivity.mAccount = currentAccount
-                if (currentAccount == null) {
-                    Log.d("MSAL", "Account changed to null.")
-                }
-            }
-
-            override fun onError(exception: MsalException) {
-                Log.d("MSAL", "Error loading account: ${exception.toString()}")
-            }
-        })
-    }
     override fun onMailDataError(error: Throwable) {
         Log.e("yeah", "Error receiving mail data: $error")
     }
     private fun saveMailDataToDatabase(data: gotOutlookMail) {
         val db = HomeActivity.database(this)
         val latestOutlook: OutlookMails = db.outlookDao().getMostRecentMail() ?: OutlookMails("0000-00-00 00:00:00", "not Found", "not Found", 0)
-        data.value.forEach { mail ->
+        Log.d("wow", latestOutlook.toString())
+        for (mail in data.value) {
+            if (outlookUpdateStopFlag) break
 
             val subject = mail.subject
             val from = mail.sender.emailAddress.address
@@ -489,9 +471,9 @@ var outlookUpdateStopFlag = false
 
             if (subject == latestOutlook.title && from == latestOutlook.sender && received == latestOutlook.receivedTime) {
                 Log.d("yeah", "no new mail")
-                outlookUpdateStopFlag= true
-                return@forEach
-            }else{
+                outlookUpdateStopFlag = true
+                break
+            } else {
                 val mailEntity = OutlookMails(
                     title = mail.subject,
                     receivedTime = received,
@@ -501,12 +483,36 @@ var outlookUpdateStopFlag = false
                 Log.d("yeah", "new mail!")
                 database(this@HomeActivity).outlookDao().insert(mailEntity)
             }
-
-//            Log.d("wow", mailEntity.receivedTime.toString())
-//
-//            Log.d("wow", MailTimeFormatter().convertToLocaleTimeAndFormat(received!!).toString())
-
-//            db.outlookDao().insert(mailEntity)
         }
+//
+//        data.value.forEach { mail ->
+//
+//            val subject = mail.subject
+//            val from = mail.sender.emailAddress.address
+//            val received = MailTimeFormatter().extractDateTime(mail.receivedDateTime)?.let { pacificTime ->
+//                MailTimeFormatter().convertToLocaleTimeAndFormat(pacificTime)
+//            } ?: "0000-00-00 00:00:00"
+//
+//            if (subject == latestOutlook.title && from == latestOutlook.sender && received == latestOutlook.receivedTime) {
+//                Log.d("yeah", "no new mail")
+//                outlookUpdateStopFlag= true
+//                return@forEach
+//            }else{
+//                val mailEntity = OutlookMails(
+//                    title = mail.subject,
+//                    receivedTime = received,
+//                    sender = mail.sender.emailAddress.address,
+//                    mailfolderid = 0
+//                )
+//                Log.d("yeah", "new mail!")
+//                database(this@HomeActivity).outlookDao().insert(mailEntity)
+//            }
+//
+////            Log.d("wow", mailEntity.receivedTime.toString())
+////
+////            Log.d("wow", MailTimeFormatter().convertToLocaleTimeAndFormat(received!!).toString())
+//
+////            db.outlookDao().insert(mailEntity)
+//        }
     }
 }
