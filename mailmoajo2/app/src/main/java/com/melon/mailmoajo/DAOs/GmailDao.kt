@@ -55,9 +55,9 @@ interface GmailDao {
     fun updateMailBynId(nId:Int, mailfolderid:Int)
 
     @Query("""
-            SELECT nId, title, receivedTime, sender, mailfolderid FROM outlookmails
+            SELECT nId, title, receivedTime, sender, mailfolderid FROM Gmails
             WHERE sender  = :sender
         ORDER BY receivedTime DESC
     """)
-    fun getAddressMatchingMailsOrderedByTime(sender: String? = null): List<mails>
+    fun getAddressMatchingMailsOrderedByTime(sender: String? = null): List<Gmails>
 }

@@ -50,9 +50,9 @@ interface OutlookDao {
 
 
     @Query("""
-            SELECT nId, title, receivedTime, sender, mailfolderid FROM outlookmails
+            SELECT nId, title, receivedTime, sender, mailfolderid FROM OutlookMails
             WHERE sender  = :sender
         ORDER BY receivedTime DESC
     """)
-    fun getAddressMatchingMailsOrderedByTime(sender: String? = null): List<mails>
+    fun getAddressMatchingMailsOrderedByTime(sender: String? = null): List<OutlookMails>
 }

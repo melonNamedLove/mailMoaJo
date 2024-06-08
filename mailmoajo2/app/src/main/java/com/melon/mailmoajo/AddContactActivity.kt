@@ -98,7 +98,7 @@ class AddContactActivity : AppCompatActivity() {
                 db.mailfolderDao().insert(
                     orderedMailFolders(name, newContact.toString())
                 )
-                val mailfolderIndex = db.mailfolderDao().getAddedMailfolderIndex( newContact.toString())//new given index
+                val mailfolderIndex:Int = db.mailfolderDao().getMailfolderCount()-1//new given index
 
                 Log.i("meow",mailfolderIndex.toString())
                 Log.i("meow",newContact.toString())
@@ -108,6 +108,8 @@ class AddContactActivity : AppCompatActivity() {
                         Log.i("meow",mail1.toString())
                         Log.i("meow",addressMatcingMails.toString())
                         addressMatcingMails.forEach {
+                            Log.i("meow",it.nId.toString() +  mailfolderIndex.toString())
+
                             db.gmailDao().updateMailBynId(it.nId, mailfolderIndex)
                         }
                     }
