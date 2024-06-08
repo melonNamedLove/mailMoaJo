@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import entities.OutlookMails
 import entities.contacts
 
 @Dao
@@ -29,6 +30,8 @@ interface contactDao{
     fun deleteUserByNId(nId: Int)
 
 
+    @Query("SELECT nId FROM contacts WHERE (mail_1 = :sender OR mail_2=:sender OR mail_3=:sender)")
+    fun getMatchingMail(sender:String): Int?
 
 }
 
