@@ -270,15 +270,13 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                                 }
                             }
                         } else if(gmailCount>0  || outlookCount==0) {//gmail만 load됐을 때
-                            Log.d("wow", TokenManager(this@HomeActivity).GgetRefreshToken().toString())
-//                            TokenManager(this@HomeActivity).refreshAccessToken()
-//                            val latestGmail:Gmails = db.gmailDao().getMostRecentMail()?:Gmails("0000-00-00 00:00:00","not Found","not Found",0)
+
+                            Log.d("wow", TokenManager(this@HomeActivity).GgetRefreshToken().toString())      //gmail update
 
                             val tokenRefreshed = TokenManager(this@HomeActivity).refreshAccessTokenSuspend()
                             withContext(Dispatchers.Main){
                                 if (tokenRefreshed) {
-                                    val sharedPreferences = TokenManager(this@HomeActivity).getEncryptedSharedPreferences()
-                                    val token = sharedPreferences.getString("access_token", null)
+                                    val token = TokenManager(this@HomeActivity).GgetRefreshToken()
                                     val latestGmail: Gmails = db.gmailDao().getMostRecentMail() ?: Gmails("0000-00-00 00:00:00", "not Found", "not Found", 0)
                                     Log.d("wow", latestGmail.toString())
                                     fetchMailList_toUpdate(token = token!!, userid = tokenprefs.getString("userid", "").toString(), latestMail = latestGmail, pageToken = "")
@@ -391,7 +389,13 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                         Log.d("meow", sync_stop.toString())
                         continuation.resume(false) { }
                     } else {
-                        database(this@HomeActivity).gmailDao().insert(Gmails(received, from, subject, 0))
+                        val matchingcontact:Int? = database(this@HomeActivity).contactDao().getMatchingMail(from)     //연락처 검사 후 추가 부분
+                        if(matchingcontact != null){
+                            database(this@HomeActivity).gmailDao().insert(Gmails(received, from, subject, matchingcontact))
+                        }else{
+                            database(this@HomeActivity).gmailDao().insert(Gmails(received, from, subject, 0))
+                        }
+
                         Log.d("wow", "new mail!")
                         sync_stop = false
                         continuation.resume(true) { }
@@ -455,7 +459,7 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
     }
 var outlookUpdateStopFlag = false
     //outlook callback
-    override fun onMailDataReceived(data: gotOutlookMail) {
+    override fun onMailDataReceived(data: gotOutlookMail) { //outlook functions
         Log.d("yeah", "Received mail data: $data")
         saveMailDataToDatabase(data)
 
@@ -498,14 +502,24 @@ var outlookUpdateStopFlag = false
                 outlookUpdateStopFlag = true
                 break
             } else {
-                val mailEntity = OutlookMails(
-                    title = mail.subject,
-                    receivedTime = received,
-                    sender = mail.sender.emailAddress.address,
-                    mailfolderid = 0
-                )
+
+                val matchingcontact:Int? = database(this@HomeActivity).contactDao().getMatchingMail(from)     //연락처 검사 후 추가 부분
+                if(matchingcontact != null){
+                    database(this@HomeActivity).outlookDao().insert(OutlookMails(
+                        title = mail.subject,
+                        receivedTime = received,
+                        sender = mail.sender.emailAddress.address,
+                        mailfolderid = matchingcontact
+                    ))
+                }else{
+                    database(this@HomeActivity).outlookDao().insert(OutlookMails(
+                        title = mail.subject,
+                        receivedTime = received,
+                        sender = mail.sender.emailAddress.address,
+                        mailfolderid = 0
+                    ))
+                }
                 Log.d("yeah", "new mail!")
-                database(this@HomeActivity).outlookDao().insert(mailEntity)
             }
         }
 //
