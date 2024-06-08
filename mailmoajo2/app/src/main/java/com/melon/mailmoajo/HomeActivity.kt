@@ -248,7 +248,7 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
                             val OLtoken = TokenManager(this@HomeActivity).refreshToken()
                             withContext(Dispatchers.Main) {             //outlook Update
                                     if (OLtoken != null) {
-                                    val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
+                                        val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
 
                                         callGraphAPI(
                                         this@HomeActivity,
@@ -289,6 +289,30 @@ class HomeActivity : AppCompatActivity(),CallbackInterface {
 
                         }else if(gmailCount==0  || outlookCount>0){//outlook만 load됐을 때
 
+                            val OLtoken = TokenManager(this@HomeActivity).refreshToken()
+                            withContext(Dispatchers.Main) {             //outlook Update
+                                if (OLtoken != null) {
+                                    val olMailAPIUrl = "${MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT}v1.0/me/messages?\$select=sender,subject,receivedDateTime"
+
+                                    callGraphAPI(
+                                        this@HomeActivity,
+                                        OLtoken,
+                                        olMailAPIUrl,
+                                        { result ->
+                                            Log.d("yeah", result.toString())
+                                            onMailDataReceived(result)
+                                        },
+                                        { error ->
+                                            Log.e("yeah", "Failed to call API: $error")
+                                            onMailDataError(error)
+                                        }
+                                    )
+                                } else {
+                                    Log.d("yeah", "토큰 갱신 실패")
+                                    Log.d("yeah", mAccount.toString())
+                                    Log.d("yeah", mSingleAccountApp.toString())
+                                }
+                            }
 
                         }else if(gmailCount ==0  && outlookCount==0){//아무것도 없을 경우
                             Log.d("meow","로그인부터 하슈")

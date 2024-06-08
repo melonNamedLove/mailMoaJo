@@ -17,13 +17,19 @@
         android:layout_height="30dp">
     </EditText>
     <EditText
-        android:id="@+id/googleEmailET"
+        android:id="@+id/mail1ET"
         android:layout_width="200dp"
         android:layout_height="30dp">
 
     </EditText>
     <EditText
-        android:id="@+id/outlookEmailET"
+        android:id="@+id/mail2ET"
+        android:layout_width="200dp"
+        android:layout_height="30dp">
+
+    </EditText>
+    <EditText
+        android:id="@+id/mail3ET"
         android:layout_width="200dp"
         android:layout_height="30dp">
 

@@ -87,14 +87,16 @@ class ContactDetailFragment( position: Int) : Fragment() {
 //        binding!!.contactRcv.adapter!!.notifyItemChanged(listData.size)
 
         binding.contactnameTV.setText(contactlistData[position].name)
-        binding.contactgmailTV.setText(contactlistData[position].gmail)
-        binding.contactoutlookTV.setText(contactlistData[position].outlook)
+        binding.contactgmailTV.setText(contactlistData[position].mail_1)
+        binding.contactoutlookTV.setText(contactlistData[position].mail_2)
+        binding.contactoutlookTV.setText(contactlistData[position].mail_3)
 
         val nId = contactlistData[position].nId
         val delContact = contacts(
             contactlistData[position].name,
-            contactlistData[position].gmail,
-            contactlistData[position].outlook
+            contactlistData[position].mail_1,
+            contactlistData[position].mail_2,
+            contactlistData[position].mail_3
         )
         binding.deleteContactBtn.setOnClickListener{
 

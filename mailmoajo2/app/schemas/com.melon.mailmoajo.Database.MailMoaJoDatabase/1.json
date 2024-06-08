@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6fcb9daabc075efe34ce872493efe3d6",
+    "identityHash": "17af786f793c7a1f6ce91f7bfeef1962",
     "entities": [
       {
         "tableName": "contacts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `gmail` TEXT, `outlook` TEXT, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `mail_1` TEXT, `mail_2` TEXT, `mail_3` TEXT, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "name",
@@ -15,16 +15,186 @@
             "notNull": true
           },
           {
-            "fieldPath": "gmail",
-            "columnName": "gmail",
+            "fieldPath": "mail_1",
+            "columnName": "mail_1",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "outlook",
-            "columnName": "outlook",
+            "fieldPath": "mail_2",
+            "columnName": "mail_2",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "mail_3",
+            "columnName": "mail_3",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nId",
+            "columnName": "nId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "nId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "orderedMailFolders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `id` TEXT NOT NULL, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "folderid",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nId",
+            "columnName": "nId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "nId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "mails",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receivedTime` TEXT NOT NULL, `sender` TEXT NOT NULL, `title` TEXT NOT NULL, `mailfolderid` INTEGER NOT NULL, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "receivedTime",
+            "columnName": "receivedTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sender",
+            "columnName": "sender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mailfolderid",
+            "columnName": "mailfolderid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nId",
+            "columnName": "nId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "nId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Gmails",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receivedTime` TEXT NOT NULL, `sender` TEXT NOT NULL, `title` TEXT NOT NULL, `mailfolderid` INTEGER NOT NULL, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "receivedTime",
+            "columnName": "receivedTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sender",
+            "columnName": "sender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mailfolderid",
+            "columnName": "mailfolderid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nId",
+            "columnName": "nId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "nId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "OutlookMails",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`receivedTime` TEXT NOT NULL, `sender` TEXT NOT NULL, `title` TEXT NOT NULL, `mailfolderid` INTEGER NOT NULL, `nId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "receivedTime",
+            "columnName": "receivedTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sender",
+            "columnName": "sender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mailfolderid",
+            "columnName": "mailfolderid",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "nId",
@@ -46,7 +216,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6fcb9daabc075efe34ce872493efe3d6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '17af786f793c7a1f6ce91f7bfeef1962')"
     ]
   }
 }
