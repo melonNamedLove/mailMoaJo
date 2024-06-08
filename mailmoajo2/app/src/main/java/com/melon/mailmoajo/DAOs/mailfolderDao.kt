@@ -29,6 +29,10 @@ interface mailfolderDao{
     @Query("DELETE FROM orderedMailFolders WHERE id = :folderid")
     fun deleteMailFolderByFolderId(folderid: String)
 
+
+    @Query("SELECT nId FROM orderedMailFolders WHERE id = :folderid")
+    fun getAddedMailfolderIndex(folderid: String):Int
+
 //    @Query("SELECT * FROM User") // 테이블의 모든 값을 가져와라
 //    fun getAll(): List<User>
 //

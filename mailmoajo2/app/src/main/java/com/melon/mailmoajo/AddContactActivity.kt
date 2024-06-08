@@ -10,6 +10,9 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
+import com.melon.mailmoajo.DAOs.GmailDao
+import com.melon.mailmoajo.DAOs.OutlookDao
+import com.melon.mailmoajo.DAOs.mailDao
 import com.melon.mailmoajo.Database.MailMoaJoDatabase
 import com.melon.mailmoajo.HomeActivity.Companion.database
 //import com.melon.mailmoajo.GoogleSignInActivity.Companion.contactprefs
@@ -43,36 +46,40 @@ class AddContactActivity : AppCompatActivity() {
 
         var i: Intent = Intent(this, HomeActivity::class.java)
 
+
         binding.addbtn.setOnClickListener{
 //            var contactprefset = contactprefs.getStringSet("contact", setOf<String>())
 
 //            var contactset = contactprefset!!.toMutableSet()
             var name = ""
-            var google = ""
-            var outlook = ""
+            var mail1 = ""
+            var mail2 = ""
+            var mail3 = ""
 
             if (!binding.nameET.text.toString().equals("")){
                 name =binding.nameET.text.toString()
             }
-            if (!binding.googleEmailET.text.toString().equals("")){
-                google =binding.googleEmailET.text.toString()
+            if (!binding.mail1ET.text.toString().equals("")){
+                mail1 =binding.mail1ET.text.toString()
             }
-            if (!binding.outlookEmailET.text.toString().equals("")){
-                outlook =binding.outlookEmailET.text.toString()
+            if (!binding.mail2ET.text.toString().equals("")){
+                mail2 =binding.mail2ET.text.toString()
+            }
+            if (!binding.mail3ET.text.toString().equals("")){
+                mail3 =binding.mail3ET.text.toString()
             }
 //            val concatContactString = name+"**"+google+"**"+outlook
 //            contactset!!.add(concatContactString)
 //            contactprefs.edit().putStringSet("contact", contactset.toSet()).apply()
 
 
-            var newContact = contacts(name, google, outlook)
+            var newContact = contacts(name, mail1, mail2, mail3)
 
 //             싱글톤 패턴을 사용하지 않은 경우
             val db = database(applicationContext)
 //            allowMainThreadQueries() // 그냥 강제로 실행
-//
 
-            if( name==null || (google==null && outlook==null ) || name.equals("") || (google.equals("") && outlook.equals("") ) ){
+            if( name==null || (mail1==null && mail2==null  && mail3==null ) || name.equals("") ||  (mail1=="" && mail2==""  && mail3=="" ) ){
                 val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 val view = inflater.inflate(R.layout.alert_popup, null)
                 view.findViewById<TextView>(R.id.alertTV).setText("이름 또는 이메일이 비어있습니다. \n 연락처가 저장되지 않습니다.")
@@ -91,6 +98,60 @@ class AddContactActivity : AppCompatActivity() {
                 db.mailfolderDao().insert(
                     orderedMailFolders(name, newContact.toString())
                 )
+                val mailfolderIndex = db.mailfolderDao().getAddedMailfolderIndex( newContact.toString())//new given index
+
+                Log.i("meow",mailfolderIndex.toString())
+                Log.i("meow",newContact.toString())
+                if(db.gmailDao().getGmailCount()!=0){
+                    if(mail1.isNotBlank()){
+                        val addressMatcingMails = db.gmailDao().getAddressMatchingMailsOrderedByTime(mail1)
+                        Log.i("meow",mail1.toString())
+                        Log.i("meow",addressMatcingMails.toString())
+                        addressMatcingMails.forEach {
+                            db.gmailDao().updateMailBynId(it.nId, mailfolderIndex)
+                        }
+                    }
+                    if(mail2.isNotBlank()){
+                        val addressMatcingMails = db.gmailDao().getAddressMatchingMailsOrderedByTime(mail2)
+                        Log.i("meow",addressMatcingMails.toString())
+                        addressMatcingMails.forEach {
+                            db.gmailDao().updateMailBynId(it.nId, mailfolderIndex)
+                        }
+                    }
+                    if(mail3.isNotBlank()){
+                        val addressMatcingMails = db.gmailDao().getAddressMatchingMailsOrderedByTime(mail3)
+                        Log.i("meow",addressMatcingMails.toString())
+                        addressMatcingMails.forEach {
+                            db.gmailDao().updateMailBynId(it.nId, mailfolderIndex)
+                        }
+                    }
+                }
+                if(db.outlookDao().getOutlookCount()!=0){
+                    if(mail1.isNotBlank()){
+                        val addressMatcingMails = db.outlookDao().getAddressMatchingMailsOrderedByTime(mail1)
+                        Log.i("meow",addressMatcingMails.toString())
+                        addressMatcingMails.forEach {
+                            db.outlookDao().updateMailBynId(it.nId, mailfolderIndex)
+                        }
+                    }
+                    if(mail2.isNotBlank()){
+                        val addressMatcingMails = db.outlookDao().getAddressMatchingMailsOrderedByTime(mail2)
+                        Log.i("meow",addressMatcingMails.toString())
+                        addressMatcingMails.forEach {
+                            db.outlookDao().updateMailBynId(it.nId, mailfolderIndex)
+                        }
+
+                    }
+                    if(mail3.isNotBlank()){
+
+                        val addressMatcingMails = db.outlookDao().getAddressMatchingMailsOrderedByTime(mail3)
+                        Log.i("meow",addressMatcingMails.toString())
+                        addressMatcingMails.forEach {
+                            db.outlookDao().updateMailBynId(it.nId, mailfolderIndex)
+                        }
+
+                    }
+                }
 
                 setResult(1,i)
                 finish()

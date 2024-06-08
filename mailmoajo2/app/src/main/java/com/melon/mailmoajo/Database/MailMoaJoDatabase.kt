@@ -17,11 +17,12 @@ import entities.mails
 import entities.orderedMailFolders
 
 //@Database(entities = arrayOf(User::class, Student::class), version = 1)
-@Database(entities = arrayOf(contacts::class, orderedMailFolders::class, mails::class, Gmails::class, OutlookMails::class), version = 4, exportSchema = true,
+@Database(entities = arrayOf(contacts::class, orderedMailFolders::class, mails::class, Gmails::class, OutlookMails::class), version = 1, exportSchema = true,
     autoMigrations = [
-        AutoMigration (from = 1, to = 2),
-        AutoMigration (from = 2, to = 3),
-        AutoMigration (from = 3, to = 4)
+//        AutoMigration (from = 1, to = 2),
+//        AutoMigration (from = 2, to = 3),
+//        AutoMigration (from = 3, to = 4),
+//        AutoMigration (from = 4, to = 5)
     ]
 )
 abstract  class MailMoaJoDatabase :RoomDatabase() {

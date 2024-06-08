@@ -15,8 +15,9 @@ import kotlin.reflect.KClass
 data class contacts(
 
     @ColumnInfo(name = "name") var name: String,
-    @ColumnInfo(name = "gmail") var gmail: String?,
-    @ColumnInfo(name = "outlook") var outlook: String?,
+    @ColumnInfo(name = "mail_1") var mail_1: String?,
+    @ColumnInfo(name = "mail_2") var mail_2: String?,
+    @ColumnInfo(name = "mail_3") var mail_3: String?,
     ){@PrimaryKey(autoGenerate = true) var nId: Int = 0}
 @Entity
 data class orderedMailFolders(

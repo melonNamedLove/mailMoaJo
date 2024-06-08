@@ -27,6 +27,9 @@ interface contactDao{
 //
     @Query("DELETE FROM contacts WHERE nId = :nId")
     fun deleteUserByNId(nId: Int)
+
+
+
 }
 
 //@Dao
